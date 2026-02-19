@@ -333,9 +333,9 @@ end
 
     local LEFT_W, RIGHT_W = 330, 330
 
-    local leftPanel = UI:MakePanel(miscGroup, "Updates", miscGroup, 0, -110, LEFT_W, 330)
-    local rightPanel = UI:MakePanel(miscGroup, "Unit info panel", leftPanel, LEFT_W, 0, RIGHT_W, 330)
-    local bottomPanel = UI:MakePanel(miscGroup, "Indicators", leftPanel, 0, -(330 + 16), LEFT_W + RIGHT_W, 180)
+    local leftPanel = UI:MakePanel(miscGroup, L["Updates"], miscGroup, 0, -110, LEFT_W, 330)
+    local rightPanel = UI:MakePanel(miscGroup, L["Unit info panel"], leftPanel, LEFT_W, 0, RIGHT_W, 330)
+    local bottomPanel = UI:MakePanel(miscGroup, L["Indicators"], leftPanel, 0, -(330 + 16), LEFT_W + RIGHT_W, 180)
 
     local centerDivider = miscGroup:CreateTexture(nil, "ARTWORK")
     centerDivider:SetColorTexture(1, 1, 1, 0.10)
@@ -388,7 +388,7 @@ end
         end
 
         local gap = 6
-        leftPanel._msufPresetPerf = MakePresetButton("Perf...", function()
+        leftPanel._msufPresetPerf = MakePresetButton(L["Perf..."], function()
             local g = EnsureGeneral()
             g.miscUpdatesPreset = "perf"
             sliders.updateInterval:SetValue(0.12)
@@ -399,7 +399,7 @@ end
         end)
         leftPanel._msufPresetPerf:SetPoint("LEFT", row, "LEFT", 0, 0)
 
-        leftPanel._msufPresetBal = MakePresetButton("Balanced...", function()
+        leftPanel._msufPresetBal = MakePresetButton(L["Balanced..."], function()
             local g = EnsureGeneral()
             g.miscUpdatesPreset = "balanced"
             sliders.updateInterval:SetValue(0.05)
@@ -410,7 +410,7 @@ end
         end)
         leftPanel._msufPresetBal:SetPoint("LEFT", leftPanel._msufPresetPerf, "RIGHT", gap, 0)
 
-        leftPanel._msufPresetAcc = MakePresetButton("Accurate...", function()
+        leftPanel._msufPresetAcc = MakePresetButton(L["Accurate..."], function()
             local g = EnsureGeneral()
             g.miscUpdatesPreset = "accurate"
             sliders.updateInterval:SetValue(0.01)
@@ -444,7 +444,7 @@ end
             g.frameUpdateInterval = v
             MSUF_FrameUpdateInterval = v
         end,
-        formatText = function(v) return string.format("Unit update interval: %.2f s", v) end,
+        formatText = function(v) return string.format(L["Unit update interval: %.2f s"], v) end,
     })
 
     sliders.castbarUpdate = UI:MakeSlider({
@@ -466,7 +466,7 @@ end
             g.castbarUpdateInterval = v
             MSUF_CastbarUpdateInterval = v
         end,
-        formatText = function(v) return string.format("Castbar update interval: %.2f s", v) end,
+        formatText = function(v) return string.format(L["Castbar update interval: %.2f s"], v) end,
     })
 
     sliders.ufcoreBudget = UI:MakeSlider({
@@ -487,7 +487,7 @@ end
             local g = EnsureGeneral()
             g.ufcoreFlushBudgetMs = v
         end,
-        formatText = function(v) return string.format("UFCore flush budget: %.1f ms", v) end,
+        formatText = function(v) return string.format(L["UFCore flush budget: %.1f ms"], v) end,
     })
 
     sliders.ufcoreUrgent = UI:MakeSlider({
@@ -510,7 +510,7 @@ end
         end,
         formatText = function(v)
             local n = math.floor((tonumber(v) or 10) + 0.5)
-            return string.format("UFCore urgent cap: %d", n)
+            return string.format(L["UFCore urgent cap: %d"], n)
         end,
     })
 
@@ -525,7 +525,7 @@ end
         template = "UICheckButtonTemplate",
         anchor = rightPanel._msufHeaderLine,
         x = 0, y = -10,
-        label = "Disable MSUF unit info panel tooltips",
+        label = L["Disable MSUF unit info panel tooltips"],
         get = function()
             local g = EnsureGeneral()
             return g.disableUnitInfoTooltips and true or false
@@ -536,7 +536,7 @@ end
         end,
     })
 
-    local posLabel = UI:Label(rightPanel, "MSUF unit info panel position", "TOPLEFT", infoTooltipDisable, 0, -28)
+    local posLabel = UI:Label(rightPanel, L["MSUF unit info panel position"], "TOPLEFT", infoTooltipDisable, 0, -28)
     UI:MakeDropdown({
         name = "MSUF_InfoTooltipPosDropdown",
         parent = rightPanel,
@@ -558,7 +558,7 @@ end
         end,
     })
 
-    local blizzHeader = UI:Label(rightPanel, "Blizzard frames", "TOPLEFT", posLabel, 0, -64)
+    local blizzHeader = UI:Label(rightPanel, L["Blizzard frames"], "TOPLEFT", posLabel, 0, -64)
     local blizzLine = rightPanel:CreateTexture(nil, "OVERLAY")
     blizzLine:SetColorTexture(1, 1, 1, 0.10)
     blizzLine:SetHeight(1)
@@ -571,7 +571,7 @@ end
         template = "UICheckButtonTemplate",
         anchor = blizzLine,
         x = 0, y = -10,
-        label = "Disable Blizzard unitframes",
+        label = L["Disable Blizzard unitframes"],
         get = function()
             local g = EnsureGeneral()
             return (g.disableBlizzardUnitFrames ~= false) and true or false
@@ -616,7 +616,7 @@ end
         template = "UICheckButtonTemplate",
         anchor = blizzUFDisable,
         x = 0, y = -10,
-        label = "Fully Hide Blizzard PlayerFrame - Turn off for resource bar compatibility",
+        label = L["Fully Hide Blizzard PlayerFrame - Turn off for resource bar compatibility"],
         get = function()
             local g = EnsureGeneral()
             return (g.hardKillBlizzardPlayerFrame == true)
@@ -642,7 +642,7 @@ end
         template = "InterfaceOptionsCheckButtonTemplate",
         anchor = _G.MSUF_HardKillPlayerFrameCheck,
         x = 0, y = -12,
-        label = "Show MSUF minimap icon",
+        label = L["Show MSUF minimap icon"],
         get = function()
             local g = EnsureGeneral()
             return (g.showMinimapIcon ~= false) and true or false
@@ -667,7 +667,7 @@ end
         template = "InterfaceOptionsCheckButtonTemplate",
         anchor = minimapIconCheck,
         x = 0, y = -12,
-        label = "Play sound on Target/Target Lost",
+        label = L["Play sound on Target/Target Lost"],
         get = function()
             local g = EnsureGeneral()
             return (g.playTargetSelectLostSounds == true)
@@ -728,7 +728,7 @@ end
         }
     end
 
-    local statusHeader = UI:Label(bottomPanel, "Status indicators", "TOPLEFT", bottomPanel, 14, -34)
+    local statusHeader = UI:Label(bottomPanel, L["Status indicators"], "TOPLEFT", bottomPanel, 14, -34)
     local statusLine = bottomPanel:CreateTexture(nil, "ARTWORK")
     statusLine:SetColorTexture(1, 1, 1, 0.10)
     statusLine:SetHeight(1)
@@ -737,7 +737,7 @@ end
 
 
     -- Range Fade (moved here so it sits at the same height as Indicators, bottom-right column)
-    local rangeFadeHeader = UI:Label(bottomPanel, "Range fade", "TOPLEFT", bottomPanel, LEFT_W + 14, -34)
+    local rangeFadeHeader = UI:Label(bottomPanel, L["Range fade"], "TOPLEFT", bottomPanel, LEFT_W + 14, -34)
     local rangeFadeLine = bottomPanel:CreateTexture(nil, "ARTWORK")
     rangeFadeLine:SetColorTexture(1, 1, 1, 0.10)
     rangeFadeLine:SetHeight(1)
@@ -750,7 +750,7 @@ end
         template = "InterfaceOptionsCheckButtonTemplate",
         anchor = rangeFadeHeader,
         x = 0, y = -14,
-        label = "Enable Target Range Fade",
+        label = L["Enable Target Range Fade"],
         get = function()
             local t = EnsureTarget()
             return (t.rangeFadeEnabled == true)
@@ -769,7 +769,7 @@ end
         template = "InterfaceOptionsCheckButtonTemplate",
         anchor = rangeFadeTargetCheck,
         x = 0, y = -12,
-        label = "Enable Focus Range Fade",
+        label = L["Enable Focus Range Fade"],
         get = function()
             local t = EnsureFocus()
             return (t.rangeFadeEnabled == true)
@@ -789,7 +789,7 @@ end
         template = "InterfaceOptionsCheckButtonTemplate",
         anchor = rangeFadeFocusCheck,
         x = 0, y = -12,
-        label = "Enable Boss Range Fade",
+        label = L["Enable Boss Range Fade"],
         get = function()
             local t = EnsureBoss()
             return (t.rangeFadeEnabled == true)

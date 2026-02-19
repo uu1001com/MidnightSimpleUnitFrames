@@ -1443,12 +1443,12 @@ local segH=seg and 22 or 20
 
 local titleText=opts.title or"Tools"
 local title=UI_Text(parent,"GameFontNormal","TOPLEFT",parent,"TOPLEFT",6,-2,titleText,MSUF_SkinTitle)
-local globalLabel=UI_Text(parent,"GameFontHighlight","TOPLEFT",title,"BOTTOMLEFT",0,-10,"Global UI Scale",MSUF_SkinText)
-local globalCur=UI_Text(parent,"GameFontHighlightSmall","TOPLEFT",globalLabel,"BOTTOMLEFT",0,-6,"Current: ...",MSUF_SkinText)
+local globalLabel=UI_Text(parent,"GameFontHighlight","TOPLEFT",title,"BOTTOMLEFT",0,-10,L["Global UI Scale"],MSUF_SkinText)
+local globalCur=UI_Text(parent,"GameFontHighlightSmall","TOPLEFT",globalLabel,"BOTTOMLEFT",0,-6,L["Current: ..."],MSUF_SkinText)
 
 local btn1080,btn1440,btn4k,btnAuto
 local presetRow=MSUF_BuildButtonRow(parent,globalCur,"TOPLEFT","BOTTOMLEFT",0,-8,{
-{text="1080",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle="Global UI Scale: 1080",tipBody="Applies MSUF's global scale preset for 1080p-like setups and reloads your UI. Auto restores Blizzard scaling on reload.",onClick=function()
+{text="1080",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle=L["Global UI Scale: 1080"],tipBody=L["Applies MSUF's global scale preset for 1080p-like setups and reloads your UI. Auto restores Blizzard scaling on reload."],onClick=function()
 MSUF_ShowReloadConfirm("Global UI Scale: 1080p",function()
 if _G and _G.MSUF_SetScalingDisabled then _G.MSUF_SetScalingDisabled(false,true)
 end
@@ -1457,7 +1457,7 @@ MSUF_SetGlobalUiScale(UI_SCALE_1080,true)
 ReloadUI()
 end)
 end},
-{text="1440",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle="Global UI Scale: 1440",tipBody="Applies MSUF's global scale preset for 1440p-like setups and reloads your UI. Auto restores Blizzard scaling on reload.",onClick=function()
+{text="1440",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle=L["Global UI Scale: 1440"],tipBody=L["Applies MSUF's global scale preset for 1440p-like setups and reloads your UI. Auto restores Blizzard scaling on reload."],onClick=function()
 MSUF_ShowReloadConfirm("Global UI Scale: 1440p",function()
 if _G and _G.MSUF_SetScalingDisabled then _G.MSUF_SetScalingDisabled(false,true)
 end
@@ -1466,7 +1466,7 @@ MSUF_SetGlobalUiScale(UI_SCALE_1440,true)
 ReloadUI()
 end)
 end},
-{text="4K",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle="Global UI Scale: 4K",tipBody="Applies MSUF's global scale preset for 4K (2160p) setups (0.3556) and reloads your UI. Auto restores Blizzard scaling on reload.",onClick=function()
+{text="4K",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle=L["Global UI Scale: 4K"],tipBody=L["Applies MSUF's global scale preset for 4K (2160p) setups (0.3556) and reloads your UI. Auto restores Blizzard scaling on reload."],onClick=function()
 MSUF_ShowReloadConfirm("Global UI Scale: 4K (2160p)",function()
 if _G and _G.MSUF_SetScalingDisabled then _G.MSUF_SetScalingDisabled(false,true)
 end
@@ -1475,7 +1475,7 @@ MSUF_SetGlobalUiScale(UI_SCALE_4K,true)
 ReloadUI()
 end)
 end},
-{text="Auto",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle="Global UI Scale: Auto",tipBody="Stops enforcing MSUF global scale and restores your previous Blizzard UI scale.",onClick=function()
+{text="Auto",w=segW,h=segH,skinFn=MSUF_SkinDashboardButton,tipTitle=L["Global UI Scale: Auto"],tipBody=L["Stops enforcing MSUF global scale and restores your previous Blizzard UI scale."],onClick=function()
 MSUF_ShowReloadConfirm("Global UI Scale: Auto",function()
 if _G and _G.MSUF_SetScalingDisabled then _G.MSUF_SetScalingDisabled(false,true)
 end
@@ -1561,7 +1561,7 @@ local function MSUF_UpdateMsufScaleRow(scale)
 scale=tonumber(scale) or 1.0
 scale=clamp(scale,0.25,1.5)
 local pct=math.floor(scale*100+0.5)
-if msufScaleCur and msufScaleCur.SetText then msufScaleCur:SetText(string.format("Current: %.2f (%d%%)",scale,pct)) end
+if msufScaleCur and msufScaleCur.SetText then msufScaleCur:SetText(string.format(L["Current: %.2f (%d%%)"],scale,pct)) end
 end
 
 local function MSUF_SnapMsufScalePct(pct)
@@ -1589,7 +1589,7 @@ MSUF_ApplyMsufScale(scale)
 MSUF_UpdateMsufScaleRow(scale)
 end)
 
-if MSUF_AddTooltip then pcall(MSUF_AddTooltip,msufScaleSlider,"MSUF Unitframe Scale","TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only MSUF frames (unitframes + castbars). Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately; in combat it applies after combat.") end
+if MSUF_AddTooltip then pcall(MSUF_AddTooltip,msufScaleSlider,L["MSUF Unitframe Scale"],L["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only MSUF frames (unitframes + castbars). Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately; in combat it applies after combat."]) end
 
 -- Slash menu scale slider (scales only the MSUF standalone options window)
 local menuScaleLabel=UI_Text(parent,"GameFontHighlight","TOPLEFT",msufScaleSlider,"BOTTOMLEFT",0,-18,"MSUF Slash Menu Scale",MSUF_SkinText)
@@ -1618,7 +1618,7 @@ local function MSUF_UpdateSlashMenuScaleRow(scale)
 scale=tonumber(scale) or 1.0
 scale=clamp(scale,0.25,1.5)
 local pct=math.floor(scale*100+0.5)
-if menuScaleCur and menuScaleCur.SetText then menuScaleCur:SetText(string.format("Current: %.2f (%d%%)",scale,pct)) end
+if menuScaleCur and menuScaleCur.SetText then menuScaleCur:SetText(string.format(L["Current: %.2f (%d%%)"],scale,pct)) end
 end
 
 menuScaleSlider:EnableMouseWheel(true)
@@ -1639,7 +1639,7 @@ MSUF_ApplySlashMenuScale(scale,{ignoreDisable=true})
 MSUF_UpdateSlashMenuScaleRow(scale)
 end)
 
-if MSUF_AddTooltip then pcall(MSUF_AddTooltip,menuScaleSlider,"MSUF Slash Menu Scale","TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only the MSUF Slash Menu window. Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately.") end
+if MSUF_AddTooltip then pcall(MSUF_AddTooltip,menuScaleSlider,L["MSUF Slash Menu Scale"],L["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only the MSUF Slash Menu window. Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately."]) end
 
 api.ui={title=title,globalCur=globalCur,btn1080=btn1080,btn1440=btn1440,btn4k=btn4k,btnAuto=btnAuto,msufReset=msufReset,msufOff=msufOff,msufScaleLabel=msufScaleLabel,msufScaleCur=msufScaleCur,msufScaleSlider=msufScaleSlider,menuScaleLabel=menuScaleLabel,menuScaleCur=menuScaleCur,menuScaleSlider=menuScaleSlider,}
 
@@ -2241,7 +2241,7 @@ navParent._msufNavStripe=stripe end
 local function MakeButton(label,w,onClick,isHeader,isChild) local b=UI_Button(navParent,tostring(label or""),w,btnH,"TOPLEFT",navParent,"TOPLEFT",0,0,onClick)
 MSUF_LeftJustifyButtonText(b,isChild and 10 or 12)
 MSUF_SkinNavButton(b,isHeader,isChild) return b end
-local NAV={{type="leaf",key="home",label="Dashboard"},{type="header",id="unitframes",label="Unit Frames",defaultOpen=true,children={{key="uf_player",label="Player"},{key="uf_target",label="Target"},{key="uf_targettarget",label="Target of Target"},{key="uf_focus",label="Focus"},{key="uf_boss",label="Boss Frames"},{key="uf_pet",label="Pet"},}},{type="header",id="options",label="Options",defaultOpen=true,children={{key="opt_bars",label="Bars"},{key="opt_fonts",label="Fonts"},{key="auras2",label="Auras 2.0"},{key="opt_castbar",label="Castbar"},{key="opt_misc",label="Miscellaneous"},{key="opt_colors",label="Colors"},}},{type="leaf",key="gameplay",label="Gameplay"},{type="header",id="modules",label="Modules",defaultOpen=false,children={{key="modules",label="Style"},}},{type="leaf",key="profiles",label="Profiles"},}
+local NAV={{type="leaf",key="home",label="Dashboard"},{type="header",id="unitframes",label=L["Unit Frames"],defaultOpen=true,children={{key="uf_player",label=L["Player"]},{key="uf_target",label=L["Target"]},{key="uf_targettarget",label=L["Target of Target"]},{key="uf_focus",label=L["Focus"]},{key="uf_boss",label=L["Boss Frames"]},{key="uf_pet",label=L["Pet"]},}},{type="header",id="options",label=L["Options"],defaultOpen=true,children={{key="opt_bars",label=L["Bars"]},{key="opt_fonts",label=L["Fonts"]},{key="auras2",label=L["Auras 2.0"]},{key="opt_castbar",label=L["Castbar"]},{key="opt_misc",label=L["Miscellaneous"]},{key="opt_colors",label=L["Colors"]},}},{type="leaf",key="gameplay",label=L["Gameplay"]},{type="header",id="modules",label=L["Modules"],defaultOpen=false,children={{key="modules",label="Style"},}},{type="leaf",key="profiles",label=L["Profiles"]},}
 local headerLabels={}
 for _,node in ipairs(NAV)
 do if node.type=="header"then headerLabels[node.id]=node.label end
@@ -2648,7 +2648,7 @@ local function AdvApplyState(open) if open then advToggle:SetText("Hide")
 advHint:SetText("")
 advBody:Show()
 else advToggle:SetText("Show")
-advHint:SetText("Hidden. Click Show to reveal slash commands + power tools.")
+advHint:SetText(L["Hidden. Click Show to reveal slash commands + power tools."])
 advBody:Hide()
 end
 end
@@ -2693,7 +2693,7 @@ MSUF_ShowPresetConfirm(sel) end
 ,"Load preset","Applies the selected preset to your current active profile. This overwrites settings (export first if unsure).",MSUF_SkinDashboardButton)
 local presetHint=presetsCard:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
 presetHint:SetPoint("TOPLEFT",bLoadPreset,"BOTTOMLEFT",0,-4)
-presetHint:SetText("Overwrites your current active profile settings.")
+presetHint:SetText(L["Overwrites your current active profile settings."])
 MSUF_SkinMuted(presetHint)
 do local KO_FI_URL="https://ko-fi.com/midnightsimpleunitframes#linkModal";
 local PAYPAL_URL="https://www.paypal.com/ncp/payment/H3N2P87S53KBQ";

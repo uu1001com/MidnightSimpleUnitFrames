@@ -77,7 +77,8 @@ local T = {
 
 
     ["Current: ..."] =     "当前: ...",
-    ["Current: %.4f"] =    "当前: %.4f",
+    ["Current: %.2f (%d%%)"] = "当前: %.2f (%d%%)",
+
 
     ["Reset"] = "重置",
     ["Reset UI Scale"] = "重置UI缩放",
@@ -86,6 +87,10 @@ local T = {
     ["Disable ALL MSUF scaling"] = "关闭所有MSUF缩放",
     ["Turns off all scaling MSUF applies (global UI scale + MSUF-only scale), then reloads your UI. Blizzard handles scaling."] = "关闭所有MSUF应用的缩放(全局UI缩放 + MSUF-only缩放),然后重新加载您的UI. 暴雪处理缩放.",
     ["Overwrites your current active profile settings."] = "覆盖您当前的激活配置文件设置.",
+    ["MSUF Unitframe Scale"] = "MSUF单位框架缩放",
+    ["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only MSUF frames (unitframes + castbars). Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately; in combat it applies after combat."] = "提示: 将鼠标悬停在此滑块上并使用鼠标滚轮以5%的步长更改缩放.\n\n仅MSUF框架(单位框架 + 施法条)的缩放. 范围25%-150%(0.25–1.50). 拖动或点击调整. 立即应用; 在战斗中,它会在战斗后应用.",
+    ["MSUF Slash Menu Scale"] = "MSUF菜单缩放",
+    ["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only the MSUF Slash Menu window. Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately."] = "提示: 将鼠标悬停在此滑块上并使用鼠标滚轮以5%的步长更改缩放.\n\n仅MSUF菜单窗口的缩放. 范围25%-150%(0.25–1.50). 拖
 
 
 
@@ -283,6 +288,13 @@ local T = {
     ["Focus"] = "焦点",
     ["Boss 1-5"] = "首领1-5",
     ["Display"] = "显示",
+    ["Boss 1"] = "首领1",
+    ["Boss 2"] = "首领2",
+    ["Boss 3"] = "首领3",
+    ["Boss 4"] = "首领4",
+    ["Boss 5"] = "首领5",
+    ["Shared"]  = "共享",
+
     ["Show Buffs"] = "显示Buffs",
     ["Show Debuffs"]   = "显示Debuffs",
     ["Highlight own buffs"] =  "高亮自己的Buffs",
@@ -299,6 +311,8 @@ local T = {
     ["Show tooltip"] = "显示鼠标提示",
     ["Hide permanent buffs"] = "隐藏永久Buffs",
     ['Hides buffs with no duration. Debuffs are never hidden by this option.\n\nNote: Target/Focus APIs may still show permanent buffs during combat due to API limitations.'] = "隐藏无持续时间的Buffs. Debuffs不会被此选项隐藏.\n\n注意: 目标/焦点API在战斗中可能仍然显示永久Buffs, 由于API限制.",
+    ["Dispel-type borders"] = "驱散类型边框",
+    ["Colors aura borders by debuff dispel type (Magic/Curse/Poison/Disease), similar to Blizzard private aura borders."] = "根据Debuff驱散类型 (魔法/诅咒/中毒/疾病) 着色光环边框, 类似于暴雪私人光环边框.",
     ["Only my buffs"]  = "仅自己的Buffs",
     ["Only my debuffs"] = "仅自己的Debuffs",
     ["Max Buffs"] = "最大Buffs数量",
@@ -312,6 +326,9 @@ local T = {
     ["Buff Anchor"] = "Buff锚点",
     ["Debuff Anchor"] = "Debuff锚点",
     ["Growth"] = "增长",
+    ["Buff Growth"] = "Buff增长",
+    ["Debuff Growth"] = "Debuff增长",
+    ["Private Growth"] = "私人增长",
     ['Timer colors'] = "计时颜色",
     ['Color aura timers by remaining time'] = "按剩余时间着色光环计时器",
     ['When enabled, aura cooldown text uses Safe / Warning / Urgent colors based on remaining time.\nWhen disabled, aura cooldown text always uses the Safe color.'] = "启用时, 光环冷却文本根据剩余时间使用安全 / 警告 / 紧急颜色.\n禁用时, 光环冷却文本始终使用安全颜色.",
@@ -320,6 +337,11 @@ local T = {
     ['Urgent (<=)'] = "紧急 (<=)",
     ["Advanced"] = "高级",
     ["Include"] = "包含",
+    ['Use Blizzard timer text (max performance)'] = '使用暴雪计时文本 (最大性能)',
+    ['When enabled, Blizzard handles countdown numbers natively in C++.\nDisables timer colors but eliminates all periodic timer CPU overhead.\nFont, size and position are still controlled by MSUF.'] = '启用时, 暴雪在C++中本地处理倒计时数字.\n禁用计时器颜色但消除了所有定期定时器的CPU开销.\n字体, 大小和位置仍然由MSUF控制.',
+    ['Color aura timers by remaining time'] = '按剩余时间着色光环计时器',
+    ['When enabled, aura cooldown text uses Safe / Warning / Urgent colors based on remaining time.\nWhen disabled, aura cooldown text always uses the Safe color.']    = '当启用时, 光环冷却文本根据剩余时间使用安全 / 警告 / 紧急颜色.\n禁用时, 光环冷却文本始终使用安全颜色.',
+
     ["Include boss buffs"] =  "包含首领Buffs",
     ["Include boss debuffs"] =  "包含首领Debuffs",
     ["Always include dispellable debuffs"] =  "始终包含可驱散的Debuffs",
@@ -327,6 +349,10 @@ local T = {
     ["Only show boss auras"] =   "仅显示首领光环",
     ["Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown."] = "硬过滤: 启用时 (并且过滤器已启用), 将仅显示标记为首领光环的光环.",
     ["Private Auras"] = "私人光环",
+    ["Only show IMPORTANT buffs"] = "仅显示重要Buffs",
+    ["Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."] = "硬过滤: 启用时 (并且过滤器已启用), 将仅显示暴雪精心挑选的 IMPORTANT Buffs列表中 (例如, 团队机制, 关键防御等).",
+    ["Only show IMPORTANT debuffs"] = "仅显示重要Debuffs",
+    ["Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."] = "硬过滤: 启用时 (并且过滤器已启用), 将仅显示暴雪精心挑选的 IMPORTANT Debuffs列表中 (例如, 团队机制, 关键防御等).",
     ["Enabled"] = "启用",
     ["Master switch for anchoring Blizzard Private Auras to MSUF."] = "将暴雪私人光环锚定到MSUF的主开关.",
     ["Show (Player)"] = "显示 (玩家)",
@@ -602,19 +628,27 @@ local T = {
     ["Cancel Changes"] =   "取消更改",
     ["Reset Frame"] =    "重置框架",
     ["Exit MSUF Edit Mode"] =    "退出MSUF编辑模式",
-    
+
+
+
 
 -----------popup----------,
-    ["MSUF Edit – %s"] = 	"MSUF 编辑 – %s",
-    ["MSUF Edit – Castbar"] = "MSUF 编辑 – 施法条",
-    ["MSUF Edit – %s Castbar"] = "MSUF 编辑 – %s 施法条",
+    ["MSUF Edit"]   = "MSUF 编辑",
+    ['MSUF Edit  '] = 'MSUF 编辑  ',
+    ["MSUF Edit  %s"] = 	"MSUF 编辑  %s",
+    ["MSUF Edit  Castbar"] = "MSUF 编辑  施法条",
+    ["MSUF Edit  %s Castbar"] = "MSUF 编辑  %s 施法条",
     ['MSUF Edit – Target Aura'] = 'MSUF 编辑 – 目标光环',
     ['MSUF Edit – '] = 'MSUF 编辑 – ',
+    ['MSUF Edit  Target Aura'] = 'MSUF 编辑 – 目标光环',
+
     ["Editing: %s (X: %d, Y: %d)"] = "编辑: %s (X: %d, Y: %d)",
     ['Player Aura'] = '玩家光环',
     ['Target Aura'] = '目标光环',
     ['Focus Aura'] = '焦点光环',
     ['Boss %s Aura'] = '首领 %s 光环',
+    ['Boss Aura'] = '首领光环',
+    ['Aura'] = '光环',
     ["Frame"] = "框架",
     ['Frame'] = '框架',
     ["Offset X:"] = "偏移X:",
@@ -665,6 +699,20 @@ local T = {
     ["Private offset X:"] = "私人偏移X:",
     ["Private offset Y:"] = "私人偏移Y:",
     ["Private icon size:"] = "私人图标大小:",
+    ["Text Anchor"] = "文本锚点",
+    ["Right"]   = "右",
+    ["Left"]     = "左",
+    ["Center"]   = "中",
+    ["Name: "] = "名称: ",
+    ["HP: "] = "生命: ",
+    ["Power: "] = "能量: ",
+    ["Power Bar"] = "能量条",
+    ["Detach from frame"] = "从框架分离",
+    ["Detach Power Bar"] = "分离能量条",
+    ["Separates the power bar from the unit frame so you can position and size it freely."] = "将能量条从单位框架分离，以便您可以自由地定位和调整大小.",
+    ["Anchor to Boss unitframe"] = "锚定到首领单位框架",
+    ["Anchor to "]  = "锚定到 ",
+    [" unitframe"] = " 单位框架",
 
     ["Copy size settings to..."] = "复制大小设置到...",
     ["Copy text settings to..."] = "复制文本设置到...",
