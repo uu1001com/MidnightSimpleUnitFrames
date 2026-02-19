@@ -209,15 +209,15 @@ function ns.MSUF_Options_Fonts_Build(panel, fontGroup)
          return fs
     end
     local function FormatOverrideSummary(list)
-        if not list or #list == 0 then  return "Overrides: -", nil end
-        if #list == 1 then return "Overrides: " .. list[1], list[1] end
-        return "Overrides: " .. list[1] .. " +" .. tostring(#list - 1), table.concat(list, ", ")
+        if not list or #list == 0 then  return L["Overrides: -"], nil end
+        if #list == 1 then return L["Overrides: "] .. list[1], list[1] end
+        return L["Overrides: "] .. list[1] .. " +" .. tostring(#list - 1), table.concat(list, ", ")
     end
     local function ListFontOverrides(confField)
         EnsureDB()
         local out = {}
         local keys = { "player", "target", "targettarget", "focus", "pet", "boss" }
-        local pretty = { player="Player", target="Target", targettarget="ToT", focus="Focus", pet="Pet", boss="Boss" }
+        local pretty = { player=L["Player"], target=L["Target"], targettarget=L["ToT"], focus=L["Focus"], pet=L["Pet"], boss=L["Boss"] }
         for _, k in ipairs(keys) do
             local c = MSUF_DB and MSUF_DB[k]
             if c and c[confField] ~= nil then out[#out + 1] = pretty[k] or k end

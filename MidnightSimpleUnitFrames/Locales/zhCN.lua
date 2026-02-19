@@ -34,6 +34,11 @@ local T = {
     ["ON"]  = "开",
     ["OFF"]  = "关",
     ["Override"] = "覆盖",
+    ["Overrides"] = "覆盖",
+    ["Enable"] = "启用",
+    ["Cancel"] = "取消",
+
+
 
     -- Add more as you go:
     -- ["..."] = "...",
@@ -90,7 +95,7 @@ local T = {
     ["MSUF Unitframe Scale"] = "MSUF单位框架缩放",
     ["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only MSUF frames (unitframes + castbars). Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately; in combat it applies after combat."] = "提示: 将鼠标悬停在此滑块上并使用鼠标滚轮以5%的步长更改缩放.\n\n仅MSUF框架(单位框架 + 施法条)的缩放. 范围25%-150%(0.25–1.50). 拖动或点击调整. 立即应用; 在战斗中,它会在战斗后应用.",
     ["MSUF Slash Menu Scale"] = "MSUF菜单缩放",
-    ["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only the MSUF Slash Menu window. Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately."] = "提示: 将鼠标悬停在此滑块上并使用鼠标滚轮以5%的步长更改缩放.\n\n仅MSUF菜单窗口的缩放. 范围25%-150%(0.25–1.50). 拖
+    ["TIP: Hover this slider and use the Mouse Wheel to change the scale in 5% steps.\n\nScales only the MSUF Slash Menu window. Range 25%–150% (0.25–1.50). Drag or click to adjust. Applied immediately."] = "提示: 将鼠标悬停在此滑块上并使用鼠标滚轮以5%的步长更改缩放.\n\n仅MSUF菜单窗口的缩放. 范围25%-150%(0.25–1.50). 拖动或点击调整. 立即应用.",
 
 
 
@@ -118,6 +123,13 @@ local T = {
     ["2D Portrait Right"] = "2D头像右",
     ["3D Portrait Left"] = "3D头像左" ,
     ["3D Portrait Right"] = "3D头像右",
+    ["Class Icon Left (players)"] = "职业图标左 (玩家)",
+    ["Class Icon Right (players)"] = "职业图标右 (玩家)",
+    ["Copy these settings to ALL unitframes?\n\nThis will overwrite existing settings on Player/Target/Focus/Boss/Pet/Target of Target."] = "将这些设置复制到所有单位框架?\n\n这将覆盖玩家/目标/焦点/首领/宠物/目标的目标上的现有设置.",
+    ["Invert boss order"] = "反转首领顺序",
+
+
+
 
     ["Player Alpha"]   = "玩家透明度",
     ["Target Alpha"]    = "目标透明度",
@@ -132,6 +144,9 @@ local T = {
     ["Background"]      = "背景",
     ["Alpha in combat"] = "战斗中透明度",
     ["Alpha out of combat"] = "非战斗中透明度",
+    ["Free (global anchor)"] = "自由 (全局锚点)",
+    ["Player frame"] = "玩家框架",
+    ["Target frame"] = "目标框架",
 
 
 
@@ -251,11 +266,13 @@ local T = {
     ["Reserved space"] = "预留空间",
     ["Reset overrides"] = "重置覆盖",
     ["Clears per-unit Name/Health/Power and per-castbar Cast Name/Time font size overrides so everything inherits the global defaults again."] = "清除每个单位名称/生命/能量和每个施法条施法名称/时间字体大小覆盖, 所以一切都会再次继承全局默认值.",
+    ["Overrides: -"] = "覆盖: -",
+    ["Overrides: "] = "覆盖: ",
 
 
     ["Auras 2.0"] = "光环2.0",
     ["Midnight Simple Unit Frames - Auras 2.0"] = "Midnight Simple Unit Frames - 光环2.0",
-    ["Auras 2.0: Target / Focus / Boss 1-5.\nDefaults show ALL buffs & debuffs. This menu controls a shared layout for these units."] = "光环2.0: 目标 / 焦点 / 首领1-5.\n默认显示所有增益和减益. 这个菜单控制这些单位的共享布局.",
+    ["Auras 2.0: Target / Focus / Boss 1-5.\nDefaults show ALL buffs & debuffs. This menu controls a shared layout for these units."] = "光环2.0: 目标 / 焦点 / 首领1-5.\n默认显示所有增益和负面. 这个菜单控制这些单位的共享布局.",
     ["MSUF Edit Mode"] = "MSUF编辑模式",
     ["Exit MSUF Edit Mode"] = "退出MSUF编辑模式",
     ["MSUF Edit Mode"] = "MSUF编辑模式",
@@ -277,7 +294,7 @@ local T = {
     ["Override shared filters"] =  "覆盖共享过滤器",
     ["When off, this unit uses Shared filter settings. When on, it uses its own copy of the filters."] = "关闭时, 这个单位使用共享过滤器设置. 开启时, 它使用自己的过滤器的副本.",
     ["Override shared caps"] = "覆盖共享上限",
-    ["When off, this unit uses Shared caps (Max Buffs/Debuffs, Icons per row). When on, it uses its own caps."]    = "关闭时, 这个单位使用共享上限 (最大增益/减益, 每行图标). 开启时, 它使用自己的上限.",
+    ["When off, this unit uses Shared caps (Max Buffs/Debuffs, Icons per row). When on, it uses its own caps."]    = "关闭时, 这个单位使用共享上限 (最大增益/负面, 每行图标). 开启时, 它使用自己的上限.",
     ["Reset overrides"] = "重置覆盖",
     ["Turns off Override shared filters and caps for all units and reverts them to Shared."] = "为所有单位关闭覆盖共享过滤器和上限, 并将其还原为共享.",
     ["Preview in Edit Mode"] = "在编辑模式中预览",
@@ -406,7 +423,7 @@ local T = {
     ["Add color to stages (Empowered casts)"] = "添加阶段颜色 (强化施法)",
     ["Add stage blink (Empowered casts)"] = "添加阶段闪烁 (强化施法)",
     ["Stage blink time (sec)"] = "阶段闪烁时间 (秒)",
-
+    ["Use opposite fill direction for target"] = "目标使用相反填充方向",
 
 
     ["Miscellaneous"] = "杂项",
@@ -439,6 +456,7 @@ local T = {
     ["Enable Target Range Fade"]   = "启用目标距离渐隐",
     ["Enable Focus Range Fade"]   = "启用焦点距离渐隐",
     ["Enable Boss Range Fade"]   = "启用首领距离渐隐",
+    ["WARNING:\n\nAFK/DND status indicators do NOT update while you are inside an instance AND in combat.\nThis is a client/API limitation.\n\nOutside of instance combat they should work normally.\n\nEnable anyway?"] = "警告:\n\n在副本中并且战斗时, AFK/DND状态指示器不会更新.\n这是客户端/API限制.\n\n在副本外战斗它们应该正常工作.\n\n仍要启用?",
 
 
 
@@ -510,7 +528,7 @@ local T = {
     ["Auras"] =    "光环",
     ["Configure colors used by Auras 2.0 (own highlight borders, advanced filter borders) and stack count text."] =    "配置光环2.0使用的颜色 (自己的高亮边框, 高级过滤器边框) 和堆叠计数文本.",
     ["Own buff highlight color"] =    "自己的增益高亮颜色",
-    ["Own debuff highlight color"] =    "自己的减益高亮颜色",
+    ["Own debuff highlight color"] =    "自己的负面高亮颜色",
     ["Stack count text color"] =    "堆叠计数文本颜色",
     
     ["Cooldown text: Safe"] =    "冷却文本: 安全",
@@ -687,13 +705,13 @@ local T = {
     ["Text size (Cooldown):"] = "文本大小(冷却):",
     ["Cooldown text X:"] = "冷却文本X:",
     ["Cooldown text Y:"] = "冷却文本Y:",
-    ["Buffs / Debuffs"] = "增益/减益",
+    ["Buffs / Debuffs"] = "增益/负面",
     ["Buff offset X:"] = "增益偏移X:",
     ["Buff offset Y:"] = "增益偏移Y:",
     ["Buff icon size:"] = "增益图标大小:",
-    ["Debuff offset X:"] = "减益偏移X:",
-    ["Debuff offset Y:"] = "减益偏移Y:",
-    ["Debuff icon size:"] = "减益图标大小:",
+    ["Debuff offset X:"] = "负面偏移X:",
+    ["Debuff offset Y:"] = "负面偏移Y:",
+    ["Debuff icon size:"] = "负面图标大小:",
     ['Preview (highlight) private auras'] = '预览(高亮)私人光环',
     ['Private Auras']   = '私人光环',
     ["Private offset X:"] = "私人偏移X:",

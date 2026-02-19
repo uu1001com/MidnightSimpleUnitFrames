@@ -72,9 +72,9 @@ local prof=(_G and _G.MSUF_ActiveProfile)
 or"Default"if panel._msufProfileValue and panel._msufProfileValue.SetText then panel._msufProfileValue:SetText(prof)
 end
 if panel._msufStatusLine and panel._msufStatusLine.SetText then local edit=(type(MSUF_IsMSUFEditModeActive)=="function"and MSUF_IsMSUFEditModeActive())
-and"On"or"Off";
+and L["On"]or L["Off"];
 local combat=(InCombatLockdown and InCombatLockdown())
-and"In combat"or"Out of combat"panel._msufStatusLine:SetText("Profile: "..tostring(prof).."   •   Edit Mode: "..edit.."   •   "..combat)
+and L["In combat"]or L["Out of combat"]panel._msufStatusLine:SetText(L["Profile: "]..tostring(prof)..L["   •   Edit Mode: "]..edit.."   •   "..combat)
 end
 end
 local function MSUF_Print(msg) if type(print)=="function"then print("|cff00ff00MSUF:|r "..tostring(msg))
@@ -1806,10 +1806,10 @@ if p.Hide then p:Hide()
 end
 local title=p:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
 title:SetPoint("TOPLEFT",12,-12)
-title:SetText("Modules")
+title:SetText(L["Modules"])
 local sub=p:CreateFontString(nil,"OVERLAY","GameFontNormal")
 sub:SetPoint("TOPLEFT",title,"BOTTOMLEFT",0,-6)
-sub:SetText("Optional MSUF modules and UI styling (MSUF only).")
+sub:SetText(L["Optional MSUF modules and UI styling (MSUF only)."])
 if type(_G.MSUF_ApplyMidnightBackdrop)=="function"then pcall(_G.MSUF_ApplyMidnightBackdrop,p,0.96)
 end
 if type(_G.MSUF_SkinTitle)=="function"then pcall(_G.MSUF_SkinTitle,title)
@@ -1818,13 +1818,13 @@ if type(_G.MSUF_SkinMuted)=="function"then pcall(_G.MSUF_SkinMuted,sub)
 end
 local cb=CreateFrame("CheckButton",nil,p,"UICheckButtonTemplate")
 cb:SetPoint("TOPLEFT",sub,"BOTTOMLEFT",0,-14)
-if cb.Text then cb.Text:SetText("Enable MSUF Style")
+if cb.Text then cb.Text:SetText(L["Enable MSUF Style"])
 if type(_G.MSUF_SkinText)=="function"then pcall(_G.MSUF_SkinText,cb.Text)
 end
 end
 local note=p:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
 note:SetPoint("TOPLEFT",cb,"BOTTOMLEFT",28,-6)
-note:SetText("Disabling may require /reload to fully remove existing styling.")
+note:SetText(L["Disabling may require /reload to fully remove existing styling."])
 if type(_G.MSUF_SkinMuted)=="function"then pcall(_G.MSUF_SkinMuted,note)
 end
 local function GetEnabled() if type(_G.MSUF_StyleIsEnabled)=="function"then local ok,v=pcall(_G.MSUF_StyleIsEnabled)
@@ -1842,11 +1842,11 @@ cb:SetScript("OnClick",function(self) SetEnabled(self:GetChecked()) end
 )
 local rb=CreateFrame("CheckButton",nil,p,"UICheckButtonTemplate")
 rb:SetPoint("TOPLEFT",note,"BOTTOMLEFT",-28,-12)
-if rb.Text then rb.Text:SetText("Rounded unitframes")
+if rb.Text then rb.Text:SetText(L["Rounded unitframes"])
 if type(_G.MSUF_SkinText)=="function"then pcall(_G.MSUF_SkinText,rb.Text)
 end
 end
-rb.tooltipText="Round MSUF unitframes by masking HP/Power/Absorb bars and backgrounds with the superellipse mask."local function GetRoundedEnabled() if _G.MSUF_DB and _G.MSUF_DB.general then return _G.MSUF_DB.general.roundedUnitframes==true end
+rb.tooltipText=L["Round MSUF unitframes by masking HP/Power/Absorb bars and backgrounds with the superellipse mask."]local function GetRoundedEnabled() if _G.MSUF_DB and _G.MSUF_DB.general then return _G.MSUF_DB.general.roundedUnitframes==true end
 return false end
 local function SetRoundedEnabled(v) if _G.MSUF_DB and _G.MSUF_DB.general then _G.MSUF_DB.general.roundedUnitframes=v and true or false end
 if type(_G.MSUF_ApplyModules)=="function"then pcall(_G.MSUF_ApplyModules)

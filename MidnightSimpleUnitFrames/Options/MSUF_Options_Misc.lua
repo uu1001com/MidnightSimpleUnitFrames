@@ -702,9 +702,9 @@ end
         if _G.StaticPopupDialogs["MSUF_STATUS_AFKDND_WARNING"] then return end
 
         _G.StaticPopupDialogs["MSUF_STATUS_AFKDND_WARNING"] = {
-            text = "WARNING:\n\nAFK/DND status indicators do NOT update while you are inside an instance AND in combat.\nThis is a client/API limitation.\n\nOutside of instance combat they should work normally.\n\nEnable anyway?",
-            button1 = "Enable",
-            button2 = "Cancel",
+            text = L["WARNING:\n\nAFK/DND status indicators do NOT update while you are inside an instance AND in combat.\nThis is a client/API limitation.\n\nOutside of instance combat they should work normally.\n\nEnable anyway?"],
+            button1 = L["Enable"],
+            button2 = L["Cancel"],
             timeout = 0,
             whileDead = 1,
             hideOnEscape = 1,
@@ -808,10 +808,10 @@ end
     local y0 = -10
 
     local statusSpecs = {
-        { key = "showAFK",   label = "Show AFK",   confirm = true },
-        { key = "showDND",   label = "Show DND",   confirm = true },
-        { key = "showDead",  label = "Show Dead" },
-        { key = "showGhost", label = "Show Ghost" },
+        { key = "showAFK",   label = L["Show AFK"],   confirm = true },
+        { key = "showDND",   label = L["Show DND"],   confirm = true },
+        { key = "showDead",  label = L["Show Dead"] },
+        { key = "showGhost", label = L["Show Ghost"] },
     }
 
     bottomPanel._msufStatusCBs = bottomPanel._msufStatusCBs or {}

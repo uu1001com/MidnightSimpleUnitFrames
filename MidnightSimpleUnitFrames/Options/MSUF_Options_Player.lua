@@ -369,8 +369,8 @@ local MSUF_PORTRAIT_OPTIONS = {
     { value = "2D_RIGHT", text = L["2D Portrait Right"] },
     { value = "3D_LEFT",  text = L["3D Portrait Left"] },
     { value = "3D_RIGHT", text = L["3D Portrait Right"] },
-    { value = "CLASS_LEFT",  text = "Class Icon Left (players)" },
-    { value = "CLASS_RIGHT", text = "Class Icon Right (players)" },
+    { value = "CLASS_LEFT",  text = L["Class Icon Left (players)"] },
+    { value = "CLASS_RIGHT", text = L["Class Icon Right (players)"] },
 }
 -- Target-of-Target inline-in-Target separator dropdown (token stored in MSUF_DB.targettarget.totInlineSeparator).
 -- UI shows the raw token; runtime renders it with spaces around it (legacy: " | ").
@@ -410,9 +410,9 @@ local function MSUF_PortraitModeText(mode)
     if mode == "2D_RIGHT" then  return L["2D Portrait Right"] end
     if mode == "3D_LEFT" then  return L["3D Portrait Left"] end
     if mode == "3D_RIGHT" then  return L["3D Portrait Right"] end
-    if mode == "CLASS_LEFT" then  return "Class Icon Left (players)" end
-    if mode == "CLASS_RIGHT" then  return "Class Icon Right (players)" end
-     return "Portrait Off"
+    if mode == "CLASS_LEFT" then  return L["Class Icon Left (players)"] end
+    if mode == "CLASS_RIGHT" then  return L["Class Icon Right (players)"] end
+     return L["Portrait Off"]
 end
 local function MSUF_GetPortraitDropdownValue(conf)
     if not conf then  return "OFF" end
@@ -601,7 +601,7 @@ local function MSUF_EnsureCopyToAllDialog()
     if not StaticPopupDialogs then  return end
     if StaticPopupDialogs["MSUF_COPY_TO_ALL_CONFIRM"] then  return end
     StaticPopupDialogs["MSUF_COPY_TO_ALL_CONFIRM"] = {
-        text = "Copy these settings to ALL unitframes?\n\nThis will overwrite existing settings on Player/Target/Focus/Boss/Pet/Target of Target.",
+        text = L["Copy these settings to ALL unitframes?\n\nThis will overwrite existing settings on Player/Target/Focus/Boss/Pet/Target of Target."],
         button1 = YES or "Yes",
         button2 = NO or "No",
         OnAccept = function(self, data)
@@ -1458,7 +1458,7 @@ end
 		FinalizeCompactSlider(panel.playerBossSpacingSlider, (rightW - 24))
 		panel.playerBossSpacingSlider:Hide()
 		-- Boss-only: invert boss order toggle (boss 1 at bottom instead of top)
-		panel.playerInvertBossOrderCB = panel.playerInvertBossOrderCB or CreateCheck(textGroup, "MSUF_UF_InvertBossOrderCB", "Invert boss order", 12, bossSpacingY - 50)
+		panel.playerInvertBossOrderCB = panel.playerInvertBossOrderCB or CreateCheck(textGroup, "MSUF_UF_InvertBossOrderCB", L["Invert boss order"], 12, bossSpacingY - 50)
 		panel.playerInvertBossOrderCB:Hide()
 		-- Pet-only: anchor pet frame relative to Player/Target (shown only on pet pages by LayoutIndicatorTemplate)
 		if not panel.petAnchorToLabel then
@@ -3069,14 +3069,14 @@ local function _MSUF_AnchorToEffectiveValue(conf)
     return "GLOBAL"
 end
 local function _MSUF_AnchorToTextFor(v)
-    if v == "player" then return "Player frame" end
-    if v == "target" then return "Target frame" end
-    return "Free (global anchor)"
+    if v == "player" then return L["Player frame"] end
+    if v == "target" then return L["Target frame"] end
+    return L["Free (global anchor)"]
 end
 local _MSUF_ANCHOR_TO_CHOICES = {
-    {"Free (global anchor)", "GLOBAL"},
-    {"Player frame", "player"},
-    {"Target frame", "target"},
+    {L["Free (global anchor)"], "GLOBAL"},
+    {L["Player frame"], "player"},
+    {L["Target frame"], "target"},
 }
 
 -- Bind an "Anchor <unit> to" dropdown for a given unit key.
