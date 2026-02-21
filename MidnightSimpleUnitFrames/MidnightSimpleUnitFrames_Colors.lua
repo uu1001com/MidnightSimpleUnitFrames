@@ -1811,7 +1811,7 @@ end
     -- Left block: Unitframe Colors
     local unitHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     unitHeader:SetPoint("TOPLEFT", darkToneSlider, "BOTTOMLEFT", leftHeaderX, -48)
-    unitHeader:SetText("Unitframe Colors")
+    unitHeader:SetText(ns.L["Unitframe Colors"])
     F.CreateHeaderDividerAbove(unitHeader)
 
     local unitLabelX    = 0
@@ -1933,7 +1933,7 @@ end
     -- Right block: Bar Colors
     local barHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     barHeader:SetPoint("TOPLEFT", darkToneSlider, "BOTTOMLEFT", rightHeaderX, -48)
-    barHeader:SetText("Bar Colors")
+    barHeader:SetText(ns.L["Bar Colors"])
     F.CreateHeaderDividerAbove(barHeader)
 
     local barLabelX     = 0
@@ -1944,7 +1944,7 @@ end
     local absorbLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     absorbLabel:SetPoint("TOPLEFT", barHeader, "BOTTOMLEFT", barLabelX, startY)
     absorbLabel:SetJustifyH("LEFT")
-    absorbLabel:SetText("Absorb Bar Color")
+    absorbLabel:SetText(ns.L["Absorb Bar Color"])
 
     local absorbSwatch = CreateFrame("Button", "MSUF_Colors_AbsorbOverlaySwatch", content)
     absorbSwatch:SetSize(barSwatchW, 16)
@@ -1967,7 +1967,7 @@ end
     local healAbsorbLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     healAbsorbLabel:SetPoint("TOPLEFT", barHeader, "BOTTOMLEFT", barLabelX, startY - rowH)
     healAbsorbLabel:SetJustifyH("LEFT")
-    healAbsorbLabel:SetText("Heal-Absorb Bar Color")
+    healAbsorbLabel:SetText(ns.L["Heal-Absorb Bar Color"])
 
     local healAbsorbSwatch = CreateFrame("Button", "MSUF_Colors_HealAbsorbOverlaySwatch", content)
     healAbsorbSwatch:SetSize(barSwatchW, 16)
@@ -1990,7 +1990,7 @@ end
     local powerBgLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     powerBgLabel:SetPoint("TOPLEFT", barHeader, "BOTTOMLEFT", barLabelX, startY - 2 * rowH)
     powerBgLabel:SetJustifyH("LEFT")
-    powerBgLabel:SetText("Power Bar Background Color")
+    powerBgLabel:SetText(ns.L["Power Bar Background Color"])
 
     local powerBgSwatch = CreateFrame("Button", "MSUF_Colors_PowerBarBackgroundSwatch", content)
     panel.__MSUF_ExtraColorPowerBgSwatch = powerBgSwatch
@@ -2049,7 +2049,7 @@ end
     local aggroLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     aggroLabel:SetPoint("TOPLEFT", barHeader, "BOTTOMLEFT", barLabelX, startY - 3 * rowH)
     aggroLabel:SetJustifyH("LEFT")
-    aggroLabel:SetText("Aggro Border Color")
+    aggroLabel:SetText(ns.L["Aggro Border Color"])
 
     local aggroSwatch = CreateFrame("Button", "MSUF_Colors_AggroBorderSwatch", content)
     aggroSwatch:SetSize(barSwatchW, 16)
@@ -2102,7 +2102,7 @@ end
     local dispelLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     dispelLabel:SetPoint("TOPLEFT", barHeader, "BOTTOMLEFT", barLabelX, startY - 4 * rowH)
     dispelLabel:SetJustifyH("LEFT")
-    dispelLabel:SetText("Dispel Border Color")
+    dispelLabel:SetText(ns.L["Dispel Border Color"])
 
     local dispelSwatch = CreateFrame("Button", "MSUF_Colors_DispelBorderSwatch", content)
     dispelSwatch:SetSize(barSwatchW, 16)
@@ -2152,7 +2152,7 @@ end
     local purgeLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     purgeLabel:SetPoint("TOPLEFT", barHeader, "BOTTOMLEFT", barLabelX, startY - 5 * rowH)
     purgeLabel:SetJustifyH("LEFT")
-    purgeLabel:SetText("Purge Border Color")
+    purgeLabel:SetText(ns.L["Purge Border Color"])
 
     local purgeSwatch = CreateFrame("Button", "MSUF_Colors_PurgeBorderSwatch", content)
     purgeSwatch:SetSize(barSwatchW, 16)

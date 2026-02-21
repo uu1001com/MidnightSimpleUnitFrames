@@ -4709,9 +4709,9 @@ end
 
             local items = {
                 {"none",  "None"},
-                {"player", "Player"},
-                {"target", "Target"},
-                {"focus",  "Focus"},
+                {"player", L["Player"]},
+                {"target", L["Target"]},
+                {"focus",  L["Focus"]},
             }
 
             for i = 1, #items do
@@ -4755,7 +4755,7 @@ end
     -- ON  = timer never steals clicks; unlock + hold ALT to drag.
     -- OFF = timer is draggable normally while unlocked.
     local combatClickThrough = _MSUF_Check("MSUF_Gameplay_CombatTimerClickThroughCheck", "TOPLEFT", combatLock, "BOTTOMLEFT", 0, -8,
-        "Click-through (ALT to drag when unlocked)",
+        L["Click-through (ALT to drag when unlocked)"],
         "combatTimerClickThroughCheck", "combatTimerClickThrough",
         function()
             ApplyLockState()
@@ -4763,7 +4763,7 @@ end
     )
 
     -- Precise position sliders (offset from chosen anchor)
-    local combatPosLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", combatSlider, "BOTTOMLEFT", 0, -20, "Timer position (offset)", "combatTimerPosLabel")
+    local combatPosLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", combatSlider, "BOTTOMLEFT", 0, -20, L["Timer position (offset)"], "combatTimerPosLabel")
 
     local combatOffsetXSlider = _MSUF_Slider("MSUF_Gameplay_CombatTimerOffsetXSlider", "TOPLEFT", combatPosLabel, "BOTTOMLEFT", 0, -12, 240, -800, 800, 1, "-800", "800", "X: 0",
         "combatTimerOffsetXSlider", "combatOffsetX",
@@ -4793,7 +4793,7 @@ end
 
     -- Combat Enter/Leave header + separator
     local combatStateSeparator = _MSUF_Sep(combatOffsetYSlider, -24)
-    local combatStateHeader = _MSUF_Header(combatStateSeparator, "Combat Enter/Leave")
+    local combatStateHeader = _MSUF_Header(combatStateSeparator, L["Combat Enter/Leave"])
 
     -- Combat state text checkbox
     local combatStateCheck = _MSUF_Check("MSUF_Gameplay_CombatStateCheck", "TOPLEFT", combatStateHeader, "BOTTOMLEFT", 0, -8, L["Show combat enter/leave text"], "combatStateCheck", "enableCombatStateText")
@@ -5220,7 +5220,7 @@ _totemsLeftBottom = totemsDragHint
 
     local previewTitle = crosshairPreview:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     previewTitle:SetPoint("TOPLEFT", crosshairPreview, "TOPLEFT", 8, -6)
-    previewTitle:SetText("Preview")
+    previewTitle:SetText(L["Preview"])
 
     local previewBox = CreateFrame("Frame", nil, crosshairPreview)
     previewBox:SetPoint("TOPLEFT", crosshairPreview, "TOPLEFT", 8, -20)
@@ -5386,7 +5386,7 @@ _totemsLeftBottom = totemsDragHint
     -- Party Interrupt Tracker (Kick tracker)
     ------------------------------------------------------
     local kickTrackerSeparator = _MSUF_Sep(cooldownIconsCheck, -30)
-    local kickTrackerHeader = _MSUF_Header(kickTrackerSeparator, "Party Interrupt Tracker")
+    local kickTrackerHeader = _MSUF_Header(kickTrackerSeparator, L["Party Interrupt Tracker"])
 
     -- One-time warning when enabling: this tracker is best-guess (12.0 secret-safe constraints).
     local function _MSUF_ShowKickTrackerEnableWarningOnce()
@@ -5398,7 +5398,7 @@ _totemsLeftBottom = totemsDragHint
         end
         if not StaticPopupDialogs["MSUF_KT_ENABLE_WARN"] then
             StaticPopupDialogs["MSUF_KT_ENABLE_WARN"] = {
-                text = "Party Interrupt Tracker\n\nThis is a BEST-GUESS tracker:\n• Detects PARTY interrupts via UNIT_SPELLCAST_SUCCEEDED.\n• Cooldowns are estimated from a static table (talents/resets may differ).\n• Some abilities/modifiers cannot be inspected reliably in 12.0.\n\nIf other party members also use MSUF, kicks are synced via addon messages to improve reliability.\n\nMythic+ only (party). Disabled in raid/open world.",
+                text = L["Party Interrupt Tracker\n\nThis is a BEST-GUESS tracker:\n• Detects PARTY interrupts via UNIT_SPELLCAST_SUCCEEDED.\n• Cooldowns are estimated from a static table (talents/resets may differ).\n• Some abilities/modifiers cannot be inspected reliably in 12.0.\n\nIf other party members also use MSUF, kicks are synced via addon messages to improve reliability.\n\nMythic+ only (party). Disabled in raid/open world."],
                 button1 = OKAY,
                 timeout = 0,
                 whileDead = 1,
@@ -5418,7 +5418,7 @@ _totemsLeftBottom = totemsDragHint
         "MSUF_Gameplay_KickTrackerCheck",
         "TOPLEFT", kickTrackerHeader, "BOTTOMLEFT",
         0, -8,
-        "Enable party interrupt tracker",
+        L["Enable party interrupt tracker"],
         "kickTrackerCheck", "enableKickTracker",
         function(self, g)
             if g and g.enableKickTracker then
@@ -5431,7 +5431,7 @@ _totemsLeftBottom = totemsDragHint
         "MSUF_Gameplay_KickTrackerLockCheck",
         "LEFT", kickTrackerCheck, "RIGHT",
         260, 0,
-        "Lock position",
+        L["Lock position"],
         "kickTrackerLockCheck", "lockKickTracker"
     )
 
@@ -5439,8 +5439,7 @@ _totemsLeftBottom = totemsDragHint
         "GameFontHighlightSmall",
         "TOPLEFT", kickTrackerCheck, "BOTTOMLEFT",
         0, -6,
-        [[|cffffcc00WARNING: Best-guess tracking. Cooldowns are estimated; talents/resets may differ.
-If other party members use MSUF, kicks are synced via addon messages for better accuracy.|r]],
+        "|cffffcc00"..L["WARNING: Best-guess tracking. Cooldowns are estimated; talents/resets may differ. If other party members use MSUF, kicks are synced via addon messages for better accuracy."].."|r",
         "kickTrackerWarnLabel"
     )
     kickTrackerWarnLabel:SetWidth(560)
@@ -5451,7 +5450,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         "MSUF_Gameplay_KickTrackerShowNamesCheck",
         "TOPLEFT", kickTrackerWarnLabel, "BOTTOMLEFT",
         0, -6,
-        "Show names",
+        L["Show names"],
         "kickTrackerShowNamesCheck", "kickTrackerShowNames"
     )
 
@@ -5459,7 +5458,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         "MSUF_Gameplay_KickTrackerShowReadyCheck",
         "LEFT", kickTrackerShowNamesCheck, "RIGHT",
         220, 0,
-        "Show READY",
+        L["Show READY"],
         "kickTrackerShowReadyCheck", "kickTrackerShowReady"
     )
 
@@ -5468,7 +5467,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         "GameFontDisableSmall",
         "TOPLEFT", kickTrackerShowNamesCheck, "BOTTOMLEFT",
         0, -6,
-        "Mythic+ only (party). Optional MSUF sync via addon messages. Disabled in raid/open world (0 overhead).",
+        L["Mythic+ only (party). Optional MSUF sync via addon messages. Disabled in raid/open world (0 overhead)."],
         "kickTrackerModeNote"
     )
 
@@ -5479,7 +5478,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         220,
         160, 420, 5,
         "160", "420",
-        "Width",
+        L["Width"],
         "kickTrackerWidthSlider", "kickTrackerWidth",
         function(v) return (floor((v / 5) + 0.5) * 5) end,
         nil,
@@ -5493,7 +5492,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         220,
         14, 48, 1,
         "14", "48",
-        "Icon size",
+        L["Icon size"],
         "kickTrackerIconSizeSlider", "kickTrackerIconSize",
         function(v) return floor(v + 0.5) end,
         nil,
@@ -5507,7 +5506,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         220,
         0, 18, 1,
         "0", "18",
-        "Row spacing",
+        L["Row spacing"],
         "kickTrackerSpacingSlider", "kickTrackerSpacing",
         function(v) return floor(v + 0.5) end,
         nil,
@@ -5521,7 +5520,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         220,
         8, 28, 1,
         "8", "28",
-        "Font size",
+        L["Font size"],
         "kickTrackerFontSizeSlider", "kickTrackerFontSize",
         function(v) return floor(v + 0.5) end,
         nil,
@@ -5536,7 +5535,7 @@ If other party members use MSUF, kicks are synced via addon messages for better 
         220,
         0, 1, 0.05,
         "0%", "100%",
-        "Background alpha",
+        L["Background alpha"],
         "kickTrackerBgAlphaSlider", "kickTrackerBgAlpha",
         function(v) return (floor((v * 20) + 0.5) / 20) end,
         nil,
@@ -6002,9 +6001,9 @@ end
                 v = "none"
             end
             local txt
-            if v == "player" then txt = "Player"
-            elseif v == "target" then txt = "Target"
-            elseif v == "focus" then txt = "Focus"
+            if v == "player" then txt = L["Player"]
+            elseif v == "target" then txt = L["Target"]
+            elseif v == "focus" then txt = L["Focus"]
             else txt = "None" end
             if UIDropDownMenu_SetSelectedValue then UIDropDownMenu_SetSelectedValue(self.combatTimerAnchorDropdown, v) end
             if UIDropDownMenu_SetText then UIDropDownMenu_SetText(self.combatTimerAnchorDropdown, txt) end

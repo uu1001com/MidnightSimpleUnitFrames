@@ -66,28 +66,28 @@ local MSUF_PositionLeaderMiniHeaders
 -- Shared label helper for the Leader Icon anchor dropdown.
 -- Must be file-scope so both CreatePanel() and ApplyFromDB() can use it.
 local function MSUF_LeaderAnchorText(v)
-    if v == "TOPLEFT" then  return "Top left" end
-    if v == "TOPRIGHT" then  return "Top right" end
-    if v == "BOTTOMLEFT" then  return "Bottom left" end
-    if v == "BOTTOMRIGHT" then  return "Bottom right" end
-     return "Top left"
+    if v == "TOPLEFT" then  return L["Top left"] end
+    if v == "TOPRIGHT" then  return L["Top right"] end
+    if v == "BOTTOMLEFT" then  return L["Bottom left"] end
+    if v == "BOTTOMRIGHT" then  return L["Bottom right"] end
+     return L["Top left"]
 end
 -- Raid marker anchor text helper (used by dropdown + ApplySettingsForKey)
 local function MSUF_RaidMarkerAnchorText(v)
-    if v == "CENTER" then  return "Center" end
-    if v == "TOPRIGHT" then  return "Top right" end
-    if v == "BOTTOMLEFT" then  return "Bottom left" end
-    if v == "BOTTOMRIGHT" then  return "Bottom right" end
-     return "Top left"
+    if v == "CENTER" then  return L["Center"] end
+    if v == "TOPRIGHT" then  return L["Top right"] end
+    if v == "BOTTOMLEFT" then  return L["Bottom left"] end
+    if v == "BOTTOMRIGHT" then  return L["Bottom right"] end
+     return L["Top left"]
 end
 local function MSUF_LevelAnchorText(v)
-    if v == "TOPLEFT" then  return "Top left" end
-    if v == "TOPRIGHT" then  return "Top right" end
-    if v == "BOTTOMLEFT" then  return "Bottom left" end
-    if v == "BOTTOMRIGHT" then  return "Bottom right" end
-    if v == "NAMELEFT" then  return "Left to player name" end
-    if v == "NAMERIGHT" then  return "Right to player name" end
-     return "Right to player name"
+    if v == "TOPLEFT" then  return L["Top left"] end
+    if v == "TOPRIGHT" then  return L["Top right"] end
+    if v == "BOTTOMLEFT" then  return L["Bottom left"] end
+    if v == "BOTTOMRIGHT" then  return L["Bottom right"] end
+    if v == "NAMELEFT" then  return L["Left to player name"] end
+    if v == "NAMERIGHT" then  return L["Right to player name"] end
+     return L["Right to player name"]
 end
 -- ---------------------------------------------------------------------------
 -- Status icon symbol textures (Classic vs Midnight)
@@ -2504,7 +2504,7 @@ function ns.MSUF_Options_Player_ApplyFromDB(panel, currentKey, conf, g, GetOffse
 			if v ~= "player" and v ~= "target" then v = "GLOBAL" end
 			if UIDropDownMenu_SetSelectedValue then UIDropDownMenu_SetSelectedValue(panel.petAnchorToDD, v) end
 			if UIDropDownMenu_SetText then
-				local txt = (v == "player" and "Player frame") or (v == "target" and "Target frame") or "Free (global anchor)"
+				local txt = (v == "player" and "Player frame") or (v == "target" and "Target frame") or L["Free (global anchor)"]
 				UIDropDownMenu_SetText(panel.petAnchorToDD, txt)
 			end
 		end
@@ -2519,7 +2519,7 @@ function ns.MSUF_Options_Player_ApplyFromDB(panel, currentKey, conf, g, GetOffse
 			if v ~= "player" and v ~= "target" then v = "GLOBAL" end
 			if UIDropDownMenu_SetSelectedValue then UIDropDownMenu_SetSelectedValue(panel.focusAnchorToDD, v) end
 			if UIDropDownMenu_SetText then
-				local txt = (v == "player" and "Player frame") or (v == "target" and "Target frame") or "Free (global anchor)"
+				local txt = (v == "player" and "Player frame") or (v == "target" and "Target frame") or L["Free (global anchor)"]
 				UIDropDownMenu_SetText(panel.focusAnchorToDD, txt)
 			end
 		end

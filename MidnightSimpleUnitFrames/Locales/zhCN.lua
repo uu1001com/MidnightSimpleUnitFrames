@@ -33,10 +33,26 @@ local T = {
     ["Off"] = "关",
     ["ON"]  = "开",
     ["OFF"]  = "关",
+   
+
     ["Override"] = "覆盖",
     ["Overrides"] = "覆盖",
     ["Enable"] = "启用",
     ["Cancel"] = "取消",
+
+    ["Top left"] = "左上",
+    ["Top right"] = "右上",
+    ["Bottom left"] = "左下",
+    ["Bottom right"] = "右下",
+    ["Center"] = "居中",
+    ["Left to player name"] = "玩家名称左",
+    ["Right to player name"] = "玩家名称右",
+
+    ["Top Left"] = "左上",
+    ["Top Right"] = "右上",
+    ["Bottom Left"] = "左下",
+    ["Bottom Right"] = "右下",
+
 
 
 
@@ -147,6 +163,7 @@ local T = {
     ["Free (global anchor)"] = "自由 (全局锚点)",
     ["Player frame"] = "玩家框架",
     ["Target frame"] = "目标框架",
+    ["Anchor focus to"] = "焦点锚点" ,
 
 
 
@@ -236,8 +253,48 @@ local T = {
     ["HP Spacer (X)"] = "生命间距 (X)",
     ["Power Spacer on/off"] = "能量间距 开/关",
     ["Power Spacer (X)"] = "能量间距 (X)",
-
-
+    ["Bar Highlight Border"]  = "计量条高亮边框",
+    ["Highlight border thickness"] = "高亮边框厚度",
+    ["Aggro border off"] = "仇恨边框关闭",
+    ["Aggro border on"] = "仇恨边框开启",
+    ["Test"] = "测试",
+    ["Aggro border: Target, Focus, Boss frames"] = "仇恨边框: 目标, 焦点, 首领框架",
+    ["Dispel border off"]   = "驱散边框关闭",
+    ["Dispel border on"]   = "驱散边框开启",
+    ["Dispel border: Player, Target, Focus, Target of Target"] = "驱散边框: 玩家, 目标, 焦点, 目标的目标",
+    ["Purge border off"]   = "净化边框关闭",
+    ["Purge border on"]   = "净化边框开启",
+    ["Purge border: Target, Focus, Target of Target"] = "净化边框: 目标, 焦点, 目标的目标",
+    ["Custom highlight priority"] = "自定义高亮优先级",
+    ["Drag to reorder which highlight border takes priority when multiple are active."] = "拖动以重新排序当多个高亮边框同时激活时哪个优先.",
+    ["Drag to reorder"] = "拖动以重新排序",
+    ["Left-click and drag up or down to change highlight priority."]   = "左键点击并拖动上下以更改高亮边框优先级.",
+    ["Dispel"]   = "驱散",
+    ["Aggro"]   = "仇恨",
+    ["Purge"]   = "净化",
+    ["Bar settings"]    = "计量条设置",
+    ['Override shared settings'] = '覆盖共享设置',
+    ['Per-unit override'] = '每个单位覆盖',
+    ['When unchecked, this unit inherits Shared settings for text modes, absorb display, and spacers.'] = '取消勾选时, 这个单位继承共享设置中的文本模式、吸收显示和间距.',
+    ['Changing any per-unit setting will auto-enable this override.']   = '更改任何每个单位的设置将自动启用此覆盖.',
+    ["Current"]     = "当前",
+    ["Max"]     = "最大",
+    ["Cur/Max"]     = "当前/最大",
+    ["Percent"]     = "百分比",
+    ["Cur + Percent"]     = "当前 + 百分比",
+    ["Cur/Max + Percent"]     = "当前/最大 + 百分比",
+    ["Full value only"]   = "仅数值",
+    ["Full value + %"]   = "数值 + %",
+    ["% + Full value"]   = "% + 数值",
+    ["Only %"]    = "仅百分比",
+    ["Text Spacers"]    = "文本间距",
+    ["Use the Bar settings scope dropdown (left panel, bottom) to choose which unit these settings apply to."] = "使用计量条设置范围下拉菜单 (左侧面板, 底部) 来选择这些设置应用于哪个单位.",
+    ["When scope is set to 'Shared', settings apply globally. Select a unit and enable 'Override shared settings' to customize per unitframe."] = "当范围设置为 '共享' 时, 设置全局应用. 选择一个单位并启用 '覆盖共享设置' 以自定义每个框架.",
+    ["Works only when the corresponding text mode is set to 'Full value + %' (or '% + Full value')."] = "仅当相应的文本模式设置为 '数值 + %' (或 '% + 数值') 时才有效.",
+    ["Selected: Shared"]    = "已选中: 共享",
+    ["Reset all overrides"] = "重置所有覆盖",
+    ["Clears per-unit overrides for all units (Player, Target, Focus, etc.) so they all use the shared settings again."]    = "清除所有单位（玩家、目标、焦点等）的逐单位覆盖设置，使其重新采用共享设置.",
+    ["Selected: "]  = "已选中: ",
 
     ["Fonts"] = "字体",
     ["Font Settings"] = "字体设置",
@@ -268,7 +325,7 @@ local T = {
     ["Clears per-unit Name/Health/Power and per-castbar Cast Name/Time font size overrides so everything inherits the global defaults again."] = "清除每个单位名称/生命/能量和每个施法条施法名称/时间字体大小覆盖, 所以一切都会再次继承全局默认值.",
     ["Overrides: -"] = "覆盖: -",
     ["Overrides: "] = "覆盖: ",
-
+    ["Heal prediction"] = "治疗预测",
 
     ["Auras 2.0"] = "光环2.0",
     ["Midnight Simple Unit Frames - Auras 2.0"] = "Midnight Simple Unit Frames - 光环2.0",
@@ -336,7 +393,7 @@ local T = {
     ["Max Debuffs"] = "最大Debuffs数量",
     ["Block spacing"] = "块间距",
     ["Controls how far Buff and Debuff blocks are pushed away from the unitframe when using split anchors."] = "控制当使用分割锚点时, Buff和Debuff块从单位框架推开的距离.",
-    ["Requires Layout: Separate rows."] = "需要布局: Separate rows.",
+    ["Requires Layout: Separate rows."] = "需要布局: 分开行.",
     ["Icons per row"] = "每行图标数量" ,
     ["Wrap rows"] = "换行",
     ["Stack Anchor"] = "堆叠锚点",
@@ -389,8 +446,14 @@ local T = {
     ['Use "Enable filters" in the Auras 2.0 box as the master switch.\n\nInclude toggles are additive (they never hide your normal auras).\nHighlight toggles only change border colors.\n\nDebuff types: if you select ANY type, debuffs are limited to the selected types.'] =   '使用光环2.0框中的 "启用过滤器" 作为主开关.\n\n包含切换是附加的 (它们从不隐藏你的正常光环).\n高亮切换仅更改边框颜色.\n\nDebuff类型: 如果你选择任何类型, Debuffs将限制为所选类型.',
     ["Max slots (Player)"] = "最多光环槽位 (玩家)",
     ["Max slots (Focus/Boss)"] = "最多光环槽位 (焦点/首领)",
-
-
+    ["2nd row down"]  = "第二行（下方）",
+    ["2nd row up"]  = "第二行（上方）",
+    ["Separate rows"]  = "分开行",
+    ["Single row (Mixed)"]  = "单行 (混合)",
+    ["Grow Right"] = "向右增长",
+    ["Grow Left"]   = "向左增长",
+    ["Vertical Up"] = "垂直向上",
+    ["Vertical Down"]   = "垂直向下",
 
 
 
@@ -480,6 +543,7 @@ local T = {
     ["Unified bar color"] = "统一条颜色",
     ["Reset to default"] = "重置为默认值",
     ["Dark mode bar color"] = "暗黑模式条颜色",
+    ["Unitframe Colors"]    = "单位框架颜色",
 
     ["Extra Color Options"] = "额外颜色选项",
     ["Friendly NPC Color"] = "友好NPC颜色",
@@ -487,6 +551,17 @@ local T = {
     ["Enemy NPC Color"] = "敌对NPC颜色",
     ["Dead NPC Color"] = "死亡NPC颜色",
     ["Pet Frame Color"] = "宠物框架颜色",
+    ["Bar Colors"] = "计量条颜色",
+    ["Absorb Bar Color"] = "吸收条颜色",
+    ["Heal-Absorb Bar Color"] = "治疗吸收条颜色",
+    ["Power Bar Background Color"] = "能量条背景颜色",
+    ["Aggro Border Color"] = "仇恨边框颜色",
+    ["Dispel Border Color"] = "驱散边框颜色",
+    ["Purge Border Color"] = "净化边框颜色",
+
+
+
+
     ["Absorb Bar Color"] = "吸收条颜色",
     ["Heal-Absorb Bar Color"] = "治疗吸收条颜色",
     ["Power Bar Background Color"] = "能量条背景颜色",
@@ -548,6 +623,7 @@ local T = {
     ["Anchor"] = "锚点",
     ["Timer size"] = "计时器大小",
     ["Lock position"] = "锁定位置",
+    
     ["Combat Enter/Leave"] = "战斗进入/离开",
     ["Show combat enter/leave text"] = "显示战斗进入/离开文本",
     ["Enter text"] = "进入战斗文本",
@@ -580,6 +656,8 @@ local T = {
     ["Keeps per character settings."] = "保持每个角色的设置.",
     ["Selected: (none)"]   = "已选择: (无)",
     ["Used by: Crosshair color"]   = "用于: 十字准星颜色",
+    ["Timer position (offset)"] = "计时器位置 (偏移)",
+    ["Click-through (ALT to drag when unlocked)"]   = "点击穿透 (解锁时ALT拖动)",
 
 
     ["Reset Totem tracker layout"] = "重置图腾追踪器布局",
@@ -597,6 +675,15 @@ local T = {
     ["Cooldown Manager"] = "冷却管理器",
     ["Show cooldown manager bars as icons (temporarily disabled)"] = "将冷却管理器条显示为图标 (临时禁用)",
 
+    ["Party Interrupt Tracker"] = "小队打断追踪器",
+    ["Party Interrupt Tracker\n\nThis is a BEST-GUESS tracker:\n• Detects PARTY interrupts via UNIT_SPELLCAST_SUCCEEDED.\n• Cooldowns are estimated from a static table (talents/resets may differ).\n• Some abilities/modifiers cannot be inspected reliably in 12.0.\n\nIf other party members also use MSUF, kicks are synced via addon messages to improve reliability.\n\nMythic+ only (party). Disabled in raid/open world."] = "小队打断追踪器\n\n这是一个最佳猜测追踪器:\n• 通过UNIT_SPELLCAST_SUCCEEDED检测PARTY中断.\n• 冷却时间从静态表估计 (天赋/重置可能不同).\n• 在12.0中, 一些能力和修饰符无法可靠地检查.\n\n如果其他小队成员也使用MSUF, 打击通过插件消息同步以提高可靠性.\n\n仅限团队副本 (小队). 阵营/开放世界禁用.",
+    ["Enable party interrupt tracker"] = "启用小队打断追踪器",
+    ["Show names"] = "显示名称",
+    ["WARNING: Best-guess tracking. Cooldowns are estimated; talents/resets may differ. If other party members use MSUF, kicks are synced via addon messages for better accuracy."] = "警告: 最佳猜测追踪. 冷却时间是估计的; 天赋/重置可能不同. 如果其他小队成员使用MSUF, 通过插件消息同步踢击以获得更好的准确性.",
+    ["Show READY"] = "显示就绪",
+    ["Mythic+ only (party). Optional MSUF sync via addon messages. Disabled in raid/open world (0 overhead)."] = "仅限大秘境（小队）.可选通过插件消息同步 MSUF.团队/野外禁用(0 开销).",
+    ["Background alpha"] = "背景透明度",
+    ["Row spacing"] = "行间距",
 
 
 
@@ -718,9 +805,9 @@ local T = {
     ["Private offset Y:"] = "私人偏移Y:",
     ["Private icon size:"] = "私人图标大小:",
     ["Text Anchor"] = "文本锚点",
-    ["Right"]   = "右",
-    ["Left"]     = "左",
-    ["Center"]   = "中",
+    ["Right"]   = "右边",
+    ["Left"]     = "左边",
+   
     ["Name: "] = "名称: ",
     ["HP: "] = "生命: ",
     ["Power: "] = "能量: ",

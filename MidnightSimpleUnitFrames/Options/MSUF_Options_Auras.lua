@@ -520,21 +520,21 @@ local function CreateDropdown(parent, label, x, y, getter, setter)
 	        -- radio style (default): no isNotRadio
 	        UIDropDownMenu_AddButton(info)
 	     end
-	    AddItem("Grow Right", "RIGHT")
-	    AddItem("Grow Left", "LEFT")
-	    AddItem("Vertical Up", "UP")
-	    AddItem("Vertical Down", "DOWN")
+	    AddItem(L["Grow Right"], "RIGHT")
+	    AddItem(L["Grow Left"], "LEFT")
+	    AddItem(L["Vertical Up"], "UP")
+	    AddItem(L["Vertical Down"], "DOWN")
 	 end)
     dd:SetScript("OnShow", function()
         local v = getter() or "RIGHT"
         UIDropDownMenu_SetSelectedValue(dd, v)
-        local txt = "Grow Right"
+        local txt = L["Grow Right"]
         if v == "LEFT" then
-            txt = "Grow Left"
+            txt = L["Grow Left"]
         elseif v == "UP" then
-            txt = "Vertical Up"
+            txt = L["Vertical Up"]
         elseif v == "DOWN" then
-            txt = "Vertical Down"
+            txt = L["Vertical Down"]
         end
         UIDropDownMenu_SetText(dd, txt)
      end)
@@ -570,16 +570,16 @@ local function CreateLayoutDropdown(parent, x, y, getter, setter)
 	        end
 	        UIDropDownMenu_AddButton(info)
 	     end
-	    AddItem("Separate rows", "SEPARATE")
-	    AddItem("Single row (Mixed)", "SINGLE")
+	    AddItem(L["Separate rows"], "SEPARATE")
+	    AddItem(L["Single row (Mixed)"], "SINGLE")
      end)
 	dd:SetScript("OnShow", function()
 	    local v = getter() or "SEPARATE"
 	    UIDropDownMenu_SetSelectedValue(dd, v)
 	    if v == "SINGLE" then
-	        UIDropDownMenu_SetText(dd, "Single row (Mixed)")
+	        UIDropDownMenu_SetText(dd, L["Single row (Mixed)"])
 	    else
-	        UIDropDownMenu_SetText(dd, "Separate rows")
+	        UIDropDownMenu_SetText(dd, L["Separate rows"])
 	    end
 	    if parent and parent._msufA2_OnLayoutModeChanged then
 	        pcall(parent._msufA2_OnLayoutModeChanged)
@@ -614,16 +614,16 @@ local function CreateRowWrapDropdown(parent, x, y, getter, setter)
             end
             UIDropDownMenu_AddButton(info)
          end
-        AddItem("2nd row down", "DOWN")
-        AddItem("2nd row up", "UP")
+        AddItem(L["2nd row down"], "DOWN")
+        AddItem(L["2nd row up"], "UP")
      end)
     dd:SetScript("OnShow", function()
         local v = getter() or "DOWN"
         UIDropDownMenu_SetSelectedValue(dd, v)
         if v == "UP" then
-            UIDropDownMenu_SetText(dd, "2nd row up")
+            UIDropDownMenu_SetText(dd, L["2nd row up"])
         else
-            UIDropDownMenu_SetText(dd, "2nd row down")
+            UIDropDownMenu_SetText(dd, L["2nd row down"])
         end
      end)
      return dd
@@ -653,22 +653,22 @@ local function CreateStackAnchorDropdown(parent, x, y, getter, setter)
             end
             UIDropDownMenu_AddButton(info)
          end
-        AddItem("Top Left", "TOPLEFT")
-        AddItem("Top Right", "TOPRIGHT")
-        AddItem("Bottom Left", "BOTTOMLEFT")
-        AddItem("Bottom Right", "BOTTOMRIGHT")
+        AddItem(L["Top Left"], "TOPLEFT")
+        AddItem(L["Top Right"], "TOPRIGHT")
+        AddItem(L["Bottom Left"], "BOTTOMLEFT")
+        AddItem(L["Bottom Right"], "BOTTOMRIGHT")
      end)
     dd:SetScript("OnShow", function()
         local v = getter() or "TOPRIGHT"
         UIDropDownMenu_SetSelectedValue(dd, v)
         if v == "TOPLEFT" then
-            UIDropDownMenu_SetText(dd, "Top Left")
+            UIDropDownMenu_SetText(dd, L["Top Left"])
         elseif v == "BOTTOMLEFT" then
-            UIDropDownMenu_SetText(dd, "Bottom Left")
+            UIDropDownMenu_SetText(dd, L["Bottom Left"])
         elseif v == "BOTTOMRIGHT" then
-            UIDropDownMenu_SetText(dd, "Bottom Right")
+            UIDropDownMenu_SetText(dd, L["Bottom Right"])
         else
-            UIDropDownMenu_SetText(dd, "Top Right")
+            UIDropDownMenu_SetText(dd, L["Top Right"])
         end
      end)
      return dd
@@ -1460,15 +1460,15 @@ do
     ddEditFilters:SetPoint("TOPLEFT", leftTop, "TOPLEFT", 452, -42)
     MSUF_FixUIDropDown(ddEditFilters, 160)
     local labelForKey = {
-        shared = "Shared",
-        player = "Player",
-        target = "Target",
-        focus = "Focus",
-        boss1 = "Boss 1",
-        boss2 = "Boss 2",
-        boss3 = "Boss 3",
-        boss4 = "Boss 4",
-        boss5 = "Boss 5",
+        shared = L["Shared"],
+        player = L["Player"],
+        target = L["Target"],
+        focus = L["Focus"],
+        boss1 = L["Boss 1"],
+        boss2 = L["Boss 2"],
+        boss3 = L["Boss 3"],
+        boss4 = L["Boss 4"],
+        boss5 = L["Boss 5"],
     }
     local function ApplyKey(key)
         panel.__msufAuras2_FilterEditKey = key

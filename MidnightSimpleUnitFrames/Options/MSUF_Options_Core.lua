@@ -3821,7 +3821,7 @@ if absorbTexTestCB then
     -- Player-only: show your own incoming heals as a small prediction segment behind the HP bar.
     local selfHealPredCB = CreateLabeledCheckButton(
         "MSUF_SelfHealPredictionCheck",
-        "Heal prediction",
+        L["Heal prediction"],
         barGroup,
         16, -1 -- placeholder; we re-anchor below
     )
@@ -4012,13 +4012,13 @@ gradientCheck = CreateLabeledCheckButton(
     MSUF_ExpandDropdownClickArea(hpPowerScopeDrop)
     hpPowerScopeDrop:SetPoint("TOPLEFT", hpPowerScopeLabel, "BOTTOMLEFT", -16, -4)
     hpPowerScopeOptions = {
-        { key = "shared",      label = "Shared" },
-        { key = "player",      label = "Player" },
-        { key = "target",      label = "Target" },
-        { key = "targettarget",label = "Target of Target" },
-        { key = "focus",       label = "Focus" },
-        { key = "pet",         label = "Pet" },
-        { key = "boss",        label = "Boss" },
+        { key = "shared",      label = L["Shared"] },
+        { key = "player",      label = L["Player"] },
+        { key = "target",      label = L["Target"] },
+        { key = "targettarget",label = L["Target of Target"] },
+        { key = "focus",       label = L["Focus"] },
+        { key = "pet",         label = L["Pet"] },
+        { key = "boss",        label = L["Boss"] },
     }
 
     local function _MSUF_HPText_NormalizeScopeKey(k)
@@ -4095,9 +4095,9 @@ gradientCheck = CreateLabeledCheckButton(
     MSUF_StyleCheckmark(hpPowerOverrideCheck)
     hpPowerOverrideCheck:SetScript('OnEnter', function(self)
         GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-        GameTooltip:SetText('Per-unit override', 1, 1, 1)
-        GameTooltip:AddLine('When unchecked, this unit inherits Shared settings for text modes, absorb display, and spacers.', 0.9, 0.9, 0.9, true)
-        GameTooltip:AddLine('Changing any per-unit setting will auto-enable this override.', 0.9, 0.9, 0.9, true)
+        GameTooltip:SetText(L['Per-unit override'], 1, 1, 1)
+        GameTooltip:AddLine(L['When unchecked, this unit inherits Shared settings for text modes, absorb display, and spacers.'], 0.9, 0.9, 0.9, true)
+        GameTooltip:AddLine(L['Changing any per-unit setting will auto-enable this override.'], 0.9, 0.9, 0.9, true)
         GameTooltip:Show()
     end)
     hpPowerOverrideCheck:SetScript('OnLeave', function() GameTooltip:Hide() end)
@@ -4111,10 +4111,10 @@ gradientCheck = CreateLabeledCheckButton(
     MSUF_ExpandDropdownClickArea(hpModeDrop)
     hpModeDrop:SetPoint("TOPLEFT", hpModeLabel, "BOTTOMLEFT", -16, -4)
     hpModeOptions = {
-        { key = "FULL_ONLY",          label = "Full value only" },
-        { key = "FULL_PLUS_PERCENT",  label = "Full value + %" },
-        { key = "PERCENT_PLUS_FULL",  label = "% + Full value" },
-        { key = "PERCENT_ONLY",       label = "Only %" },
+        { key = "FULL_ONLY",          label = L["Full value only"] },
+        { key = "FULL_PLUS_PERCENT",  label = L["Full value + %"] },
+        { key = "PERCENT_PLUS_FULL",  label = L["% + Full value"] },
+        { key = "PERCENT_ONLY",       label = L["Only %"] },
     }
 
     local function _MSUF_HPText_GetHpModeKey()
@@ -4179,12 +4179,12 @@ powerModeLabel = barGroup:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     MSUF_ExpandDropdownClickArea(powerModeDrop)
     powerModeDrop:SetPoint("TOPLEFT", powerModeLabel, "BOTTOMLEFT", -16, -16)
     powerModeOptions = {
-        { key = "CURRENT", label = "Current" },
-        { key = "MAX", label = "Max" },
-        { key = "CURMAX", label = "Cur/Max" },
-        { key = "PERCENT", label = "Percent" },
-        { key = "CURPERCENT", label = "Cur + Percent" },
-        { key = "CURMAXPERCENT", label = "Cur/Max + Percent" },
+        { key = "CURRENT", label = L["Current"] },
+        { key = "MAX", label = L["Max"] },
+        { key = "CURMAX", label = L["Cur/Max"] },
+        { key = "PERCENT", label = L["Percent"] },
+        { key = "CURPERCENT", label = L["Cur + Percent"] },
+        { key = "CURMAXPERCENT", label = L["Cur/Max + Percent"] },
     }
 
     local function _MSUF_NormalizePowerTextMode_Local(mode)
@@ -4641,8 +4641,8 @@ powerModeLabel = barGroup:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     end)
     hpPowerResetBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine("Reset all overrides")
-        GameTooltip:AddLine("Clears per-unit overrides for all units (Player, Target, Focus, etc.) so they all use the shared settings again.", 0.9, 0.9, 0.9, true)
+        GameTooltip:AddLine(L["Reset all overrides"])
+        GameTooltip:AddLine(L["Clears per-unit overrides for all units (Player, Target, Focus, etc.) so they all use the shared settings again."], 0.9, 0.9, 0.9, true)
         GameTooltip:Show()
     end)
     hpPowerResetBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -4675,10 +4675,10 @@ end
 hpSpacerInfoButton:SetScript("OnEnter", function(self)
    if not GameTooltip then  return end
    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-   GameTooltip:AddLine("Text Spacers", 1, 1, 1)
-   GameTooltip:AddLine("Use the Bar settings scope dropdown (left panel, bottom) to choose which unit these settings apply to.", 0.9, 0.9, 0.9, true)
-	   GameTooltip:AddLine("When scope is set to 'Shared', settings apply globally. Select a unit and enable 'Override shared settings' to customize per unitframe.", 0.9, 0.9, 0.9, true)
-   GameTooltip:AddLine("Works only when the corresponding text mode is set to 'Full value + %' (or '% + Full value').", 0.9, 0.9, 0.9, true)
+   GameTooltip:AddLine(L["Text Spacers"], 1, 1, 1)
+   GameTooltip:AddLine(L["Use the Bar settings scope dropdown (left panel, bottom) to choose which unit these settings apply to."], 0.9, 0.9, 0.9, true)
+	   GameTooltip:AddLine(L["When scope is set to 'Shared', settings apply globally. Select a unit and enable 'Override shared settings' to customize per unitframe."], 0.9, 0.9, 0.9, true)
+   GameTooltip:AddLine(L["Works only when the corresponding text mode is set to 'Full value + %' (or '% + Full value')."], 0.9, 0.9, 0.9, true)
    GameTooltip:Show()
 end)
 hpSpacerInfoButton:SetScript("OnLeave", function()  if GameTooltip then GameTooltip:Hide() end  end)
@@ -4772,12 +4772,12 @@ local function _MSUF_TextModeAllowsSpacer(mode)
         },
     }
     local function _MSUF_NiceUnitKey(unitKey)
-        if unitKey == "player" then  return "Player"
-        elseif unitKey == "target" then  return "Target"
-        elseif unitKey == "focus" then  return "Focus"
-        elseif unitKey == "targettarget" then  return "ToT"
-        elseif unitKey == "pet" then  return "Pet"
-        elseif unitKey == "boss" then  return "Boss"
+        if unitKey == "player" then  return L["Player"]
+        elseif unitKey == "target" then  return L["Target"]
+        elseif unitKey == "focus" then  return L["Focus"]
+        elseif unitKey == "targettarget" then  return L["ToT"]
+        elseif unitKey == "pet" then  return L["Pet"]
+        elseif unitKey == "boss" then  return L["Boss"]
         end
         return tostring(unitKey or "Player")
     end
@@ -4823,7 +4823,7 @@ local function _MSUF_SyncSpacerControls()
 
 	    if hpSpacerSelectedLabel and hpSpacerSelectedLabel.SetText then
 	        local nice = (isShared and "Shared") or _MSUF_NiceUnitKey(unitKey)
-	        hpSpacerSelectedLabel:SetText("Selected: " .. nice)
+	        hpSpacerSelectedLabel:SetText(L["Selected: "] .. nice)
 	    end
 
     for _, spec in ipairs(SPACER_SPECS) do
@@ -5132,7 +5132,7 @@ end
 -- Highlight border thickness (separate overlay for aggro/dispel/purge)
 local highlightBorderThicknessSlider = CreateLabeledSlider(
     "MSUF_HighlightBorderThicknessSlider",
-    "Highlight border thickness",
+    L["Highlight border thickness"],
     barGroup,
     1, 6, 1,
     16, -420
@@ -5379,7 +5379,7 @@ end)
 -- Draggable rows to set display priority of highlight borders (Aggro/Dispel/Purge).
 -- Default order: Dispel > Aggro > Purge.  Custom order stored in DB.
 local _PRIO_DEFAULTS = { "dispel", "aggro", "purge" }  -- must match render fallback order
-local _PRIO_LABELS   = { dispel = "Dispel", aggro = "Aggro", purge = "Purge" }
+local _PRIO_LABELS   = { dispel = L["Dispel"], aggro = L["Aggro"], purge = L["Purge"] }
 
 local prioCheck = CreateFrame("CheckButton", "MSUF_HighlightPrioCheck", barGroup, "ChatConfigCheckButtonTemplate")
 prioCheck:SetPoint("TOPLEFT", purgeOutlineDrop, "BOTTOMLEFT", 16, -10)
