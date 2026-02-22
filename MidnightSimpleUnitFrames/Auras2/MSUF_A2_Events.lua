@@ -5,11 +5,6 @@
 local addonName, ns = ...
 
 
--- MSUF: Max-perf Auras2: replace protected calls (pcall) with direct calls.
--- NOTE: this removes error-catching; any error will propagate.
-local function MSUF_A2_FastCall(fn, ...)
-    return true, fn(...)
-end
 ns = (rawget(_G, "MSUF_NS") or ns) or {}
 -- =========================================================================
 -- PERF LOCALS (Auras2 runtime)
@@ -64,11 +59,6 @@ end
 -- ------------------------------------------------------------
 -- Helpers
 -- ------------------------------------------------------------
-local function SafePCall(fn, ...)
-    if type(fn) ~= "function" then return end
-    local ok, _ = MSUF_A2_FastCall(fn, ...)
-    return ok
-end
 
 -- Strict coalescing for UNIT_AURA bursts:
 --  * Never render "per event".
@@ -114,18 +104,12 @@ local function IsEditModeActive()
 
     local g = rawget(_G, "MSUF_IsInEditMode")
     if type(g) == "function" then
-        local ok, v = MSUF_A2_FastCall(g)
-        if ok and v == true then
-            return true
-        end
+        if g() == true then return true end
     end
 
     local h = rawget(_G, "MSUF_IsMSUFEditModeActive")
     if type(h) == "function" then
-        local ok, v = MSUF_A2_FastCall(h)
-        if ok and v == true then
-            return true
-        end
+        if h() == true then return true end
     end
 
     return false

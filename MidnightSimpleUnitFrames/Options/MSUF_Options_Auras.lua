@@ -99,22 +99,25 @@ local function IsEditModeActive()
 end
 local function MSUF_A2_IsMasqueAddonLoaded()
     local api = _A2_API()
-    if api and type(api.IsMasqueAddonLoaded) == "function" then
-        return api.IsMasqueAddonLoaded() and true or false
+    local m = api and api.Masque
+    if m and type(m.IsAddonLoaded) == "function" then
+        return m.IsAddonLoaded() and true or false
     end
      return false
 end
 local function MSUF_A2_IsMasqueReadyForToggle()
     local api = _A2_API()
-    if api and type(api.IsMasqueReadyForToggle) == "function" then
-        return api.IsMasqueReadyForToggle() and true or false
+    local m = api and api.Masque
+    if m and type(m.IsReadyForToggle) == "function" then
+        return m.IsReadyForToggle() and true or false
     end
      return false
 end
 local function MSUF_A2_EnsureMasqueGroup()
     local api = _A2_API()
-    if api and type(api.EnsureMasqueGroup) == "function" then
-        return api.EnsureMasqueGroup() and true or false
+    local m = api and api.Masque
+    if m and type(m.EnsureGroup) == "function" then
+        return m.EnsureGroup() and true or false
     end
      return false
 end
@@ -403,11 +406,10 @@ local function AttachSliderValueBox(slider, minV, maxV, step, getter)
          return v
     end
     eb:SetScript("OnEnterPressed", function(self)
-        self:ClearFocus()
         local v = ClampRound(self:GetText())
-        slider:SetValue(v) -- triggers the slider's OnValueChanged (setter + refresh)
         self:SetText(tostring(v))
-        self:HighlightText(0, 0)
+        slider:SetValue(v) -- triggers the slider's OnValueChanged (setter + refresh)
+        self:ClearFocus()
      end)
     eb:SetScript("OnEscapePressed", function(self)
         self:ClearFocus()
@@ -767,9 +769,9 @@ function ns.MSUF_RegisterAurasOptions_Full(parentCategory)
     local timerBox = MakeBox(content, 720, 228)
     timerBox:SetPoint("TOPLEFT", leftTop, "BOTTOMLEFT", 0, -14)
     -- Blizzard-rendered Private Auras (anchor controls)
-    local privateBox = MakeBox(content, 720, 270)
+    local privateBox = MakeBox(content, 720, 140)
     privateBox:SetPoint("TOPLEFT", timerBox, "BOTTOMLEFT", 0, -14)
-    local advBox = MakeBox(content, 720, 460)
+    local advBox = MakeBox(content, 720, 260)
     advBox:SetPoint("TOPLEFT", privateBox, "BOTTOMLEFT", 0, -14)
     -- Movement controls are handled via MSUF Edit Mode now (no placeholder section here).
     -- Prevent dead scroll space: keep the scroll child height tight to the last section.
@@ -1286,6 +1288,8 @@ SetOverrideCapsForEditing = function(v)
  end
 local function SyncLegacySharedFromSharedFilters()
     -- Keep legacy/shared fields in sync for backward compatibility.
+    -- Only sync when editing the SHARED profile — per-unit overrides must NOT touch shared flags.
+    if GetEditingKey() ~= "shared" then return end
     local a2, s = GetAuras2DB()
     if not (a2 and s and a2.shared and a2.shared.filters) then  return end
     local f = a2.shared.filters
@@ -1644,9 +1648,9 @@ end
     local h3 = leftTop:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     h3:SetPoint("TOPLEFT", leftTop, "TOPLEFT", 12, -156)
     h3:SetText(TR("Display"))
-    local TIP_SHOW_STACK = L['Shows stack/application counts (e.g. "2") on aura icons. Disable to hide stack numbers.']
-    local TIP_HIDE_PERMANENT = L['Hides buffs with no duration. Debuffs are never hidden by this option.\n\nNote: Target/Focus APIs may still show permanent buffs during combat due to API limitations.']
-    local TIP_ADV_INFO = L['Use "Enable filters" in the Auras 2.0 box as the master switch.\n\nInclude toggles are additive (they never hide your normal auras).\nHighlight toggles only change border colors.\n\nDebuff types: if you select ANY type, debuffs are limited to the selected types.']
+    local TIP_SHOW_STACK = 'Shows stack/application counts (e.g. "2") on aura icons. Disable to hide stack numbers.'
+    local TIP_HIDE_PERMANENT = 'Hides buffs with no duration. Debuffs are never hidden by this option.\n\nNote: Target/Focus APIs may still show permanent buffs during combat due to API limitations.'
+    local TIP_ADV_INFO = 'Use "Enable filters" in the Auras 2.0 box as the master switch.\n\nInclude toggles are additive (they never hide your normal auras).\nHighlight toggles only change border colors.'
     do
         local displayCB = {}
         local TIP_SWIPE_STYLE = L["When enabled, the cooldown swipe represents elapsed time (darkens as time is lost).\n\nTurn this OFF to keep the default cooldown-style swipe."]
@@ -1690,12 +1694,23 @@ end
              end)
         end
     end
-    -- Only-mine + permanent filters are stored per-unit (Target first), but we also sync shared fields for now.
-    BuildBoolPathCheckboxes(leftTop, {
-        { L["Only my buffs"], 12, -204, A2_FilterBuffs, "onlyMine", nil, nil, nil, SyncLegacySharedFromSharedFilters },
-        { L["Only my debuffs"], 200, -204, A2_FilterDebuffs, "onlyMine", nil, nil, nil, SyncLegacySharedFromSharedFilters },
-        { L["Hide permanent buffs"], 200, -252, GetEditingFilters, "hidePermanent", nil, TIP_HIDE_PERMANENT, nil, SyncLegacySharedFromSharedFilters },
-    })
+    -- Only-mine + permanent filters: stored in the per-unit filter table (via A2_FilterBuffs/Debuffs).
+    -- Tracked as "filters" scope so per-unit override auto-enables and scope greying works correctly.
+    do
+        local filterCB = {}
+        BuildBoolPathCheckboxes(leftTop, {
+            { "Only my buffs", 12, -204, A2_FilterBuffs, "onlyMine", nil, nil, "cbOnlyMyBuffs", SyncLegacySharedFromSharedFilters },
+            { "Only my debuffs", 200, -204, A2_FilterDebuffs, "onlyMine", nil, nil, "cbOnlyMyDebuffs", SyncLegacySharedFromSharedFilters },
+            { "Hide permanent buffs", 200, -252, GetEditingFilters, "hidePermanent", nil, TIP_HIDE_PERMANENT, "cbHidePermanent", SyncLegacySharedFromSharedFilters },
+        }, filterCB)
+        for _, key in ipairs({ "cbOnlyMyBuffs", "cbOnlyMyDebuffs", "cbHidePermanent" }) do
+            local cb = filterCB[key]
+            if cb then
+                A2_Track("filters", cb)
+                A2_WrapCheckboxAutoOverride(cb, "filters")
+            end
+        end
+    end
     -- Caps (live here in the Auras 2.0 box) + numeric entry boxes
     local function MakeCapsNumberGS(key, default, legacyKey)
         local function get()
@@ -1975,7 +1990,7 @@ end
         ApplyTimerEnabledState()
     end
     -- ------------------------------------------------------------
-    -- ADVANCED (below): Include / Dispel-type filters
+    -- ADVANCED (below): Include filters + Sort order
     -- ------------------------------------------------------------
     local rTitle = advBox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     rTitle:SetPoint("TOPLEFT", advBox, "TOPLEFT", 12, -10)
@@ -1986,21 +2001,18 @@ end
     do
         local refs = {}
         BuildBoolPathCheckboxes(advBox, {
-            { L["Include boss buffs"], 12, -58, A2_FilterBuffs, "includeBoss", nil, nil, "cbBossBuffs" },
-            { L["Include boss debuffs"], 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
-            { L["Always include dispellable debuffs"], 12, -114, A2_FilterDebuffs, "includeDispellable", nil,
-                L["Additive: this will NOT hide your normal debuffs."], "cbDispellable" },
-            { L["Only show boss auras"], 380, -58, GetEditingFilters, "onlyBossAuras", nil,
-                L["Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown."], "cbOnlyBoss" },
-            { L["Only show IMPORTANT buffs"], 380, -86, A2_FilterBuffs, "onlyImportant", nil,
-                L["Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpBuffs" },
-            { L["Only show IMPORTANT debuffs"], 380, -114, A2_FilterDebuffs, "onlyImportant", nil,
-                L["Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpDebuffs" },
+            { "Include boss buffs", 12, -58, A2_FilterBuffs, "includeBoss", nil, nil, "cbBossBuffs" },
+            { "Include boss debuffs", 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
+            { "Only show boss auras", 380, -58, GetEditingFilters, "onlyBossAuras", nil,
+                "Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown.", "cbOnlyBoss" },
+            { "Only show IMPORTANT buffs", 380, -86, A2_FilterBuffs, "onlyImportant", nil,
+                "Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.).", "cbOnlyImpBuffs" },
+            { "Only show IMPORTANT debuffs", 380, -114, A2_FilterDebuffs, "onlyImportant", nil,
+                "Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.).", "cbOnlyImpDebuffs" },
         }, refs)
 -- Track scopes + auto-override wrappers (Auras 2 menu only)
 do
-    local filterKeys = { "cbBossBuffs", "cbBossDebuffs", "cbDispellable", "cbOnlyBoss", "cbOnlyImpBuffs", "cbOnlyImpDebuffs",
-        "cbMagic", "cbCurse", "cbDisease", "cbPoison", "cbEnrage" }
+    local filterKeys = { "cbBossBuffs", "cbBossDebuffs", "cbOnlyBoss", "cbOnlyImpBuffs", "cbOnlyImpDebuffs" }
     for i = 1, #filterKeys do
         local cb = refs[filterKeys[i]]
         if cb then
@@ -2035,20 +2047,17 @@ end
             L["Master switch for anchoring Blizzard Private Auras to MSUF."])
         A2_Track("global", btnPrivateEnable)
         BuildBoolPathCheckboxes(privateBox, {
-            { L["Show (Player)"], 12, -64, A2_Settings, "showPrivateAurasPlayer", nil,
-                L["Re-anchors Blizzard Private Auras to MSUF (no spell lists)."], "cbPrivateShowP" },
-            { L["Show (Focus)"], 12, -92, A2_Settings, "showPrivateAurasFocus", nil,
-                L["Re-anchors Blizzard Private Auras to MSUF Focus."], "cbPrivateShowF" },
-            { L["Show (Boss)"], 12, -120, A2_Settings, "showPrivateAurasBoss", nil,
-                L["Re-anchors Blizzard Private Auras to MSUF Boss frames."], "cbPrivateShowB" },
-            { L["Preview"], 12, -148, A2_Settings, "highlightPrivateAuras", nil,
-                L["Visual only: adds a purple border + corner marker on private aura slots."], "cbPrivateHL" },
+            { "Show (Player)", 12, -64, A2_Settings, "showPrivateAurasPlayer", nil,
+                "Re-anchors Blizzard Private Auras to MSUF (no spell lists).", "cbPrivateShowP" },
+            { "Show (Focus)", 12, -92, A2_Settings, "showPrivateAurasFocus", nil,
+                "Re-anchors Blizzard Private Auras to MSUF Focus.", "cbPrivateShowF" },
+            { "Show (Boss)", 12, -120, A2_Settings, "showPrivateAurasBoss", nil,
+                "Re-anchors Blizzard Private Auras to MSUF Boss frames.", "cbPrivateShowB" },
         }, refs)
         -- Track: these are Shared-scope controls (so per-unit overrides can grey them out correctly).
         if refs.cbPrivateShowP then A2_Track("global", refs.cbPrivateShowP) end
         if refs.cbPrivateShowF then A2_Track("global", refs.cbPrivateShowF) end
         if refs.cbPrivateShowB then A2_Track("global", refs.cbPrivateShowB) end
-        if refs.cbPrivateHL    then A2_Track("global", refs.cbPrivateHL) end
         local function SetWidgetEnabled(widget, enabled)
             if not widget then  return end
             enabled = not not enabled
@@ -2089,8 +2098,12 @@ end
             if v > 12 then v = 12 end
             s.privateAuraMaxOther = v
          end
-        local privateMaxPlayer = CreateAuras2CompactSlider(privateBox, L["Max slots (Player)"], 0, 12, 1, 12, -178, 300, GetPrivateMaxPlayer, SetPrivateMaxPlayer)
-        local privateMaxOther  = CreateAuras2CompactSlider(privateBox, L["Max slots (Focus/Boss)"], 0, 12, 1, 12, -226, 300, GetPrivateMaxOther, SetPrivateMaxOther)
+        local privateMaxPlayer = CreateAuras2CompactSlider(privateBox, "Max (Player)", 0, 12, 1, 340, -34, 150, GetPrivateMaxPlayer, SetPrivateMaxPlayer)
+        MSUF_StyleAuras2CompactSlider(privateMaxPlayer, { hideMinMax = true, leftTitle = true })
+        AttachSliderValueBox(privateMaxPlayer, 0, 12, 1, GetPrivateMaxPlayer)
+        local privateMaxOther  = CreateAuras2CompactSlider(privateBox, "Max (Focus/Boss)", 0, 12, 1, 540, -34, 150, GetPrivateMaxOther, SetPrivateMaxOther)
+        MSUF_StyleAuras2CompactSlider(privateMaxOther, { hideMinMax = true, leftTitle = true })
+        AttachSliderValueBox(privateMaxOther, 0, 12, 1, GetPrivateMaxOther)
         if privateMaxPlayer then A2_Track("global", privateMaxPlayer) end
         if privateMaxOther  then A2_Track("global", privateMaxOther) end
         local function UpdatePrivateAurasEnabled()
@@ -2098,16 +2111,10 @@ end
             local master = (s and s.privateAurasEnabled == true) or false
             local p = (master and s and s.showPrivateAurasPlayer == true) or false
             local o = (master and s and (s.showPrivateAurasFocus == true or s.showPrivateAurasBoss == true)) or false
-            local any = (master and (p or o)) or false
             -- Master-gate the per-unit checkboxes.
             if refs.cbPrivateShowP then SetWidgetEnabled(refs.cbPrivateShowP, master) end
             if refs.cbPrivateShowF then SetWidgetEnabled(refs.cbPrivateShowF, master) end
             if refs.cbPrivateShowB then SetWidgetEnabled(refs.cbPrivateShowB, master) end
-            if refs.cbPrivateHL then
-                local cb = refs.cbPrivateHL
-                if cb.SetEnabled then cb:SetEnabled(any) end
-                cb:SetAlpha(any and 1 or 0.35)
-            end
             if privateMaxPlayer then SetWidgetEnabled(privateMaxPlayer, p) end
             if privateMaxOther  then SetWidgetEnabled(privateMaxOther, o) end
          end
@@ -2131,9 +2138,6 @@ end
                     UpdatePrivateAurasEnabled()
                  end)
             end
-            if refs.cbPrivateHL then
-                refs.cbPrivateHL:HookScript("OnShow", UpdatePrivateAurasEnabled)
-            end
             if privateMaxPlayer then
                 privateMaxPlayer:HookScript("OnShow", UpdatePrivateAurasEnabled)
             end
@@ -2148,22 +2152,77 @@ end
                 if cb then advGate[#advGate + 1] = cb end
             end
          end
-        Track({ "cbBossBuffs", "cbBossDebuffs", "cbDispellable", "cbOnlyBoss", "cbOnlyImpBuffs", "cbOnlyImpDebuffs", "cbPrivateShowP", "cbPrivateShowF", "cbPrivateShowB", "cbPrivateHL" })
+        Track({ "cbBossBuffs", "cbBossDebuffs", "cbOnlyBoss", "cbOnlyImpBuffs", "cbOnlyImpDebuffs", "cbPrivateShowP", "cbPrivateShowF", "cbPrivateShowB" })
         -- Advanced gating should also affect the Private Auras master + sliders.
         if btnPrivateEnable then advGate[#advGate + 1] = btnPrivateEnable end
         if privateMaxPlayer then advGate[#advGate + 1] = privateMaxPlayer end
         if privateMaxOther  then advGate[#advGate + 1] = privateMaxOther end
-        local dtH = advBox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-        dtH:SetPoint("TOPLEFT", advBox, "TOPLEFT", 12, -270)
-        dtH:SetText(TR("Debuff types"))
-        BuildBoolPathCheckboxes(advBox, {
-            { L["Magic"], 12, -294, A2_FilterDebuffs, "dispelMagic", nil, nil, "cbMagic" },
-            { L["Curse"], 140, -294, A2_FilterDebuffs, "dispelCurse", nil, nil, "cbCurse" },
-            { L["Disease"], 268, -294, A2_FilterDebuffs, "dispelDisease", nil, nil, "cbDisease" },
-            { L["Poison"], 396, -294, A2_FilterDebuffs, "dispelPoison", nil, nil, "cbPoison" },
-            { L["Enrage"], 524, -294, A2_FilterDebuffs, "dispelEnrage", nil, nil, "cbEnrage" },
-        }, refs)
-        Track({ "cbMagic", "cbCurse", "cbDisease", "cbPoison", "cbEnrage" })
+        -- ------------------------------------------------------------
+        -- Sort order dropdown (Blizzard Enum.AuraSortOrder)
+        -- Stored in shared.filters.sortOrder (respects per-unit filter overrides).
+        -- Passed to C_UnitAuras.GetAuraSlots as 4th arg — sorting happens in C code (zero Lua cost).
+        -- Secret-safe: plain numeric config, never compared with secret data.
+        -- ------------------------------------------------------------
+        do
+            local SORT_ITEMS = {
+                { text = TR("Unsorted (default)"), value = 0 },
+                { text = TR("Default (player > canApply > ID)"), value = 1 },
+                { text = TR("Big Defensive (longest first)"), value = 2 },
+                { text = TR("Expiration (soonest first)"), value = 3 },
+                { text = TR("Expiration only"), value = 4 },
+                { text = TR("Name (alphabetical)"), value = 5 },
+                { text = TR("Name only"), value = 6 },
+            }
+            -- LUT for display text by value (OnShow uses this to set label)
+            local SORT_TEXT = {}
+            for i = 1, #SORT_ITEMS do
+                SORT_TEXT[SORT_ITEMS[i].value] = SORT_ITEMS[i].text
+            end
+            local sortH = advBox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+            sortH:SetPoint("TOPLEFT", advBox, "TOPLEFT", 12, -130)
+            sortH:SetText(TR("Sort order"))
+            local ddSort = CreateFrame("Frame", "MSUF_Auras2_SortOrderDropDown", advBox, "UIDropDownMenuTemplate")
+            ddSort:SetPoint("TOPLEFT", advBox, "TOPLEFT", 90, -136)
+            MSUF_FixUIDropDown(ddSort, 220)
+            local function SortGet()
+                local f = GetEditingFilters()
+                return (f and type(f.sortOrder) == "number") and f.sortOrder or 0
+            end
+            local function SortSet(v)
+                local f = GetEditingFilters()
+                if not f then return end
+                f.sortOrder = v
+            end
+            local function SortOnClick(self)
+                SortSet(self.value)
+                UIDropDownMenu_SetSelectedValue(ddSort, self.value)
+                UIDropDownMenu_SetText(ddSort, SORT_TEXT[self.value] or SORT_ITEMS[1].text)
+                CloseDropDownMenus()
+                A2_AutoOverrideFiltersIfNeeded()
+                A2_RequestApply()
+            end
+            UIDropDownMenu_Initialize(ddSort, function()
+                local cur = SortGet()
+                for i = 1, #SORT_ITEMS do
+                    local item = SORT_ITEMS[i]
+                    local info = UIDropDownMenu_CreateInfo()
+                    info.text = item.text
+                    info.value = item.value
+                    info.func = SortOnClick
+                    info.keepShownOnClick = false
+                    info.checked = (cur == item.value)
+                    UIDropDownMenu_AddButton(info)
+                end
+            end)
+            ddSort:SetScript("OnShow", function()
+                local v = SortGet()
+                UIDropDownMenu_SetSelectedValue(ddSort, v)
+                UIDropDownMenu_SetText(ddSort, SORT_TEXT[v] or SORT_ITEMS[1].text)
+            end)
+            A2_Track("filters", ddSort)
+            advGate[#advGate + 1] = ddSort
+            if sortH then advGate[#advGate + 1] = sortH end
+        end
     end
     UpdateAdvancedEnabled()
     -- Ensure checkbox state stays consistent after /reload or early panel opens
@@ -2257,7 +2316,7 @@ end
         end
      end)
     local rInfo = advBox:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-    rInfo:SetPoint("TOPLEFT", advBox, "TOPLEFT", 12, -330)
+    rInfo:SetPoint("TOPLEFT", advBox, "TOPLEFT", 12, -190)
     rInfo:SetWidth(690)
     rInfo:SetJustifyH("LEFT")
     rInfo:SetText(TIP_ADV_INFO)

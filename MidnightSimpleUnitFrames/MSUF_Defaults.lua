@@ -728,6 +728,10 @@ end
     if g.hpTextSpacerX == nil then
         g.hpTextSpacerX = 140
     end
+    -- Bar settings scope: always default to Shared so users edit globally first.
+    if g.hpPowerTextSelectedKey == nil then
+        g.hpPowerTextSelectedKey = "shared"
+    end
     -- Which unit's HP spacer settings are currently shown/edited in the Bars menu.
     -- This is purely a UI selection state (does not change gameplay behavior).
     if g.hpSpacerSelectedUnitKey == nil then

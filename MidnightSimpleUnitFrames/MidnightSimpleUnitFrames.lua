@@ -608,14 +608,20 @@ function ns.Bars.ApplyHealthBars(frame, unit, maxHP, hp)
     end
     -- Absorb overlays: only update when marked dirty (absorb/maxHP events),
     -- not on every UNIT_HEALTH. Dirty flags set by FrameOnEvent + OnShow + AttachFrame.
-    if frame.absorbBar and frame._msufAbsorbDirty then
+    -- Exception: test mode needs unconditional updates (on→show fakes, off→clear fakes).
+    local absorbTestMode = _G.MSUF_AbsorbTextureTestMode
+    local wasTestMode = frame._msufAbsorbTestActive
+    if absorbTestMode then frame._msufAbsorbTestActive = true end
+    local absorbForce = absorbTestMode or wasTestMode
+    if frame.absorbBar and (frame._msufAbsorbDirty or absorbForce) then
         frame._msufAbsorbDirty = false
         ns.Bars._UpdateAbsorbBar(frame, unit, maxHP)
     end
-    if frame.healAbsorbBar and frame._msufHealAbsorbDirty then
+    if frame.healAbsorbBar and (frame._msufHealAbsorbDirty or absorbForce) then
         frame._msufHealAbsorbDirty = false
         ns.Bars._UpdateHealAbsorbBar(frame, unit, maxHP)
     end
+    if wasTestMode and not absorbTestMode then frame._msufAbsorbTestActive = nil end
     if frame.selfHealPredBar then
         if ns.Bars._UpdateSelfHealPrediction then ns.Bars._UpdateSelfHealPrediction(frame, unit, maxHP, hp) end
     end
@@ -1310,10 +1316,10 @@ function _G.MSUF_SetHpSpacerSelectedUnitKey(unitKey, suppressUIRefresh)
     local k = _G.MSUF_NormalizeTextLayoutUnitKey(unitKey, "player")
     g.hpSpacerSelectedUnitKey = k
     
-    -- Keep the Bars menu scope dropdown in sync.
-    if k and k ~= "shared" then
-        g.hpPowerTextSelectedKey = k
-    end
+    -- Do NOT sync hpPowerTextSelectedKey here.
+    -- The Bars menu scope dropdown must only change when the user explicitly
+    -- selects a unit via the scope dropdown itself.  Clicking a unitframe
+    -- updates the spacer-selection indicator but never overrides the scope.
     if not suppressUIRefresh and type(_G.MSUF_Options_RefreshHPSpacerControls) == "function" then
         _G.MSUF_Options_RefreshHPSpacerControls()
     end
@@ -2036,7 +2042,13 @@ local function MSUF_TextLayout_ApplyGroup(f, tf, conf, spec, mode, hasPct, on, e
     local baseY = ns.Util.Offset(conf[spec.yKey], spec.defY)
     local fullX, pctX = baseX, baseX
     local canSplit = hasPct and on and eff ~= 0 and (not spec.limitMode or mode == "FULL_PLUS_PERCENT" or mode == "PERCENT_PLUS_FULL")
-    if canSplit then if mode == "FULL_PLUS_PERCENT" then fullX = baseX + sign * eff else pctX = baseX + sign * eff end end
+    if canSplit then
+        if mode == "FULL_PLUS_PERCENT" then
+            fullX = baseX + sign * eff
+        else
+            pctX = baseX + sign * eff
+        end
+    end
     if fullObj then
         MSUF_ApplyPoint(fullObj, pt, tf, relPt, fullX, baseY)
         if anchorJustify and fullObj.SetJustifyH then fullObj:SetJustifyH(anchorJustify) end
@@ -4127,12 +4139,13 @@ local function MSUF_EnableUnitFrameDrag(f, unit)
     local function _ApplySnapAndClamp(key, conf)
         if not conf then  return end
         local g = MSUF_DB and MSUF_DB.general or nil
-        if g and g.editModeSnapToGrid then
-            local gridStep = g.editModeGridStep or 20
-            if gridStep < 1 then gridStep = 1 end
+        if g and g.editModeSnapToGrid == true then
+            local gridStep = tonumber(g.editModeGridStep) or 20
+            if gridStep < 8 then gridStep = 8 end
+            if gridStep > 64 then gridStep = 64 end
             local half = gridStep / 2
-            local x = conf.offsetX or 0
-            local y = conf.offsetY or 0
+            local x = tonumber(conf.offsetX) or 0
+            local y = tonumber(conf.offsetY) or 0
             conf.offsetX = math.floor((x + half) / gridStep) * gridStep
             conf.offsetY = math.floor((y + half) / gridStep) * gridStep
         end
@@ -4184,10 +4197,14 @@ local function MSUF_EnableUnitFrameDrag(f, unit)
                     local ax2, ay2 = _PointXY(ecv, relPoint)
                     local fx2, fy2 = _PointXY(self, point)
                     if ax2 and ay2 and fx2 and fy2 then
-                        local x = fx2 - ax2
-                        local y = fy2 - ay2
-                        conf.offsetX = floor((x - baseX) + 0.5)
-                        conf.offsetY = floor((y - extraY) + 0.5)
+                        local fs = (self.GetEffectiveScale and self:GetEffectiveScale()) or 1
+                        local as = (ecv.GetEffectiveScale and ecv:GetEffectiveScale()) or 1
+                        if fs == 0 then fs = 1 end
+                        if as == 0 then as = 1 end
+                        local x = (fx2 * fs - ax2 * as) / as
+                        local y = (fy2 * fs - ay2 * as) / as
+                        conf.offsetX = floor(((x - baseX)) + 0.5)
+                        conf.offsetY = floor(((y - extraY)) + 0.5)
                         if MSUF_SyncUnitPositionPopup then
                             MSUF_SyncUnitPositionPopup(unit, conf)
                         end
@@ -4202,15 +4219,19 @@ local function MSUF_EnableUnitFrameDrag(f, unit)
         local ax, ay = anchor:GetCenter()
         local fx, fy = self:GetCenter()
         if not ax or not ay or not fx or not fy then  return end
-        local newX = fx - ax
-        local newY = fy - ay
+        local fs = (self.GetEffectiveScale and self:GetEffectiveScale()) or 1
+        local as = (anchor.GetEffectiveScale and anchor:GetEffectiveScale()) or 1
+        if fs == 0 then fs = 1 end
+        if as == 0 then as = 1 end
+        local newX = (fx * fs - ax * as) / as
+        local newY = (fy * fs - ay * as) / as
         if key == "boss" then
             local index = tonumber(unit:match("^boss(%d+)$")) or 1
             local spacing = conf.spacing or -36
             newY = newY - ((index - 1) * spacing)
     end
-        conf.offsetX = newX
-        conf.offsetY = newY
+        conf.offsetX = floor((newX) + 0.5)
+        conf.offsetY = floor((newY) + 0.5)
         if MSUF_SyncUnitPositionPopup then
             MSUF_SyncUnitPositionPopup(unit, conf)
     end
@@ -4269,6 +4290,9 @@ local function MSUF_EnableUnitFrameDrag(f, unit)
         if key and conf then
             _UpdateDBFromFrame(self, key, conf)
             _ApplySnapAndClamp(key, conf)
+            -- Keep cachedConfig in sync so PositionUnitFrame reads the live DB
+            -- table, not a stale ref from before a profile import/switch.
+            self.cachedConfig = conf
             if key == "boss" then
                 for i = 1, MSUF_MAX_BOSS_FRAMES do
                     local bossUnit = "boss" .. i
@@ -4835,6 +4859,19 @@ local function MSUF_EnsureTargetToTInlineFS(targetFrame)
     sep:SetPoint("LEFT", targetFrame.nameText, "RIGHT", 0, 0)
     txt:ClearAllPoints()
     txt:SetPoint("LEFT", sep, "RIGHT", 0, 0)
+    -- Immediately inherit font from nameText (master) so ToT inline never
+    -- displays with the wrong GameFontHighlight size.  Invalidate _msufFontRev
+    -- so the central font cache re-applies cleanly on the next pass.
+    local nameFS = targetFrame.nameText
+    if nameFS and nameFS.GetFont then
+        local font, size, flags = nameFS:GetFont()
+        if font then
+            sep:SetFont(font, size, flags)
+            txt:SetFont(font, size, flags)
+            sep._msufFontRev = nil
+            txt._msufFontRev = nil
+        end
+    end
     targetFrame._msufToTInlineSep = sep
     targetFrame._msufToTInlineText = txt
  end
