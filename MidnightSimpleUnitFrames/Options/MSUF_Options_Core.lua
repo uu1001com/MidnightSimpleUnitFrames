@@ -2231,13 +2231,13 @@ local headerRow, _btns = MSUF_BuildButtonRowList(profileGroup, profileTitle, 8, 
     {
         id   = "reset",
         name = "MSUF_ProfileResetButton",
-        text = "Reset profile",
+        text = L["Reset profile"],
         w    = 140,
         h    = 24,
         y    = 10,
         onClick = function()
             if not MSUF_ActiveProfile then
-                print("|cffff0000MSUF:|r No active profile selected to reset.")
+                print(L["|cffff0000MSUF:|r No active profile selected to reset."])
                  return
             end
             local name = MSUF_ActiveProfile
@@ -2247,7 +2247,7 @@ local headerRow, _btns = MSUF_BuildButtonRowList(profileGroup, profileTitle, 8, 
     {
         id   = "delete",
         name = "MSUF_ProfileDeleteButton",
-        text = "Delete profile",
+        text = L["Delete profile"],
         w    = 140,
         h    = 24,
     },
@@ -2741,7 +2741,7 @@ castbarFocusButton:SetScript("OnClick", function()
     castbarGeneralLine:SetPoint("RIGHT", castbarEnemyGroup, "RIGHT", -16, 0)
     castbarInterruptShakeCheck = CreateLabeledCheckButton(
         "MSUF_CastbarInterruptShakeCheck",
-        "Shake on interrupt",
+        L["Shake on interrupt"],
         castbarEnemyGroup,
         16, -200
     )
@@ -2766,7 +2766,7 @@ local function MSUF_SyncCastbarsTabToggles()
     if castbarFillDirDrop then
         local dir = g.castbarFillDirection or "RTL"
         if UIDropDownMenu_SetSelectedValue then UIDropDownMenu_SetSelectedValue(castbarFillDirDrop, dir) end
-        if UIDropDownMenu_SetText then UIDropDownMenu_SetText(castbarFillDirDrop, (dir == "LTR") and "Left to right" or "Right to left (default)") end
+        if UIDropDownMenu_SetText then UIDropDownMenu_SetText(castbarFillDirDrop, (dir == "LTR") and L["Left to right"] or L["Right to left (default)"]) end
         MSUF_SetDropDownEnabled(castbarFillDirDrop, castbarFillDirLabel, true)
     end
     CB(castbarOpositeDirectionTarget, (g.castbarOpositeDirectionTarget ~= false))
@@ -2796,7 +2796,7 @@ end
     _G.MSUF_Options_BindGeneralBoolCheck(castbarInterruptShakeCheck, "castbarInterruptShake", nil, MSUF_SyncCastbarsTabToggles, nil)
     castbarShakeIntensitySlider = CreateLabeledSlider(
         "MSUF_CastbarShakeIntensitySlider",
-        "Shake intensity",
+        L["Shake intensity"],
         castbarEnemyGroup,
         0, 30, 1,         -- strength
         175, -200          -- Next to the toggles
@@ -2915,13 +2915,13 @@ end
         _G.MSUF_Options_BindGeneralBoolCheck(cb, dbKey, applyFn, MSUF_SyncCastbarsTabToggles, true)
          return cb
     end
-    castbarUnifiedDirCheck = CB("MSUF_CastbarUnifiedDirectionCheck", "Always use fill direction for all casts", 16, 185, "castbarUnifiedDirection", "castbarFillDirection", function(cb)  cb:ClearAllPoints(); cb:SetPoint("BOTTOMLEFT", castbarFillDirLabel, "TOPLEFT", 0, 4)  end)
+    castbarUnifiedDirCheck = CB("MSUF_CastbarUnifiedDirectionCheck", L["Always use fill direction for all casts"], 16, 185, "castbarUnifiedDirection", "castbarFillDirection", function(cb)  cb:ClearAllPoints(); cb:SetPoint("BOTTOMLEFT", castbarFillDirLabel, "TOPLEFT", 0, 4)  end)
     castbarFillDirDrop = CreateFrame("Frame", "MSUF_CastbarFillDirectionDropdown", castbarEnemyGroup, "UIDropDownMenuTemplate")
     MSUF_ExpandDropdownClickArea(castbarFillDirDrop)
     castbarFillDirDrop:SetPoint("TOPLEFT", castbarFillDirLabel, "BOTTOMLEFT", -16, -4)
     local castbarFillDirOptions = {
-        { key = "RTL", label = "Right to left (default)" },
-        { key = "LTR", label = "Left to right" },
+        { key = "RTL", label = L["Right to left (default)"] },
+        { key = "LTR", label = L["Left to right"] },
     }
     local function MSUF_GetCastbarFillDir()
         EnsureDB()
@@ -2940,7 +2940,7 @@ end
      end)
     -- Step 16: Apply dispatch handles castbar updates (castbarVisuals/castbarTicks/castbarGlow/castbarLatency)
     -- Able to have the two cast bars be oposite each other
-    castbarOpositeDirectionTarget = CB("MSUF_CastbarOpositeDirectionTarget", "Use opposite fill direction for target", 16, 0, "castbarOpositeDirectionTarget", "castbarOpositeDirectionTarget", function(cb)  cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", castbarFillDirDrop, "BOTTOMLEFT", 16, -10)  end)
+    castbarOpositeDirectionTarget = CB("MSUF_CastbarOpositeDirectionTarget", L["Use opposite fill direction for target"], 16, 0, "castbarOpositeDirectionTarget", "castbarOpositeDirectionTarget", function(cb)  cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", castbarFillDirDrop, "BOTTOMLEFT", 16, -10)  end)
     -- Channeled casts: show 5 tick lines
     castbarChannelTicksCheck = CB("MSUF_CastbarChannelTicksCheck", "Show channel tick lines (5)", 16, 0, "castbarShowChannelTicks", "castbarTicks", function(cb)  if castbarFillDirDrop then cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", castbarOpositeDirectionTarget, "BOTTOMLEFT", 0, -10) end  end)
 -- GCD bar (player): show a short bar for instant casts that trigger the global cooldown
@@ -2957,7 +2957,7 @@ end
      end
     castbarGCDBarCheck = CB(
         "MSUF_CastbarGCDBarCheck",
-        "Show GCD bar for instant casts",
+        L["Show GCD bar for instant casts"],
         16, 0,
         "showGCDBar",
         _MSUF_ApplyGCDBarToggle,
@@ -2979,7 +2979,7 @@ end
      end
     castbarGCDTimeCheck = CB(
         "MSUF_CastbarGCDTimeCheck",
-        "GCD bar: show time text",
+        L["GCD bar: show time text"],
         16, 0,
         "showGCDBarTime",
         _MSUF_ApplyGCDBarVisuals,
@@ -2990,7 +2990,7 @@ end
     )
     castbarGCDSpellCheck = CB(
         "MSUF_CastbarGCDSpellCheck",
-        "GCD bar: show spell name + icon",
+        L["GCD bar: show spell name + icon"],
         16, 0,
         "showGCDBarSpell",
         _MSUF_ApplyGCDBarVisuals,
@@ -3000,14 +3000,14 @@ end
          end
     )
 -- Castbar glow / spark (Blizzard-style)
-    castbarGlowCheck = CB("MSUF_CastbarGlowCheck", "Show castbar glow effect", 16, 0, "castbarShowGlow", "castbarGlow")
+    castbarGlowCheck = CB("MSUF_CastbarGlowCheck", L["Show castbar glow effect"], 16, 0, "castbarShowGlow", "castbarGlow")
 -- Latency indicator (end-of-cast spell queue / net latency zone)
-    castbarLatencyCheck = CB("MSUF_CastbarLatencyCheck", "Show latency indicator", 16, 0, "castbarShowLatency", "castbarLatency")
-    empowerColorStagesCheck = CB("MSUF_EmpowerColorStagesCheck", "Add color to stages (Empowered casts)", 16, 130, "empowerColorStages", "castbarVisuals", function(cb)  cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", castbarUnifiedDirCheck, "TOPLEFT", 300, 0)  end)
-    empowerStageBlinkCheck = CB("MSUF_EmpowerStageBlinkCheck", "Add stage blink (Empowered casts)", 16, 130, "empowerStageBlink", "castbarVisuals", function(cb)  cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", empowerColorStagesCheck, "BOTTOMLEFT", 0, -10)  end)
+    castbarLatencyCheck = CB("MSUF_CastbarLatencyCheck", L["Show latency indicator"], 16, 0, "castbarShowLatency", "castbarLatency")
+    empowerColorStagesCheck = CB("MSUF_EmpowerColorStagesCheck", L["Add color to stages (Empowered casts)"], 16, 130, "empowerColorStages", "castbarVisuals", function(cb)  cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", castbarUnifiedDirCheck, "TOPLEFT", 300, 0)  end)
+    empowerStageBlinkCheck = CB("MSUF_EmpowerStageBlinkCheck", L["Add stage blink (Empowered casts)"], 16, 130, "empowerStageBlink", "castbarVisuals", function(cb)  cb:ClearAllPoints(); cb:SetPoint("TOPLEFT", empowerColorStagesCheck, "BOTTOMLEFT", 0, -10)  end)
 empowerStageBlinkTimeSlider = CreateLabeledSlider(
     "MSUF_EmpowerStageBlinkTimeSlider",
-    "Stage blink time (sec)",
+    L["Stage blink time (sec)"],
     castbarEnemyGroup,
     0.05, 1.00, 0.01,
     16, 130
@@ -3069,7 +3069,7 @@ empowerStageBlinkTimeSlider:SetScript("OnShow", function(self)
         A(castbarChannelTicksCheck, "TOPLEFT", castbarOpositeDirectionTarget, "BOTTOMLEFT", 0, -10)
         A(castbarGCDBarCheck, "TOPLEFT", castbarChannelTicksCheck, "BOTTOMLEFT", 0, -8)
         -- Style (right)
-        A(castbarTextureLabel, "TOPLEFT", rightCol, "TOPLEFT", 0, -20); T(castbarTextureLabel, "Castbar texture")
+        A(castbarTextureLabel, "TOPLEFT", rightCol, "TOPLEFT", 0, -20); T(castbarTextureLabel, L["Castbar texture"])
         A(castbarTextureDrop, "TOPLEFT", castbarTextureLabel, "BOTTOMLEFT", -16, -4)
         A(castbarTexturePreview, "TOPLEFT", castbarTextureDrop, "BOTTOMLEFT", 20, -6)
         A(castbarTextureInfo, "TOPLEFT", rightCol, "TOPLEFT", 0, -20); W(castbarTextureInfo, 320)
@@ -3194,7 +3194,7 @@ if prev then
 end
             local outlineSlider = CreateLabeledSlider(
                 "MSUF_CastbarOutlineThicknessSlider",
-                "Outline thickness",
+                L["Outline thickness"],
                 castbarEnemyGroup,
                 0, 6, 1,
                 0, 0
@@ -3269,7 +3269,7 @@ end
             if rightCol and not maxSlider then
                 maxSlider = CreateLabeledSlider(
                     "MSUF_CastbarSpellNameMaxLenSlider",
-                    "Max name length",
+                    L["Max name length"],
                     castbarEnemyGroup,
                     6, 30, 1,
                     0, 0
@@ -3279,7 +3279,7 @@ end
             if rightCol and not resSlider then
                 resSlider = CreateLabeledSlider(
                     "MSUF_CastbarSpellNameReservedSlider",
-                    "Reserved space",
+                    L["Reserved space"],
                     castbarEnemyGroup,
                     0, 30, 1,
                     0, 0
@@ -3522,10 +3522,10 @@ MSUF_ExpandDropdownClickArea(absorbDisplayDrop)
 absorbDisplayDrop:SetPoint("TOPLEFT", absorbDisplayLabel, "BOTTOMLEFT", -16, -4)
 UIDropDownMenu_SetWidth(absorbDisplayDrop, BAR_DROPDOWN_WIDTH)
 local absorbDisplayOptions = {
-    { key = 1, label = "Absorb off" },
-    { key = 2, label = "Absorb bar" },
-    { key = 3, label = "Absorb bar + text" },
-    { key = 4, label = "Absorb text only" },
+    { key = 1, label = L["Absorb off"] },
+    { key = 2, label = L["Absorb bar"] },
+    { key = 3, label = L["Absorb bar + text"] },
+    { key = 4, label = L["Absorb text only"] },
 }
 local function MSUF_GetAbsorbDisplayMode()
     EnsureDB()
@@ -3825,7 +3825,7 @@ _MSUF_InitAbsorbTextureDropdown(healAbsorbTextureDrop, "healAbsorbBarTexture", "
 -- Runtime-only (not saved). Auto-disables when leaving the Bars menu group.
 local absorbTexTestCB = CreateLabeledCheckButton(
     "MSUF_AbsorbTextureTestModeCheck",
-    "Test absorb textures",
+    L["Test absorb textures"],
     barGroup,
     16, -1 -- placeholder; we re-anchor below
 )
@@ -3852,7 +3852,7 @@ if absorbTexTestCB then
     -- Player-only: show your own incoming heals as a small prediction segment behind the HP bar.
     local selfHealPredCB = CreateLabeledCheckButton(
         "MSUF_SelfHealPredictionCheck",
-        "Heal prediction",
+        L["Heal prediction"],
         barGroup,
         16, -1 -- placeholder; we re-anchor below
     )
@@ -3961,20 +3961,20 @@ if MSUF_RefreshAbsorbBarUIEnabled then MSUF_RefreshAbsorbBarUIEnabled() end
 end
 gradientCheck = CreateLabeledCheckButton(
         "MSUF_GradientEnableCheck",
-        "Enable HP bar gradient",
+        L["Enable HP bar gradient"],
         barGroup,
         16, -260
     )
     powerGradientCheck = CreateLabeledCheckButton(
         "MSUF_PowerGradientEnableCheck",
-        "Enable power bar gradient",
+        L["Enable power bar gradient"],
         barGroup,
         16, -282
     )
     -- Gradient strength (shared by HP + Power gradients). Range 0..1
     gradientStrengthSlider = CreateLabeledSlider(
         "MSUF_GradientStrengthSlider",
-        "Gradient strength",
+        L["Gradient strength"],
         barGroup,
         0, 1, 0.05,
         16, -304
@@ -3984,25 +3984,25 @@ gradientCheck = CreateLabeledCheckButton(
     gradientDirPad = MSUF_CreateGradientDirectionPad(barGroup)
     targetPowerBarCheck = CreateLabeledCheckButton(
         "MSUF_TargetPowerBarCheck",
-        "Show power bar on target frame",
+        L["Show power bar on target frame"],
         barGroup,
         260, -260
     )
     bossPowerBarCheck = CreateLabeledCheckButton(
         "MSUF_BossPowerBarCheck",
-        "Show power bar on boss frames",
+        L["Show power bar on boss frames"],
         barGroup,
         260, -290
     )
     playerPowerBarCheck = CreateLabeledCheckButton(
         "MSUF_PlayerPowerBarCheck",
-        "Show power bar on player frames",
+        L["Show power bar on player frames"],
         barGroup,
         260, -320
     )
     focusPowerBarCheck = CreateLabeledCheckButton(
         "MSUF_FocusPowerBarCheck",
-        "Show power bar on focus",
+        L["Show power bar on focus"],
         barGroup,
         260, -350
     )
@@ -4016,13 +4016,13 @@ gradientCheck = CreateLabeledCheckButton(
     powerBarHeightEdit:SetTextInsets(4, 4, 2, 2)
     powerBarEmbedCheck = CreateLabeledCheckButton(
         "MSUF_PowerBarEmbedCheck",
-        "Embed power bar into health bar",
+        L["Embed power bar into health bar"],
         barGroup,
         260, -380
     )
     powerBarBorderCheck = CreateLabeledCheckButton(
         "MSUF_PowerBarBorderCheck",
-        "Show power bar border",
+        L["Show power bar border"],
         barGroup,
         260, -410
     )
@@ -4043,13 +4043,13 @@ gradientCheck = CreateLabeledCheckButton(
     MSUF_ExpandDropdownClickArea(hpPowerScopeDrop)
     hpPowerScopeDrop:SetPoint("TOPLEFT", hpPowerScopeLabel, "BOTTOMLEFT", -16, -4)
     hpPowerScopeOptions = {
-        { key = "shared",      label = "Shared" },
-        { key = "player",      label = "Player" },
-        { key = "target",      label = "Target" },
-        { key = "targettarget",label = "Target of Target" },
-        { key = "focus",       label = "Focus" },
-        { key = "pet",         label = "Pet" },
-        { key = "boss",        label = "Boss" },
+        { key = "shared",      label = L["Shared"] },
+        { key = "player",      label = L["Player"] },
+        { key = "target",      label = L["Target"] },
+        { key = "targettarget",label = L["Target of Target"] },
+        { key = "focus",       label = L["Focus"] },
+        { key = "pet",         label = L["Pet"] },
+        { key = "boss",        label = L["Boss"] },
     }
 
     local function _MSUF_HPText_NormalizeScopeKey(k)
@@ -4126,9 +4126,9 @@ gradientCheck = CreateLabeledCheckButton(
     MSUF_StyleCheckmark(hpPowerOverrideCheck)
     hpPowerOverrideCheck:SetScript('OnEnter', function(self)
         GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-        GameTooltip:SetText('Per-unit override', 1, 1, 1)
-        GameTooltip:AddLine('When unchecked, this unit inherits Shared settings for text modes, absorb display, and spacers.', 0.9, 0.9, 0.9, true)
-        GameTooltip:AddLine('Changing any per-unit setting will auto-enable this override.', 0.9, 0.9, 0.9, true)
+        GameTooltip:SetText(L['Per-unit override'], 1, 1, 1)
+        GameTooltip:AddLine(L['When unchecked, this unit inherits Shared settings for text modes, absorb display, and spacers.'], 0.9, 0.9, 0.9, true)
+        GameTooltip:AddLine(L['Changing any per-unit setting will auto-enable this override.'], 0.9, 0.9, 0.9, true)
         GameTooltip:Show()
     end)
     hpPowerOverrideCheck:SetScript('OnLeave', function() GameTooltip:Hide() end)
@@ -4142,10 +4142,10 @@ gradientCheck = CreateLabeledCheckButton(
     MSUF_ExpandDropdownClickArea(hpModeDrop)
     hpModeDrop:SetPoint("TOPLEFT", hpModeLabel, "BOTTOMLEFT", -16, -4)
     hpModeOptions = {
-        { key = "FULL_ONLY",          label = "Full value only" },
-        { key = "FULL_PLUS_PERCENT",  label = "Full value + %" },
-        { key = "PERCENT_PLUS_FULL",  label = "% + Full value" },
-        { key = "PERCENT_ONLY",       label = "Only %" },
+        { key = "FULL_ONLY",          label = L["Full value only"] },
+        { key = "FULL_PLUS_PERCENT",  label = L["Full value + %"] },
+        { key = "PERCENT_PLUS_FULL",  label = L["% + Full value"] },
+        { key = "PERCENT_ONLY",       label = L["Only %"] },
     }
 
     local function _MSUF_HPText_GetHpModeKey()
@@ -4210,12 +4210,12 @@ powerModeLabel = barGroup:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     MSUF_ExpandDropdownClickArea(powerModeDrop)
     powerModeDrop:SetPoint("TOPLEFT", powerModeLabel, "BOTTOMLEFT", -16, -16)
     powerModeOptions = {
-        { key = "CURRENT", label = "Current" },
-        { key = "MAX", label = "Max" },
-        { key = "CURMAX", label = "Cur/Max" },
-        { key = "PERCENT", label = "Percent" },
-        { key = "CURPERCENT", label = "Cur + Percent" },
-        { key = "CURMAXPERCENT", label = "Cur/Max + Percent" },
+        { key = "CURRENT", label = L["Current"] },
+        { key = "MAX", label = L["Max"] },
+        { key = "CURMAX", label = L["Cur/Max"] },
+        { key = "PERCENT", label = L["Percent"] },
+        { key = "CURPERCENT", label = L["Cur + Percent"] },
+        { key = "CURMAXPERCENT", label = L["Cur/Max + Percent"] },
     }
 
     local function _MSUF_NormalizePowerTextMode_Local(mode)
@@ -4704,8 +4704,8 @@ powerModeLabel = barGroup:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     end)
     hpPowerResetBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine("Reset all overrides")
-        GameTooltip:AddLine("Clears per-unit overrides for all units (Player, Target, Focus, etc.) so they all use the shared settings again.", 0.9, 0.9, 0.9, true)
+        GameTooltip:AddLine(L["Reset all overrides"])
+        GameTooltip:AddLine(L["Clears per-unit overrides for all units (Player, Target, Focus, etc.) so they all use the shared settings again."], 0.9, 0.9, 0.9, true)
         GameTooltip:Show()
     end)
     hpPowerResetBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -4738,10 +4738,10 @@ end
 hpSpacerInfoButton:SetScript("OnEnter", function(self)
    if not GameTooltip then  return end
    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-   GameTooltip:AddLine("Text Spacers", 1, 1, 1)
-   GameTooltip:AddLine("Use the Bar settings scope dropdown (left panel, bottom) to choose which unit these settings apply to.", 0.9, 0.9, 0.9, true)
-	   GameTooltip:AddLine("When scope is set to 'Shared', settings apply globally. Select a unit and enable 'Override shared settings' to customize per unitframe.", 0.9, 0.9, 0.9, true)
-   GameTooltip:AddLine("Works only when the corresponding text mode is set to 'Full value + %' (or '% + Full value').", 0.9, 0.9, 0.9, true)
+   GameTooltip:AddLine(L["Text Spacers"], 1, 1, 1)
+   GameTooltip:AddLine(L["Use the Bar settings scope dropdown (left panel, bottom) to choose which unit these settings apply to."], 0.9, 0.9, 0.9, true)
+	   GameTooltip:AddLine(L["When scope is set to 'Shared', settings apply globally. Select a unit and enable 'Override shared settings' to customize per unitframe."], 0.9, 0.9, 0.9, true)
+   GameTooltip:AddLine(L["Works only when the corresponding text mode is set to 'Full value + %' (or '% + Full value')."], 0.9, 0.9, 0.9, true)
    GameTooltip:Show()
 end)
 hpSpacerInfoButton:SetScript("OnLeave", function()  if GameTooltip then GameTooltip:Hide() end  end)
@@ -4753,7 +4753,7 @@ hpSpacerCheck.text = _G["MSUF_HPTextSpacerCheckText"]
 if hpSpacerCheck.text then hpSpacerCheck.text:SetText(TR("HP Spacer on/off")) end
 MSUF_StyleToggleText(hpSpacerCheck)
 MSUF_StyleCheckmark(hpSpacerCheck)
-hpSpacerSlider = CreateLabeledSlider("MSUF_HPTextSpacerSlider", "HP Spacer (X)", barGroup, 0, 1000, 1, 16, -200)
+hpSpacerSlider = CreateLabeledSlider("MSUF_HPTextSpacerSlider", L["HP Spacer (X)"], barGroup, 0, 1000, 1, 16, -200)
 hpSpacerSlider:ClearAllPoints()
 hpSpacerSlider:SetPoint("TOPLEFT", hpSpacerCheck, "BOTTOMLEFT", 0, -18)
 if hpSpacerSlider.SetWidth then hpSpacerSlider:SetWidth(260) end
@@ -4768,7 +4768,7 @@ powerSpacerCheck.text = _G["MSUF_PowerTextSpacerCheckText"]
 if powerSpacerCheck.text then powerSpacerCheck.text:SetText(TR("Power Spacer on/off")) end
 MSUF_StyleToggleText(powerSpacerCheck)
 MSUF_StyleCheckmark(powerSpacerCheck)
-local powerSpacerSlider = CreateLabeledSlider("MSUF_PowerTextSpacerSlider", "Power Spacer (X)", barGroup, 0, 1000, 1, 16, -200)
+local powerSpacerSlider = CreateLabeledSlider("MSUF_PowerTextSpacerSlider", L["Power Spacer (X)"], barGroup, 0, 1000, 1, 16, -200)
 powerSpacerSlider:ClearAllPoints()
 powerSpacerSlider:SetPoint("TOPLEFT", powerSpacerCheck, "BOTTOMLEFT", 0, -18)
 if powerSpacerSlider.SetWidth then powerSpacerSlider:SetWidth(260) end
@@ -4835,12 +4835,12 @@ local function _MSUF_TextModeAllowsSpacer(mode)
         },
     }
     local function _MSUF_NiceUnitKey(unitKey)
-        if unitKey == "player" then  return "Player"
-        elseif unitKey == "target" then  return "Target"
-        elseif unitKey == "focus" then  return "Focus"
-        elseif unitKey == "targettarget" then  return "ToT"
-        elseif unitKey == "pet" then  return "Pet"
-        elseif unitKey == "boss" then  return "Boss"
+        if unitKey == "player" then  return L["Player"]
+        elseif unitKey == "target" then  return L["Target"]
+        elseif unitKey == "focus" then  return L["Focus"]
+        elseif unitKey == "targettarget" then  return L["ToT"]
+        elseif unitKey == "pet" then  return L["Pet"]
+        elseif unitKey == "boss" then  return L["Boss"]
         end
         return tostring(unitKey or "Player")
     end
@@ -4886,7 +4886,7 @@ local function _MSUF_SyncSpacerControls()
 
 	    if hpSpacerSelectedLabel and hpSpacerSelectedLabel.SetText then
 	        local nice = (isShared and "Shared") or _MSUF_NiceUnitKey(unitKey)
-	        hpSpacerSelectedLabel:SetText("Selected: " .. nice)
+	        hpSpacerSelectedLabel:SetText(L["Selected: "] .. nice)
 	    end
 
     for _, spec in ipairs(SPACER_SPECS) do
@@ -5163,7 +5163,7 @@ local barTextureDrop
 -- 0 = disabled, 1..6 = thickness in pixels (expands OUTSIDE the HP bar like castbar outline)
 barOutlineThicknessSlider = CreateLabeledSlider(
     "MSUF_BarOutlineThicknessSlider",
-    "Outline thickness",
+    L["Outline thickness"],
     barGroup,
     0, 6, 1,
     16, -350
@@ -5195,7 +5195,7 @@ end
 -- Highlight border thickness (separate overlay for aggro/dispel/purge)
 local highlightBorderThicknessSlider = CreateLabeledSlider(
     "MSUF_HighlightBorderThicknessSlider",
-    "Highlight border thickness",
+    L["Highlight border thickness"],
     barGroup,
     1, 6, 1,
     16, -420
@@ -5442,7 +5442,7 @@ end)
 -- Draggable rows to set display priority of highlight borders (Aggro/Dispel/Purge).
 -- Default order: Dispel > Aggro > Purge.  Custom order stored in DB.
 local _PRIO_DEFAULTS = { "dispel", "aggro", "purge" }  -- must match render fallback order
-local _PRIO_LABELS   = { dispel = "Dispel", aggro = "Aggro", purge = "Purge" }
+local _PRIO_LABELS   = { dispel = L["Dispel"], aggro = L["Aggro"], purge = L["Purge"] }
 
 local prioCheck = CreateFrame("CheckButton", "MSUF_HighlightPrioCheck", barGroup, "ChatConfigCheckButtonTemplate")
 prioCheck:SetPoint("TOPLEFT", purgeOutlineDrop, "BOTTOMLEFT", 16, -10)
