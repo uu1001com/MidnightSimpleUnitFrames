@@ -3,7 +3,10 @@
 -- Gameplay module: combat timer, combat state text, combat crosshair, and other small helpers.
 local _, ns = ...
 ns = ns or {}
-
+local L=ns.L or (_G and _G.MSUF_L)
+if not L then L={}setmetatable(L,{__index=function(t,k)return k end})ns.L=L end
+local isEn=(ns and ns.LOCALE)=="enUS"
+local function T(v) if type(v)=="string" then if isEn then return v end return L[v] or v end return v end
 ------------------------------------------------------
 -- Local shortcuts / libs
 ------------------------------------------------------
@@ -2963,13 +2966,13 @@ function ns.MSUF_RegisterGameplayOptions_Full(parentCategory)
 
     local title = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
-    title:SetText("Midnight Simple Unit Frames - Gameplay")
+    title:SetText(L["Midnight Simple Unit Frames - Gameplay"])
 
     local subText = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     subText:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     subText:SetWidth(600)
     subText:SetJustifyH("LEFT")
-    subText:SetText("Here are several gameplay enhancement options you can toggle on or off.")
+    subText:SetText(L["Here are several gameplay enhancement options you can toggle on or off."])
 
     -- Section header + separator line
     local sectionTitle = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -2987,17 +2990,17 @@ function ns.MSUF_RegisterGameplayOptions_Full(parentCategory)
 -- Shared melee range spell (shared)
 local meleeSharedTitle = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 meleeSharedTitle:SetPoint("TOPLEFT", separator, "BOTTOMLEFT", 0, -18)
-meleeSharedTitle:SetText("Melee range spell (crosshair)")
+meleeSharedTitle:SetText(L["Melee range spell (crosshair)"])
 panel.meleeSharedTitle = meleeSharedTitle
 
 local meleeSharedSubText = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 meleeSharedSubText:SetPoint("TOPLEFT", meleeSharedTitle, "BOTTOMLEFT", 0, -4)
-meleeSharedSubText:SetText("Used by: Crosshair melee-range color.")
+meleeSharedSubText:SetText(L["Used by: Crosshair melee-range color."])
 panel.meleeSharedSubText = meleeSharedSubText
 
 local meleeLabel = content:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 meleeLabel:SetPoint("TOPLEFT", meleeSharedSubText, "BOTTOMLEFT", 0, -10)
-meleeLabel:SetText("Choose spell (type spell ID or name):")
+meleeLabel:SetText(L["Choose spell (type spell ID or name):"])
 panel.meleeSpellChooseLabel = meleeLabel
 
 local meleeInput = CreateFrame("EditBox", "MSUF_Gameplay_MeleeSpellInput", content, "InputBoxTemplate")
@@ -3014,22 +3017,22 @@ local MSUF_SkipMeleeFocusLostResolve = false
 -- use a valid class spell for range checking.
 local perClassCB = CreateFrame("CheckButton", "MSUF_Gameplay_MeleeSpellPerClassCheck", content, "InterfaceOptionsCheckButtonTemplate")
 perClassCB:SetPoint("TOPLEFT", meleeInput, "BOTTOMLEFT", 4, -6)
-perClassCB.Text:SetText("Store per class")
+perClassCB.Text:SetText(L["Store per class"])
 panel.meleeSpellPerClassCheck = perClassCB
 
 local perClassHint = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 perClassHint:SetPoint("TOPLEFT", perClassCB, "BOTTOMLEFT", 20, -2)
-perClassHint:SetText("Keeps per character settings.")
+perClassHint:SetText(L["Keeps per character settings."])
 panel.meleeSpellPerClassHint = perClassHint
 
 local meleeSelected = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 meleeSelected:SetPoint("LEFT", meleeInput, "RIGHT", 12, 0)
-meleeSelected:SetText("Selected: (none)")
+meleeSelected:SetText(L["Selected: (none)"])
 panel.meleeSpellSelectedText = meleeSelected
 
 local meleeUsedBy = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 meleeUsedBy:SetPoint("TOPLEFT", meleeSelected, "BOTTOMLEFT", 0, -6)
-meleeUsedBy:SetText("Used by: Crosshair color")
+meleeUsedBy:SetText(L["Used by: Crosshair color"])
 panel.meleeSpellUsedByText = meleeUsedBy
 
 local meleeSharedWarn = content:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
@@ -3128,7 +3131,7 @@ local function UpdateSelectedTextFromDB()
             meleeSelected:SetText(string_format("Selected: ID %d", id))
         end
     else
-        meleeSelected:SetText("Selected: (none)")
+        meleeSelected:SetText(L["Selected: (none)"])
     end
 end
 
@@ -3521,13 +3524,13 @@ end
 
     -- Combat Timer header + separator
     local combatSeparator = _MSUF_Sep(subText, -36)
-    local combatHeader = _MSUF_Header(combatSeparator, "Combat Timer")
+    local combatHeader = _MSUF_Header(combatSeparator, L["Combat Timer"])
 
     -- In-combat timer checkbox
-    local combatTimerCheck = _MSUF_Check("MSUF_Gameplay_CombatTimerCheck", "TOPLEFT", combatHeader, "BOTTOMLEFT", 0, -8, "Enable in-combat timer", "combatTimerCheck", "enableCombatTimer")
+    local combatTimerCheck = _MSUF_Check("MSUF_Gameplay_CombatTimerCheck", "TOPLEFT", combatHeader, "BOTTOMLEFT", 0, -8, L["Enable in-combat timer"], "combatTimerCheck", "enableCombatTimer")
 
     -- Combat Timer anchor dropdown (None / Player / Target / Focus)
-    local combatTimerAnchorLabel = _MSUF_Label("GameFontNormal", "LEFT", combatTimerCheck, "RIGHT", 220, 0, "Anchor", "combatTimerAnchorLabel")
+    local combatTimerAnchorLabel = _MSUF_Label("GameFontNormal", "LEFT", combatTimerCheck, "RIGHT", 220, 0, L["Anchor"], "combatTimerAnchorLabel")
     local combatTimerAnchorDD = _MSUF_Dropdown("MSUF_Gameplay_CombatTimerAnchorDropDown", "LEFT", combatTimerAnchorLabel, "RIGHT", 6, -2, 120, "combatTimerAnchorDropdown")
 
     local function _CombatTimerAnchor_Validate(v)
@@ -3598,9 +3601,9 @@ end
 
             local items = {
                 {"none",  "None"},
-                {"player", "Player"},
-                {"target", "Target"},
-                {"focus",  "Focus"},
+                {"player", L["Player"]},
+                {"target", L["Target"]},
+                {"focus",  L["Focus"]},
             }
 
             for i = 1, #items do
@@ -3627,14 +3630,14 @@ end
     end
 
     -- Combat Timer size slider
-    local combatSlider = _MSUF_Slider("MSUF_Gameplay_CombatFontSizeSlider", "TOPLEFT", combatTimerCheck, "BOTTOMLEFT", 0, -24, 220, 10, 64, 1, "10 px", "64 px", "Timer size", "combatFontSizeSlider", "combatFontSize",
+    local combatSlider = _MSUF_Slider("MSUF_Gameplay_CombatFontSizeSlider", "TOPLEFT", combatTimerCheck, "BOTTOMLEFT", 0, -24, 220, 10, 64, 1, "10 px", "64 px", L["Timer size"], "combatFontSizeSlider", "combatFontSize",
         function(v) return math.floor(v + 0.5) end,
         function() ApplyFontToCounter() end,
         false
     )
 
     -- Combat Timer lock checkbox
-    local combatLock = _MSUF_Check("MSUF_Gameplay_LockCombatTimerCheck", "LEFT", combatSlider, "RIGHT", 40, 0, "Lock position", "lockCombatTimerCheck", "lockCombatTimer",
+    local combatLock = _MSUF_Check("MSUF_Gameplay_LockCombatTimerCheck", "LEFT", combatSlider, "RIGHT", 40, 0, L["Lock position"], "lockCombatTimerCheck", "lockCombatTimer",
         function()
             ApplyLockState()
         end
@@ -3644,7 +3647,7 @@ end
     -- ON  = timer never steals clicks; unlock + hold ALT to drag.
     -- OFF = timer is draggable normally while unlocked.
     local combatClickThrough = _MSUF_Check("MSUF_Gameplay_CombatTimerClickThroughCheck", "TOPLEFT", combatLock, "BOTTOMLEFT", 0, -8,
-        "Click-through (ALT to drag when unlocked)",
+        L["Click-through (ALT to drag when unlocked)"],
         "combatTimerClickThroughCheck", "combatTimerClickThrough",
         function()
             ApplyLockState()
@@ -3652,7 +3655,7 @@ end
     )
 
     -- Precise position sliders (offset from chosen anchor)
-    local combatPosLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", combatSlider, "BOTTOMLEFT", 0, -20, "Timer position (offset)", "combatTimerPosLabel")
+    local combatPosLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", combatSlider, "BOTTOMLEFT", 0, -20, L["Timer position (offset)"], "combatTimerPosLabel")
 
     local combatOffsetXSlider = _MSUF_Slider("MSUF_Gameplay_CombatTimerOffsetXSlider", "TOPLEFT", combatPosLabel, "BOTTOMLEFT", 0, -12, 240, -800, 800, 1, "-800", "800", "X: 0",
         "combatTimerOffsetXSlider", "combatOffsetX",
@@ -3682,16 +3685,16 @@ end
 
     -- Combat Enter/Leave header + separator
     local combatStateSeparator = _MSUF_Sep(combatOffsetYSlider, -24)
-    local combatStateHeader = _MSUF_Header(combatStateSeparator, "Combat Enter/Leave")
+    local combatStateHeader = _MSUF_Header(combatStateSeparator, L["Combat Enter/Leave"])
 
     -- Combat state text checkbox
-    local combatStateCheck = _MSUF_Check("MSUF_Gameplay_CombatStateCheck", "TOPLEFT", combatStateHeader, "BOTTOMLEFT", 0, -8, "Show combat enter/leave text", "combatStateCheck", "enableCombatStateText")
+    local combatStateCheck = _MSUF_Check("MSUF_Gameplay_CombatStateCheck", "TOPLEFT", combatStateHeader, "BOTTOMLEFT", 0, -8, L["Show combat enter/leave text"], "combatStateCheck", "enableCombatStateText")
 
     -- Custom texts (enter/leave)
-    local combatStateEnterLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", combatStateCheck, "BOTTOMLEFT", 0, -12, "Enter text", "combatStateEnterLabel")
+    local combatStateEnterLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", combatStateCheck, "BOTTOMLEFT", 0, -12, L["Enter text"], "combatStateEnterLabel")
     local combatStateEnterInput = _MSUF_EditBox("MSUF_Gameplay_CombatStateEnterInput", "TOPLEFT", combatStateEnterLabel, "BOTTOMLEFT", 0, -6, 220, 20, "combatStateEnterInput")
 
-    local combatStateLeaveLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", combatStateEnterInput, "BOTTOMLEFT", 0, -12, "Leave text", "combatStateLeaveLabel")
+    local combatStateLeaveLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", combatStateEnterInput, "BOTTOMLEFT", 0, -12, L["Leave text"], "combatStateLeaveLabel")
     local combatStateLeaveInput = _MSUF_EditBox("MSUF_Gameplay_CombatStateLeaveInput", "TOPLEFT", combatStateLeaveLabel, "BOTTOMLEFT", 0, -6, 220, 20, "combatStateLeaveInput")
 
     local function CommitCombatStateTexts()
@@ -3740,28 +3743,28 @@ end
     end)
 
     -- Combat Enter/Leave text size slider (shares range with combat timer)
-    local combatStateSlider = _MSUF_Slider("MSUF_Gameplay_CombatStateFontSizeSlider", "TOPLEFT", combatStateLeaveInput, "BOTTOMLEFT", 0, -24, 220, 10, 64, 1, "10 px", "64 px", "Text size", "combatStateFontSizeSlider", "combatStateFontSize",
+    local combatStateSlider = _MSUF_Slider("MSUF_Gameplay_CombatStateFontSizeSlider", "TOPLEFT", combatStateLeaveInput, "BOTTOMLEFT", 0, -24, 220, 10, 64, 1, "10 px", "64 px", L["Text size"], "combatStateFontSizeSlider", "combatStateFontSize",
         function(v) return math.floor(v + 0.5) end,
         function() ApplyFontToCounter() end,
         false
     )
 
     -- Combat Enter/Leave lock checkbox (shares lock with combat timer)
-    local combatStateLock = _MSUF_Check("MSUF_Gameplay_CombatStateLockCheck", "LEFT", combatStateLeaveInput, "RIGHT", 80, 0, "Lock position", "lockCombatStateCheck", "lockCombatState",
+    local combatStateLock = _MSUF_Check("MSUF_Gameplay_CombatStateLockCheck", "LEFT", combatStateLeaveInput, "RIGHT", 80, 0, L["Lock position"], "lockCombatStateCheck", "lockCombatState",
         function()
             ApplyLockState()
         end
     )
 
     -- Duration slider for combat enter/leave text
-    local combatStateDurationSlider = _MSUF_Slider("MSUF_Gameplay_CombatStateDurationSlider", "LEFT", combatStateEnterInput, "RIGHT", 80, 0, 160, 0.5, 5.0, 0.5, "Short", "Long", "Duration (s)", "combatStateDurationSlider", "combatStateDuration",
+    local combatStateDurationSlider = _MSUF_Slider("MSUF_Gameplay_CombatStateDurationSlider", "LEFT", combatStateEnterInput, "RIGHT", 80, 0, 160, 0.5, 5.0, 0.5, "Short", "Long", L["Duration (s)"], "combatStateDurationSlider", "combatStateDuration",
         function(v) return math.floor(v * 10 + 0.5) / 10 end,
         nil,
         false
     )
 
     -- Reset button next to Duration (restore default 1.5s)
-    local combatStateDurationReset = _MSUF_Button("MSUF_Gameplay_CombatStateDurationReset", "LEFT", combatStateSlider, "RIGHT", 40, 0, 60, 20, "Reset", "combatStateDurationResetButton")
+    local combatStateDurationReset = _MSUF_Button("MSUF_Gameplay_CombatStateDurationReset", "LEFT", combatStateSlider, "RIGHT", 40, 0, 60, 20, L["Reset"], "combatStateDurationResetButton")
     combatStateDurationReset:SetScript("OnClick", function()
         local g = EnsureGameplayDefaults()
         g.combatStateDuration = 1.5
@@ -3775,7 +3778,7 @@ end
 
     -- Class-specific toggles header + separator
     local classSpecSeparator = _MSUF_Sep(combatStateSlider, -24)
-    local classSpecHeader = _MSUF_Header(classSpecSeparator, "Class-specific toggles")
+    local classSpecHeader = _MSUF_Header(classSpecSeparator, L["Class-specific toggles"])
 
     -- Shaman: Player Totem tracker (player-only)
     local _isShaman = false
@@ -3791,17 +3794,17 @@ end
     local _totemsRightBottom = nil
 
     if _isShaman then
-        local totemsTitle = _MSUF_Label("GameFontNormal", "TOPLEFT", classSpecHeader, "BOTTOMLEFT", 0, -10, "Shaman: Totem tracker", "playerTotemsTitle")
+        local totemsTitle = _MSUF_Label("GameFontNormal", "TOPLEFT", classSpecHeader, "BOTTOMLEFT", 0, -10, L["Shaman: Totem tracker"], "playerTotemsTitle")
         panel.playerTotemsTitle = totemsTitle
 
-        local totemsSub = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", totemsTitle, "BOTTOMLEFT", 0, -2, "Player-only. Secret-safe in combat.", "playerTotemsSubText")
+        local totemsSub = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", totemsTitle, "BOTTOMLEFT", 0, -2, L["Player-only. Secret-safe in combat."], "playerTotemsSubText")
 
-        local totemsDismissHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", totemsSub, "BOTTOMLEFT", 0, -2, "Note: Right-click to dismiss totems is protected by Blizzard (secure) and not supported yet.", "playerTotemsDismissHint")
+        local totemsDismissHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", totemsSub, "BOTTOMLEFT", 0, -2, L["Note: Right-click to dismiss totems is protected by Blizzard (secure) and not supported yet."], "playerTotemsDismissHint")
         panel.playerTotemsDismissHint = totemsDismissHint
 
         panel.playerTotemsSubText = totemsSub
 
-        local totemsCheck = _MSUF_Check("MSUF_Gameplay_PlayerTotemsCheck", "TOPLEFT", totemsDismissHint, "BOTTOMLEFT", 0, -8, "Enable Totem tracker", "playerTotemsCheck", "enablePlayerTotems",
+        local totemsCheck = _MSUF_Check("MSUF_Gameplay_PlayerTotemsCheck", "TOPLEFT", totemsDismissHint, "BOTTOMLEFT", 0, -8, L["Enable Totem tracker"], "playerTotemsCheck", "enablePlayerTotems",
             function()
                 if ns and ns.MSUF_RequestGameplayApply then
                     ns.MSUF_RequestGameplayApply()
@@ -3815,11 +3818,11 @@ end
         local function _RefreshTotemsPreviewButton()
             if panel and panel.playerTotemsPreviewButton and panel.playerTotemsPreviewButton.SetText then
                 local active = (ns and ns.MSUF_PlayerTotems_IsPreviewActive and ns.MSUF_PlayerTotems_IsPreviewActive()) and true or false
-                panel.playerTotemsPreviewButton:SetText(active and "Stop preview" or "Preview")
+                panel.playerTotemsPreviewButton:SetText(active and L["Stop preview"] or L["Preview"])
             end
         end
 
-        local totemsShowText = _MSUF_Check("MSUF_Gameplay_PlayerTotemsShowTextCheck", "TOPLEFT", totemsCheck, "BOTTOMLEFT", 0, -8, "Show cooldown text", "playerTotemsShowTextCheck", "playerTotemsShowText",
+        local totemsShowText = _MSUF_Check("MSUF_Gameplay_PlayerTotemsShowTextCheck", "TOPLEFT", totemsCheck, "BOTTOMLEFT", 0, -8, L["Show cooldown text"], "playerTotemsShowTextCheck", "playerTotemsShowText",
             function()
                 if ns and ns.MSUF_RequestGameplayApply then
                     ns.MSUF_RequestGameplayApply()
@@ -3830,7 +3833,7 @@ end
             end
         )
 
-        local totemsScaleText = _MSUF_Check("MSUF_Gameplay_PlayerTotemsScaleTextCheck", "TOPLEFT", totemsShowText, "BOTTOMLEFT", 0, -8, "Scale text by icon size", "playerTotemsScaleByIconCheck", "playerTotemsScaleTextByIconSize",
+        local totemsScaleText = _MSUF_Check("MSUF_Gameplay_PlayerTotemsScaleTextCheck", "TOPLEFT", totemsShowText, "BOTTOMLEFT", 0, -8, L["Scale text by icon size"], "playerTotemsScaleByIconCheck", "playerTotemsScaleTextByIconSize",
             function()
                 if ns and ns.MSUF_RequestGameplayApply then
                     ns.MSUF_RequestGameplayApply()
@@ -3843,7 +3846,7 @@ end
 
         -- Preview button: keep it in the left column under the toggles (cleaner layout).
         -- Preview is Shaman-only and works even when the feature toggle is off (positioning).
-        local totemsPreviewBtn = _MSUF_Button("MSUF_Gameplay_PlayerTotemsPreviewButton", "TOPLEFT", totemsScaleText, "BOTTOMLEFT", 0, -12, 140, 22, "Preview", "playerTotemsPreviewButton")
+        local totemsPreviewBtn = _MSUF_Button("MSUF_Gameplay_PlayerTotemsPreviewButton", "TOPLEFT", totemsScaleText, "BOTTOMLEFT", 0, -12, 140, 22, L["Preview"], "playerTotemsPreviewButton")
         totemsPreviewBtn:SetScript("OnClick", function()
             if ns and ns.MSUF_PlayerTotems_TogglePreview then
                 ns.MSUF_PlayerTotems_TogglePreview()
@@ -3854,7 +3857,7 @@ end
 
         
 -- Tip: positioning workflow
-local totemsDragHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", totemsPreviewBtn, "BOTTOMLEFT", 0, -4, "Tip: Move the preview via mousedrag", "playerTotemsDragHint")
+local totemsDragHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", totemsPreviewBtn, "BOTTOMLEFT", 0, -4, L["Tip: Move the preview via mousedrag"], "playerTotemsDragHint")
 panel.playerTotemsDragHint = totemsDragHint
 
 _totemsLeftBottom = totemsDragHint
@@ -3862,7 +3865,7 @@ _totemsLeftBottom = totemsDragHint
 	        -- Right column for layout/size controls (keeps the left side clean, avoids clipping)
 	        local _totemsRightX = 300
 
-	        local totemsIconSize = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsIconSizeSlider", "TOPLEFT", totemsCheck, "TOPLEFT", _totemsRightX, -2, 240, 8, 64, 1, "Small", "Big", "Icon size", "playerTotemsIconSizeSlider", "playerTotemsIconSize",
+	        local totemsIconSize = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsIconSizeSlider", "TOPLEFT", totemsCheck, "TOPLEFT", _totemsRightX, -2, 240, 8, 64, 1, "Small", "Big", L["Icon size"], "playerTotemsIconSizeSlider", "playerTotemsIconSize",
             function(v) return math.floor((v or 0) + 0.5) end,
             function()
                 if ns and ns.MSUF_RequestGameplayApply then ns.MSUF_RequestGameplayApply() end
@@ -3870,31 +3873,31 @@ _totemsLeftBottom = totemsDragHint
             true
         )
 
-        local totemsSpacing = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsSpacingSlider", "TOPLEFT", totemsIconSize, "BOTTOMLEFT", 0, -18, 240, 0, 20, 1, "Tight", "Wide", "Spacing", "playerTotemsSpacingSlider", "playerTotemsSpacing",
+        local totemsSpacing = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsSpacingSlider", "TOPLEFT", totemsIconSize, "BOTTOMLEFT", 0, -18, 240, 0, 20, 1, "Tight", "Wide", L["Spacing"], "playerTotemsSpacingSlider", "playerTotemsSpacing",
             function(v) return math.floor((v or 0) + 0.5) end,
             function() if ns and ns.MSUF_RequestGameplayApply then ns.MSUF_RequestGameplayApply() end end,
             true
         )
 
-        local totemsOffsetX = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsOffsetXSlider", "TOPLEFT", totemsSpacing, "BOTTOMLEFT", 0, -18, 240, -200, 200, 1, "Left", "Right", "X offset", "playerTotemsOffsetXSlider", "playerTotemsOffsetX",
+        local totemsOffsetX = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsOffsetXSlider", "TOPLEFT", totemsSpacing, "BOTTOMLEFT", 0, -18, 240, -200, 200, 1, "Left", "Right", L["X offset"], "playerTotemsOffsetXSlider", "playerTotemsOffsetX",
             function(v) return math.floor((v or 0) + 0.5) end,
             function() if ns and ns.MSUF_RequestGameplayApply then ns.MSUF_RequestGameplayApply() end end,
             true
         )
 
-        local totemsOffsetY = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsOffsetYSlider", "TOPLEFT", totemsOffsetX, "BOTTOMLEFT", 0, -18, 240, -200, 200, 1, "Down", "Up", "Y offset", "playerTotemsOffsetYSlider", "playerTotemsOffsetY",
+        local totemsOffsetY = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsOffsetYSlider", "TOPLEFT", totemsOffsetX, "BOTTOMLEFT", 0, -18, 240, -200, 200, 1, "Down", "Up", L["Y offset"], "playerTotemsOffsetYSlider", "playerTotemsOffsetY",
             function(v) return math.floor((v or 0) + 0.5) end,
             function() if ns and ns.MSUF_RequestGameplayApply then ns.MSUF_RequestGameplayApply() end end,
             true
         )
 
-        local totemsFontSize = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsFontSizeSlider", "TOPLEFT", totemsOffsetY, "BOTTOMLEFT", 0, -18, 240, 8, 64, 1, "Small", "Big", "Font size", "playerTotemsFontSizeSlider", "playerTotemsFontSize",
+        local totemsFontSize = _MSUF_Slider("MSUF_Gameplay_PlayerTotemsFontSizeSlider", "TOPLEFT", totemsOffsetY, "BOTTOMLEFT", 0, -18, 240, 8, 64, 1, "Small", "Big", L["Font size"], "playerTotemsFontSizeSlider", "playerTotemsFontSize",
             function(v) return math.floor((v or 0) + 0.5) end,
             function() if ns and ns.MSUF_RequestGameplayApply then ns.MSUF_RequestGameplayApply() end end,
             true
         )
 
-        local totemsLayoutLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", totemsFontSize, "BOTTOMLEFT", 0, -12, "Layout", "playerTotemsLayoutLabel")
+        local totemsLayoutLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", totemsFontSize, "BOTTOMLEFT", 0, -12, L["Layout"], "playerTotemsLayoutLabel")
         panel.playerTotemsLayoutLabel = totemsLayoutLabel
 
         local anchorPoints = {"TOPLEFT","TOP","TOPRIGHT","LEFT","CENTER","RIGHT","BOTTOMLEFT","BOTTOM","BOTTOMRIGHT"}
@@ -3988,7 +3991,7 @@ _totemsLeftBottom = totemsDragHint
         end)
         panel.playerTotemsAnchorToButton = anchorToBtn
 
-	        local resetTotemsBtn = _MSUF_Button("MSUF_Gameplay_PlayerTotemsResetBtn", "TOPLEFT", anchorToBtn, "BOTTOMLEFT", 0, -6, 240, 20, "Reset Totem tracker layout", "playerTotemsResetButton", function()
+	        local resetTotemsBtn = _MSUF_Button("MSUF_Gameplay_PlayerTotemsResetBtn", "TOPLEFT", anchorToBtn, "BOTTOMLEFT", 0, -6, 240, 20, L["Reset Totem tracker layout"], "playerTotemsResetButton", function()
             local g = MSUF_DB and MSUF_DB.gameplay
             if not g then return end
             g.playerTotemsShowText = true
@@ -4011,7 +4014,7 @@ _totemsLeftBottom = totemsDragHint
 
         _classSpecAnchorRef = resetTotemsBtn
     else
-        local shamanHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", classSpecHeader, "BOTTOMLEFT", 0, -10, "(Totem tracker is Shaman-only)", "playerTotemsNotShamanHint")
+        local shamanHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", classSpecHeader, "BOTTOMLEFT", 0, -10, L["(Totem tracker is Shaman-only)"], "playerTotemsNotShamanHint")
         panel.playerTotemsNotShamanHint = shamanHint
         _classSpecAnchorRef = shamanHint
     end
@@ -4032,9 +4035,9 @@ _totemsLeftBottom = totemsDragHint
         _rogueSep:SetPoint("TOPRIGHT", _rogueAnchorRef, "BOTTOMRIGHT", 0, -18)
     end
 
-    local rogueTitle = _MSUF_Label("GameFontNormal", "TOPLEFT", _rogueSep, "BOTTOMLEFT", 0, -12, "Rogue: First Dance tracker", "firstDanceTitle")
-    local rogueSub = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", rogueTitle, "BOTTOMLEFT", 0, -2, "Optional helper. Shows a 6s timer after leaving combat.", "firstDanceSubText")
-    local firstDanceCheck = _MSUF_Check("MSUF_Gameplay_FirstDanceCheck", "TOPLEFT", rogueSub, "BOTTOMLEFT", 0, -10, "Track 'The First Dance' (6s after leaving combat)", "firstDanceCheck", "enableFirstDanceTimer")
+    local rogueTitle = _MSUF_Label("GameFontNormal", "TOPLEFT", _rogueSep, "BOTTOMLEFT", 0, -12, L["Rogue: First Dance tracker"], "firstDanceTitle")
+    local rogueSub = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", rogueTitle, "BOTTOMLEFT", 0, -2, L["Optional helper. Shows a 6s timer after leaving combat."], "firstDanceSubText")
+    local firstDanceCheck = _MSUF_Check("MSUF_Gameplay_FirstDanceCheck", "TOPLEFT", rogueSub, "BOTTOMLEFT", 0, -10, L["Track 'The First Dance' (6s after leaving combat)"], "firstDanceCheck", "enableFirstDanceTimer")
     if not _isRogue then
         firstDanceCheck:SetEnabled(false)
     end
@@ -4043,19 +4046,19 @@ _totemsLeftBottom = totemsDragHint
 
     local _classSpecBottom = firstDanceCheck
     local crosshairSeparator = _MSUF_Sep(_classSpecBottom, -20)
-    local crosshairHeader = _MSUF_Header(crosshairSeparator, "Combat crosshair")
+    local crosshairHeader = _MSUF_Header(crosshairSeparator, L["Combat crosshair"])
 
     -- Generic combat crosshair (all classes)
-    local combatCrosshairCheck = _MSUF_Check("MSUF_Gameplay_CombatCrosshairCheck", "TOPLEFT", crosshairHeader, "BOTTOMLEFT", 0, -8, "Show green combat crosshair under player (in combat)", "combatCrosshairCheck", "enableCombatCrosshair",
+    local combatCrosshairCheck = _MSUF_Check("MSUF_Gameplay_CombatCrosshairCheck", "TOPLEFT", crosshairHeader, "BOTTOMLEFT", 0, -8, L["Show green combat crosshair under player (in combat)"], "combatCrosshairCheck", "enableCombatCrosshair",
         function() if panel and panel.MSUF_UpdateCrosshairPreview then panel.MSUF_UpdateCrosshairPreview() end end
     )
 
     -- Combat crosshair: melee range coloring (uses the shared melee spell selection)
-    local crosshairRangeColorCheck = _MSUF_Check("MSUF_Gameplay_CrosshairRangeColorCheck", "TOPLEFT", combatCrosshairCheck, "BOTTOMLEFT", 0, -8, "Crosshair: color by melee range to target (green=in range, red=out)", "crosshairRangeColorCheck", "enableCombatCrosshairMeleeRangeColor",
+    local crosshairRangeColorCheck = _MSUF_Check("MSUF_Gameplay_CrosshairRangeColorCheck", "TOPLEFT", combatCrosshairCheck, "BOTTOMLEFT", 0, -8, L["Crosshair: color by melee range to target (green=in range, red=out)"], "crosshairRangeColorCheck", "enableCombatCrosshairMeleeRangeColor",
         function() if panel and panel.MSUF_UpdateCrosshairPreview then panel.MSUF_UpdateCrosshairPreview() end end
     )
 
-    local crosshairRangeHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", crosshairRangeColorCheck, "BOTTOMLEFT", 24, -2, "Uses the spell selected below.", "crosshairRangeHintText")
+    local crosshairRangeHint = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", crosshairRangeColorCheck, "BOTTOMLEFT", 24, -2, L["Uses the spell selected below."], "crosshairRangeHintText")
 
     local crosshairRangeWarn = _MSUF_Label("GameFontNormalSmall", "TOPLEFT", crosshairRangeHint, "BOTTOMLEFT", 0, -2, "|cffff8800No melee range spell selected â€” Crosshair will not work.|r", "crosshairRangeWarnText")
     crosshairRangeWarn:Hide()
@@ -4109,7 +4112,7 @@ _totemsLeftBottom = totemsDragHint
 
     local previewTitle = crosshairPreview:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     previewTitle:SetPoint("TOPLEFT", crosshairPreview, "TOPLEFT", 8, -6)
-    previewTitle:SetText("Preview")
+    previewTitle:SetText(L["Preview"])
 
     local previewBox = CreateFrame("Frame", nil, crosshairPreview)
     previewBox:SetPoint("TOPLEFT", crosshairPreview, "TOPLEFT", 8, -20)
@@ -4223,7 +4226,7 @@ _totemsLeftBottom = totemsDragHint
     panel.MSUF_UpdateCrosshairPreview = UpdateCrosshairPreview
 
     -- Combat crosshair thickness slider
-    local crosshairThicknessLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", meleeSelected or (meleeSharedWarn or crosshairRangeWarn), "BOTTOMLEFT", 0, -24, "Crosshair thickness", "crosshairThicknessLabel")
+    local crosshairThicknessLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", meleeSelected or (meleeSharedWarn or crosshairRangeWarn), "BOTTOMLEFT", 0, -24, L["Crosshair thickness"], "crosshairThicknessLabel")
 
     local crosshairThicknessSlider = _MSUF_Slider("MSUF_Gameplay_CrosshairThicknessSlider", "TOPLEFT", crosshairThicknessLabel, "BOTTOMLEFT", 0, -12, 240, 1, 10, 1, "1 px", "10 px", "2 px", "crosshairThicknessSlider", "crosshairThickness",
         function(v) return math.floor(v + 0.5) end,
@@ -4241,7 +4244,7 @@ _totemsLeftBottom = totemsDragHint
     end
 
     -- Combat crosshair size slider
-    local crosshairSizeLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", crosshairThicknessSlider, "BOTTOMLEFT", 0, -24, "Crosshair size", "crosshairSizeLabel")
+    local crosshairSizeLabel = _MSUF_Label("GameFontHighlight", "TOPLEFT", crosshairThicknessSlider, "BOTTOMLEFT", 0, -24, L["Crosshair size"], "crosshairSizeLabel")
 
     local crosshairSizeSlider = _MSUF_Slider("MSUF_Gameplay_CrosshairSizeSlider", "TOPLEFT", crosshairSizeLabel, "BOTTOMLEFT", 0, -14, 240, 20, 80, 2, "20 px", "80 px", "40 px", "crosshairSizeSlider", "crosshairSize",
         function(v)
@@ -4430,9 +4433,9 @@ _totemsLeftBottom = totemsDragHint
                 v = "none"
             end
             local txt
-            if v == "player" then txt = "Player"
-            elseif v == "target" then txt = "Target"
-            elseif v == "focus" then txt = "Focus"
+            if v == "player" then txt = L["Player"]
+            elseif v == "target" then txt = L["Target"]
+            elseif v == "focus" then txt = L["Focus"]
             else txt = "None" end
             if UIDropDownMenu_SetSelectedValue then UIDropDownMenu_SetSelectedValue(self.combatTimerAnchorDropdown, v) end
             if UIDropDownMenu_SetText then UIDropDownMenu_SetText(self.combatTimerAnchorDropdown, txt) end

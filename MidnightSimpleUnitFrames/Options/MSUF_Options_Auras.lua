@@ -522,21 +522,21 @@ local function CreateDropdown(parent, label, x, y, getter, setter)
 	        -- radio style (default): no isNotRadio
 	        UIDropDownMenu_AddButton(info)
 	     end
-	    AddItem("Grow Right", "RIGHT")
-	    AddItem("Grow Left", "LEFT")
-	    AddItem("Vertical Up", "UP")
-	    AddItem("Vertical Down", "DOWN")
+	    AddItem(L["Grow Right"], "RIGHT")
+	    AddItem(L["Grow Left"], "LEFT")
+	    AddItem(L["Vertical Up"], "UP")
+	    AddItem(L["Vertical Down"], "DOWN")
 	 end)
     dd:SetScript("OnShow", function()
         local v = getter() or "RIGHT"
         UIDropDownMenu_SetSelectedValue(dd, v)
-        local txt = "Grow Right"
+        local txt = L["Grow Right"]
         if v == "LEFT" then
-            txt = "Grow Left"
+            txt = L["Grow Left"]
         elseif v == "UP" then
-            txt = "Vertical Up"
+            txt = L["Vertical Up"]
         elseif v == "DOWN" then
-            txt = "Vertical Down"
+            txt = L["Vertical Down"]
         end
         UIDropDownMenu_SetText(dd, txt)
      end)
@@ -572,16 +572,16 @@ local function CreateLayoutDropdown(parent, x, y, getter, setter)
 	        end
 	        UIDropDownMenu_AddButton(info)
 	     end
-	    AddItem("Separate rows", "SEPARATE")
-	    AddItem("Single row (Mixed)", "SINGLE")
+	    AddItem(L["Separate rows"], "SEPARATE")
+	    AddItem(L["Single row (Mixed)"], "SINGLE")
      end)
 	dd:SetScript("OnShow", function()
 	    local v = getter() or "SEPARATE"
 	    UIDropDownMenu_SetSelectedValue(dd, v)
 	    if v == "SINGLE" then
-	        UIDropDownMenu_SetText(dd, "Single row (Mixed)")
+	        UIDropDownMenu_SetText(dd, L["Single row (Mixed)"])
 	    else
-	        UIDropDownMenu_SetText(dd, "Separate rows")
+	        UIDropDownMenu_SetText(dd, L["Separate rows"])
 	    end
 	    if parent and parent._msufA2_OnLayoutModeChanged then
 	        pcall(parent._msufA2_OnLayoutModeChanged)
@@ -616,16 +616,16 @@ local function CreateRowWrapDropdown(parent, x, y, getter, setter)
             end
             UIDropDownMenu_AddButton(info)
          end
-        AddItem("2nd row down", "DOWN")
-        AddItem("2nd row up", "UP")
+        AddItem(L["2nd row down"], "DOWN")
+        AddItem(L["2nd row up"], "UP")
      end)
     dd:SetScript("OnShow", function()
         local v = getter() or "DOWN"
         UIDropDownMenu_SetSelectedValue(dd, v)
         if v == "UP" then
-            UIDropDownMenu_SetText(dd, "2nd row up")
+            UIDropDownMenu_SetText(dd, L["2nd row up"])
         else
-            UIDropDownMenu_SetText(dd, "2nd row down")
+            UIDropDownMenu_SetText(dd, L["2nd row down"])
         end
      end)
      return dd
@@ -655,22 +655,22 @@ local function CreateStackAnchorDropdown(parent, x, y, getter, setter)
             end
             UIDropDownMenu_AddButton(info)
          end
-        AddItem("Top Left", "TOPLEFT")
-        AddItem("Top Right", "TOPRIGHT")
-        AddItem("Bottom Left", "BOTTOMLEFT")
-        AddItem("Bottom Right", "BOTTOMRIGHT")
+        AddItem(L["Top Left"], "TOPLEFT")
+        AddItem(L["Top Right"], "TOPRIGHT")
+        AddItem(L["Bottom Left"], "BOTTOMLEFT")
+        AddItem(L["Bottom Right"], "BOTTOMRIGHT")
      end)
     dd:SetScript("OnShow", function()
         local v = getter() or "TOPRIGHT"
         UIDropDownMenu_SetSelectedValue(dd, v)
         if v == "TOPLEFT" then
-            UIDropDownMenu_SetText(dd, "Top Left")
+            UIDropDownMenu_SetText(dd, L["Top Left"])
         elseif v == "BOTTOMLEFT" then
-            UIDropDownMenu_SetText(dd, "Bottom Left")
+            UIDropDownMenu_SetText(dd, L["Bottom Left"])
         elseif v == "BOTTOMRIGHT" then
-            UIDropDownMenu_SetText(dd, "Bottom Right")
+            UIDropDownMenu_SetText(dd, L["Bottom Right"])
         else
-            UIDropDownMenu_SetText(dd, "Top Right")
+            UIDropDownMenu_SetText(dd, L["Top Right"])
         end
      end)
      return dd
@@ -687,8 +687,8 @@ function ns.MSUF_RegisterAurasOptions_Full(parentCategory)
         _G.MSUF_AurasOptionsPanel = panel
     end
     panel.__MSUF_AurasBuilt = true
-    local title = CreateTitle(panel, "Midnight Simple Unit Frames - Auras 2.0")
-    CreateSubText(panel, title, "Auras 2.0: Target / Focus / Boss 1-5.\nDefaults show ALL buffs & debuffs. This menu controls a shared layout for these units.")
+    local title = CreateTitle(panel, L["Midnight Simple Unit Frames - Auras 2.0"])
+    CreateSubText(panel, title, L["Auras 2.0: Target / Focus / Boss 1-5.\nDefaults show ALL buffs & debuffs. This menu controls a shared layout for these units."])
 	-- Top-right convenience button: enter/exit MSUF Edit Mode (MSUF frames only; no Blizzard frame taint).
 	local editBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 	editBtn:SetSize(140, 22)
@@ -716,7 +716,7 @@ function ns.MSUF_RegisterAurasOptions_Full(parentCategory)
 	editBtn:SetScript("OnClick", function()
 		if InCombatLockdown and InCombatLockdown() then
 			if UIErrorsFrame and UIErrorsFrame.AddMessage then
-				UIErrorsFrame:AddMessage("MSUF: Can't toggle Edit Mode in combat.", 1, 0.2, 0.2)
+				UIErrorsFrame:AddMessage(L["MSUF: Can't toggle Edit Mode in combat."], 1, 0.2, 0.2)
 			end
 			 return
 		end
@@ -738,7 +738,7 @@ function ns.MSUF_RegisterAurasOptions_Full(parentCategory)
         GameTooltip:ClearAllPoints()
         GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 12, 0)
 		GameTooltip:SetText(TR("MSUF Edit Mode"), 1, 1, 1)
-		GameTooltip:AddLine("Toggle MSUF Edit Mode (only affects Midnight Simple Unit Frames).", 0.8, 0.8, 0.8, true)
+		GameTooltip:AddLine(L["Toggle MSUF Edit Mode (only affects Midnight Simple Unit Frames)."], 0.8, 0.8, 0.8, true)
 		GameTooltip:Show()
 	 end)
 	editBtn:SetScript("OnLeave", function()  if GameTooltip then GameTooltip:Hide() end  end)
@@ -1345,7 +1345,7 @@ local function UpdateAdvancedEnabled()
     h1:SetPoint("TOPLEFT", leftTop, "TOPLEFT", 12, -10)
     h1:SetText(TR("Auras 2.0"))
     -- Master toggles (top cluster)
-    CreateBoolCheckboxPath(leftTop, "Enable Auras 2.0", 12, -34, A2_DB, "enabled", nil,
+    CreateBoolCheckboxPath(leftTop, L["Enable Auras 2.0"], 12, -34, A2_DB, "enabled", nil,
         "Master toggle. When off, no auras are shown for Target/Focus/Boss.",
         function(on)
             if not on then
@@ -1357,30 +1357,30 @@ local function UpdateAdvancedEnabled()
             A2_RequestApply()
         end)
     -- Filters (master): gates all filter logic (Only-mine/Hide-permanent + Advanced)
-    local cbEnableFilters = CreateBoolCheckboxPath(leftTop, "Enable filters", 200, -34, GetEditingFilters, "enabled", nil,
-        "Master for all filtering for the selected profile (Shared or a per-unit override). When off, no filtering/highlight is applied.")
+    local cbEnableFilters = CreateBoolCheckboxPath(leftTop, L["Enable filters"], 200, -34, GetEditingFilters, "enabled", nil,
+        L["Master for all filtering for the selected profile (Shared or a per-unit override). When off, no filtering/highlight is applied."])
     A2_Track("filters", cbEnableFilters)
     A2_WrapCheckboxAutoOverride(cbEnableFilters, "filters")
     -- Masque skinning (optional)
     -- NOTE: Keep the toggle UI state synced even if Masque loads after MSUF.
     local RefreshMasqueToggleState -- forward-declared so scripts can call it
-    local cbMasque = CreateCheckbox(leftTop, "Enable Masque skinning", 200, -58,
+    local cbMasque = CreateCheckbox(leftTop, L["Enable Masque skinning"], 200, -58,
         function()  local _, s = GetAuras2DB(); return s and s.masqueEnabled end,
         function(v)
             local _, s = GetAuras2DB()
             if s then s.masqueEnabled = (v == true) end
          end,
-        "Skins Auras 2.0 icons with Masque (if installed).\n\nWarning: Highlight borders may look odd with some Masque skins.")
+        L["Skins Auras 2.0 icons with Masque (if installed).\n\nWarning: Highlight borders may look odd with some Masque skins."])
     A2_Track("global", cbMasque)
 
     -- Optional: suppress Masque skin border/backdrop so icons stay borderless.
-    local cbMasqueHideBorder = CreateCheckbox(leftTop, "Hide Masque borders", 200, -82,
+    local cbMasqueHideBorder = CreateCheckbox(leftTop, L["Hide Masque borders"], 200, -82,
         function()  local _, s = GetAuras2DB(); return s and s.masqueHideBorder end,
         function(v)
             local _, s = GetAuras2DB()
             if s then s.masqueHideBorder = (v == true) end
          end,
-        "Hides Masque skin border/backdrop for Auras 2.0 icons (keeps icon + cooldown styling).")
+        L["Hides Masque skin border/backdrop for Auras 2.0 icons (keeps icon + cooldown styling)."])
     A2_Track("global", cbMasqueHideBorder)
     local cbMasqueDefaultTip = cbMasque.tooltipText
     local function MSUF_A2_IsMasqueReadyForToggle()
@@ -1464,15 +1464,15 @@ do
     ddEditFilters:SetPoint("TOPLEFT", leftTop, "TOPLEFT", 452, -42)
     MSUF_FixUIDropDown(ddEditFilters, 160)
     local labelForKey = {
-        shared = "Shared",
-        player = "Player",
-        target = "Target",
-        focus = "Focus",
-        boss1 = "Boss 1",
-        boss2 = "Boss 2",
-        boss3 = "Boss 3",
-        boss4 = "Boss 4",
-        boss5 = "Boss 5",
+        shared = L["Shared"],
+        player = L["Player"],
+        target = L["Target"],
+        focus = L["Focus"],
+        boss1 = L["Boss 1"],
+        boss2 = L["Boss 2"],
+        boss3 = L["Boss 3"],
+        boss4 = L["Boss 4"],
+        boss5 = L["Boss 5"],
     }
     local function ApplyKey(key)
         panel.__msufAuras2_FilterEditKey = key
@@ -1491,28 +1491,28 @@ do
 	            -- radio style (default): no isNotRadio
             UIDropDownMenu_AddButton(info, level)
          end
-        Add("Shared", "shared")
-        Add("Player", "player")
-        Add("Target", "target")
-        Add("Focus", "focus")
-        Add("Boss 1", "boss1")
-        Add("Boss 2", "boss2")
-        Add("Boss 3", "boss3")
-        Add("Boss 4", "boss4")
-        Add("Boss 5", "boss5")
+        Add(L["Shared"], "shared")
+        Add(L["Player"], "player")
+        Add(L["Target"], "target")
+        Add(L["Focus"], "focus")
+        Add(L["Boss 1"], "boss1")
+        Add(L["Boss 2"], "boss2")
+        Add(L["Boss 3"], "boss3")
+        Add(L["Boss 4"], "boss4")
+        Add(L["Boss 5"], "boss5")
      end)
     ddEditFilters:SetScript("OnShow", function(self)
         local key = GetEditingKey()
         UIDropDownMenu_SetText(self, labelForKey[key] or "Shared")
      end)
-    cbOverrideFilters = CreateCheckbox(leftTop, "Override shared filters", 380, -70,
+    cbOverrideFilters = CreateCheckbox(leftTop, L["Override shared filters"], 380, -70,
         function()  return GetOverrideForEditing() end,
         function(v)  SetOverrideForEditing(v)  end,
-        "When off, this unit uses Shared filter settings. When on, it uses its own copy of the filters.")
-    cbOverrideCaps = CreateCheckbox(leftTop, "Override shared caps", 380, -92,
+        L["When off, this unit uses Shared filter settings. When on, it uses its own copy of the filters."])
+    cbOverrideCaps = CreateCheckbox(leftTop, L["Override shared caps"], 380, -92,
         function()  return GetOverrideCapsForEditing() end,
         function(v)  SetOverrideCapsForEditing(v)  end,
-        "When off, this unit uses Shared caps (Max Buffs/Debuffs, Icons per row). When on, it uses its own caps.")
+        L["When off, this unit uses Shared caps (Max Buffs/Debuffs, Icons per row). When on, it uses its own caps."])
     -- Overrides: global summary + reset (good UX)
     -- Layout goals:
     --   Checkbox + Reset sit on the SAME row (no overlap with dropdown)
@@ -1542,7 +1542,7 @@ panel.__msufA2_overrideWarn = overrideWarn
     local function BuildOverrideSummary(active)
         local n = #active
         if n == 0 then
-             return "|cff9aa0a6No overrides active.|r"
+             return L["|cff9aa0a6No overrides active.|r"]
         end
         if n <= 2 then
             return "|cffffffffOverrides:|r " .. table.concat(active, ", ")
@@ -1600,14 +1600,14 @@ panel.__msufA2_overrideWarn = overrideWarn
         GameTooltip:ClearAllPoints()
         GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 12, 0)
         GameTooltip:SetText(TR("Reset overrides"), 1, 1, 1)
-        GameTooltip:AddLine("Turns off Override shared filters and caps for all units and reverts them to Shared.", 0.8, 0.8, 0.8, true)
+        GameTooltip:AddLine(L["Turns off Override shared filters and caps for all units and reverts them to Shared."], 0.8, 0.8, 0.8, true)
         GameTooltip:Show()
      end)
     btnResetOverrides:SetScript("OnLeave", function()
         if GameTooltip then GameTooltip:Hide() end
      end)
 end
-    CreateCheckbox(leftTop, "Preview in Edit Mode", 12, -58,
+    CreateCheckbox(leftTop, L["Preview in Edit Mode"], 12, -58,
         function()  local _, s = GetAuras2DB(); return s and s.showInEditMode end,
         function(v)
             local _, s = GetAuras2DB()
@@ -1621,7 +1621,7 @@ end
                 _G.MSUF_Auras2_OnAnyEditModeChanged(IsEditModeActive())
             end
          end,
-        "When enabled, placeholder auras can be shown while MSUF Edit Mode is active.")
+        L["When enabled, placeholder auras can be shown while MSUF Edit Mode is active."])
     do
         local _oldClick = cbEnableFilters:GetScript("OnClick")
         cbEnableFilters:SetScript("OnClick", function(self)
@@ -1640,10 +1640,10 @@ end
     h2:SetText(TR("Units"))
     -- Compact unit toggles: use MSUF on/off buttons (no checkbox tick coloring).
     -- Keep this row tight so it doesn't collide with the Display section below.
-    CreateBoolToggleButtonPath(leftTop, "Player", 12, -120, 90, 22, A2_DB, "showPlayer", nil, nil, A2_RequestApply)
-    CreateBoolToggleButtonPath(leftTop, "Target", 108, -120, 90, 22, A2_DB, "showTarget", nil, nil, A2_RequestApply)
-    CreateBoolToggleButtonPath(leftTop, "Focus", 204, -120, 90, 22, A2_DB, "showFocus", nil, nil, A2_RequestApply)
-    CreateBoolToggleButtonPath(leftTop, "Boss 1-5", 300, -120, 96, 22, A2_DB, "showBoss", nil, nil, A2_RequestApply)
+    CreateBoolToggleButtonPath(leftTop, L["Player"], 12, -120, 90, 22, A2_DB, "showPlayer")
+    CreateBoolToggleButtonPath(leftTop, L["Target"], 108, -120, 90, 22, A2_DB, "showTarget")
+    CreateBoolToggleButtonPath(leftTop, L["Focus"], 204, -120, 90, 22, A2_DB, "showFocus")
+    CreateBoolToggleButtonPath(leftTop, L["Boss 1-5"], 300, -120, 96, 22, A2_DB, "showBoss")
     -- Display (two-column layout)
     local h3 = leftTop:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     h3:SetPoint("TOPLEFT", leftTop, "TOPLEFT", 12, -156)
@@ -1653,24 +1653,24 @@ end
     local TIP_ADV_INFO = 'Use "Enable filters" in the Auras 2.0 box as the master switch.\n\nInclude toggles are additive (they never hide your normal auras).\nHighlight toggles only change border colors.'
     do
         local displayCB = {}
-        local TIP_SWIPE_STYLE = "When enabled, the cooldown swipe represents elapsed time (darkens as time is lost).\n\nTurn this OFF to keep the default cooldown-style swipe."
+        local TIP_SWIPE_STYLE = L["When enabled, the cooldown swipe represents elapsed time (darkens as time is lost).\n\nTurn this OFF to keep the default cooldown-style swipe."]
         BuildBoolPathCheckboxes(leftTop, {
-            { "Show Buffs", 12, -180, A2_Settings, "showBuffs", nil, nil, "cbShowBuffs" },
-            { "Show Debuffs", 200, -180, A2_Settings, "showDebuffs", nil, nil, "cbShowDebuffs" },
-            { "Highlight own buffs", 12, -228, A2_Settings, "highlightOwnBuffs", nil,
-                "Highlights your own buffs with a border color (visual only; does not filter).", "cbHLOwnBuffs" },
-            { "Highlight own debuffs", 200, -228, A2_Settings, "highlightOwnDebuffs", nil,
-                "Highlights your own debuffs with a border color (visual only; does not filter).", "cbHLOwnDebuffs" },
-            { "Dispel-type borders", 12, -324, A2_Settings, "useDebuffTypeBorders", nil,
-                "Colors aura borders by debuff dispel type (Magic/Curse/Poison/Disease), similar to Blizzard private aura borders.",
+            { L["Show Buffs"], 12, -180, A2_Settings, "showBuffs", nil, nil, "cbShowBuffs" },
+            { L["Show Debuffs"], 200, -180, A2_Settings, "showDebuffs", nil, nil, "cbShowDebuffs" },
+            { L["Highlight own buffs"], 12, -228, A2_Settings, "highlightOwnBuffs", nil,
+                L["Highlights your own buffs with a border color (visual only; does not filter)."], "cbHLOwnBuffs" },
+            { L["Highlight own debuffs"], 200, -228, A2_Settings, "highlightOwnDebuffs", nil,
+                L["Highlights your own debuffs with a border color (visual only; does not filter)."], "cbHLOwnDebuffs" },
+            { L["Dispel-type borders"], 12, -324, A2_Settings, "useDebuffTypeBorders", nil,
+                L["Colors aura borders by debuff dispel type (Magic/Curse/Poison/Disease), similar to Blizzard private aura borders."],
                 "cbDispelTypeBorders" },
-            { "Show cooldown swipe", 12, -252, A2_Settings, "showCooldownSwipe", nil, nil, "cbShowSwipe" },
-            { "Swipe darkens on loss", 12, -300, A2_Settings, "cooldownSwipeDarkenOnLoss", nil, TIP_SWIPE_STYLE, "cbSwipeStyle" },
-            { "Show stack count", 200, -276, A2_Settings, "showStackCount", nil, TIP_SHOW_STACK, "cbShowStackCount" },
-            { "Show cooldown text", 200, -300, A2_Settings, "showCooldownText", nil,
-                "Shows the countdown numbers on aura icons. Disable to hide cooldown numbers (swipe can remain enabled).",
+            { L["Show cooldown swipe"], 12, -252, A2_Settings, "showCooldownSwipe", nil, nil, "cbShowSwipe" },
+            { L["Swipe darkens on loss"], 12, -300, A2_Settings, "cooldownSwipeDarkenOnLoss", nil, TIP_SWIPE_STYLE, "cbSwipeStyle" },
+            { L["Show stack count"], 200, -276, A2_Settings, "showStackCount", nil, TIP_SHOW_STACK, "cbShowStackCount" },
+            { L["Show cooldown text"], 200, -300, A2_Settings, "showCooldownText", nil,
+                L["Shows the countdown numbers on aura icons. Disable to hide cooldown numbers (swipe can remain enabled)."],
                 "cbShowCooldownText" },
-            { "Show tooltip", 12, -276, A2_Settings, "showTooltip", nil, nil, "cbShowTooltip" },
+            { L["Show tooltip"], 12, -276, A2_Settings, "showTooltip", nil, nil, "cbShowTooltip" },
         }, displayCB)
         for _, cb in pairs(displayCB) do
             A2_Track("global", cb)
@@ -1760,20 +1760,20 @@ end
 	local A2_DD_STEP = 24
     -- Caps: restore Max Buffs / Max Debuffs controls (0 = unlimited)
     -- Caps: moved slightly down so the sliders breathe under the tooltip/stack toggles.
-    local maxBuffsSlider = CreateAuras2CompactSlider(leftTop, "Max Buffs", 0, 40, 1, 12, -360, nil, GetMaxBuffs, function(v)  A2_AutoOverrideCapsIfNeeded(); SetMaxBuffs(v)  end)
+    local maxBuffsSlider = CreateAuras2CompactSlider(leftTop, L["Max Buffs"], 0, 40, 1, 12, -360, nil, GetMaxBuffs, function(v)  A2_AutoOverrideCapsIfNeeded(); SetMaxBuffs(v)  end)
     A2_Track("caps", maxBuffsSlider)
     -- Caps sliders manage refresh via A2_SetCapsValue (targeted/coalesced). Avoid double refresh.
     maxBuffsSlider.__MSUF_skipAutoRefresh = true
     MSUF_StyleAuras2CompactSlider(maxBuffsSlider, { leftTitle = true })
     AttachSliderValueBox(maxBuffsSlider, 0, 40, 1, GetMaxBuffs)
-    local maxDebuffsSlider = CreateAuras2CompactSlider(leftTop, "Max Debuffs", 0, 40, 1, 200, -360, nil, GetMaxDebuffs, function(v)  A2_AutoOverrideCapsIfNeeded(); SetMaxDebuffs(v)  end)
+    local maxDebuffsSlider = CreateAuras2CompactSlider(leftTop, L["Max Debuffs"], 0, 40, 1, 200, -360, nil, GetMaxDebuffs, function(v)  A2_AutoOverrideCapsIfNeeded(); SetMaxDebuffs(v)  end)
     A2_Track("caps", maxDebuffsSlider)
     maxDebuffsSlider.__MSUF_skipAutoRefresh = true
     MSUF_StyleAuras2CompactSlider(maxDebuffsSlider, { leftTitle = true })
     AttachSliderValueBox(maxDebuffsSlider, 0, 40, 1, GetMaxDebuffs)
     -- Split-anchor spacing: when buff/debuff blocks are anchored around the unitframe, this controls
     -- how far they are pushed away from the frame edges.
-    local splitSpacingSlider = CreateAuras2CompactSlider(leftTop, "Block spacing", 0, 40, 1, 200, -438, nil, GetSplitSpacing, function(v)  A2_AutoOverrideCapsIfNeeded(); SetSplitSpacing(v)  end)
+    local splitSpacingSlider = CreateAuras2CompactSlider(leftTop, L["Block spacing"], 0, 40, 1, 200, -438, nil, GetSplitSpacing, function(v)  A2_AutoOverrideCapsIfNeeded(); SetSplitSpacing(v)  end)
     A2_Track("caps", splitSpacingSlider)
     splitSpacingSlider.__MSUF_skipAutoRefresh = true
     MSUF_StyleAuras2CompactSlider(splitSpacingSlider, { leftTitle = true })
@@ -1814,8 +1814,8 @@ end
         GameTooltip:ClearAllPoints()
         GameTooltip:SetPoint("TOPLEFT", splitSpacingSlider, "TOPRIGHT", 12, 0)
         GameTooltip:SetText(TR("Block spacing"), 1, 1, 1)
-        GameTooltip:AddLine("Controls how far Buff and Debuff blocks are pushed away from the unitframe when using split anchors.", 0.8, 0.8, 0.8, true)
-        GameTooltip:AddLine("Requires Layout: Separate rows.", 1, 0.82, 0, true)
+        GameTooltip:AddLine(L["Controls how far Buff and Debuff blocks are pushed away from the unitframe when using split anchors."], 0.8, 0.8, 0.8, true)
+        GameTooltip:AddLine(L["Requires Layout: Separate rows."], 1, 0.82, 0, true)
         GameTooltip:Show()
      end
     local function HideAnyTooltip()  if GameTooltip then GameTooltip:Hide() end  end
@@ -1826,21 +1826,21 @@ end
         splitSpacingSlider.__MSUF_valueBox:SetScript("OnLeave", HideAnyTooltip)
     end
     -- Layout row (cleaner): Icons-per-row on the left, Growth dropdown aligned on the right.
-    local perRowSlider = CreateAuras2CompactSlider(leftTop, "Icons per row", 4, 20, 1, 12, -438, nil, GetPerRow, function(v)  A2_AutoOverrideCapsIfNeeded(); SetPerRow(v)  end)
+    local perRowSlider = CreateAuras2CompactSlider(leftTop, L["Icons per row"], 4, 20, 1, 12, -438, nil, GetPerRow, function(v)  A2_AutoOverrideCapsIfNeeded(); SetPerRow(v)  end)
     A2_Track("caps", perRowSlider)
     perRowSlider.__MSUF_skipAutoRefresh = true
     MSUF_StyleAuras2CompactSlider(perRowSlider, { leftTitle = true })
     AttachSliderValueBox(perRowSlider, 4, 20, 1, GetPerRow)
     -- Per-type grow direction (right column)
-    local buffGrowthDD = CreateDropdown(leftTop, "Buff Growth", A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 5) - 12,
+    local buffGrowthDD = CreateDropdown(leftTop, L["Buff Growth"], A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 5) - 12,
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "buffGrowth", A2_GetCapsValue(key, "growth", "RIGHT")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "buffGrowth", v)  end)
     A2_Track("caps", buffGrowthDD)
-    local debuffGrowthDD = CreateDropdown(leftTop, "Debuff Growth", A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 8) - 12,
+    local debuffGrowthDD = CreateDropdown(leftTop, L["Debuff Growth"], A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 8) - 12,
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "debuffGrowth", A2_GetCapsValue(key, "growth", "RIGHT")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "debuffGrowth", v)  end)
     A2_Track("caps", debuffGrowthDD)
-    local privateGrowthCapsDD = CreateDropdown(leftTop, "Private Growth", A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 11) - 12,
+    local privateGrowthCapsDD = CreateDropdown(leftTop, L["Private Growth"], A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 11) - 12,
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "privateGrowth", A2_GetCapsValue(key, "growth", "RIGHT")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "privateGrowth", v)  end)
     A2_Track("caps", privateGrowthCapsDD)
@@ -1869,14 +1869,14 @@ end
     do
         local tTitle = timerBox:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
         tTitle:SetPoint('TOPLEFT', timerBox, 'TOPLEFT', 12, -10)
-        tTitle:SetText('Timer colors')
+        tTitle:SetText(L['Timer colors'])
         local function GetGeneral()
             EnsureDB()
             return (MSUF_DB and MSUF_DB.general) or nil
         end
         -- Blizzard pass-through toggle: Blizzard C++ renders countdown text natively.
-        local cbBlizzardTimer = CreateBoolCheckboxPath(timerBox, 'Use Blizzard timer text (max performance)', 12, -34, A2_Settings, 'useBlizzardTimerText', nil,
-            'When enabled, Blizzard handles countdown numbers natively in C++.\nDisables timer colors but eliminates all periodic timer CPU overhead.\nFont, size and position are still controlled by MSUF.',
+        local cbBlizzardTimer = CreateBoolCheckboxPath(timerBox, L['Use Blizzard timer text (max performance)'], 12, -34, A2_Settings, 'useBlizzardTimerText', nil,
+            L['When enabled, Blizzard handles countdown numbers natively in C++.\nDisables timer colors but eliminates all periodic timer CPU overhead.\nFont, size and position are still controlled by MSUF.'],
             function()
                 if timerBox and timerBox._msufApplyTimerColorsEnabledState then
                     pcall(timerBox._msufApplyTimerColorsEnabledState)
@@ -1886,8 +1886,8 @@ end
              end)
         A2_Track('global', cbBlizzardTimer)
 
-        local cbTimerBuckets = CreateBoolCheckboxPath(timerBox, 'Color aura timers by remaining time', 12, -58, GetGeneral, 'aurasCooldownTextUseBuckets', nil,
-            'When enabled, aura cooldown text uses Safe / Warning / Urgent colors based on remaining time.\nWhen disabled, aura cooldown text always uses the Safe color.',
+        local cbTimerBuckets = CreateBoolCheckboxPath(timerBox, L['Color aura timers by remaining time'], 12, -58, GetGeneral, 'aurasCooldownTextUseBuckets', nil,
+            L['When enabled, aura cooldown text uses Safe / Warning / Urgent colors based on remaining time.\nWhen disabled, aura cooldown text always uses the Safe color.'],
             function()
                 if timerBox and timerBox._msufApplyTimerColorsEnabledState then
                     pcall(timerBox._msufApplyTimerColorsEnabledState)
@@ -2038,13 +2038,13 @@ end
         paH:SetText(TR("Private Auras"))
         local btnPrivateEnable = CreateBoolToggleButtonPath(
             privateBox,
-            "Enabled",
+            L["Enabled"],
             12, -34,
             90, 22,
             A2_Settings,
             "privateAurasEnabled",
             nil,
-            "Master switch for anchoring Blizzard Private Auras to MSUF.")
+            L["Master switch for anchoring Blizzard Private Auras to MSUF."])
         A2_Track("global", btnPrivateEnable)
         BuildBoolPathCheckboxes(privateBox, {
             { "Show (Player)", 12, -64, A2_Settings, "showPrivateAurasPlayer", nil,

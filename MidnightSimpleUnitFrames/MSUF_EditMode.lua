@@ -1,5 +1,20 @@
 local addonName, ns = ...
 ns = ns or {}
+---------
+--------Localization-----
+ns.L = ns.L or (_G and _G.MSUF_L) or {}
+local L = ns.L
+if not getmetatable(L) then
+    setmetatable(L, { __index = function(t, k) return k end })
+end
+local isEn = (ns and ns.LOCALE) == "enUS"
+local function TR(v)
+    if type(v) ~= "string" then return v end
+    if isEn then return v end
+    return L[v] or v
+end
+-------Localization--------
+----------------------------------------
 _G.MSUF_NS = _G.MSUF_NS or ns
 
 -- Forward declarations (needed by early popup helpers)
@@ -583,7 +598,7 @@ function MSUF_EM_AddPopupTitleAndClose(pf, titleText)
 
     local title = pf:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOP", 0, -12)
-    title:SetText(titleText or "MSUF Edit")
+    title:SetText(titleText or L["MSUF Edit"])
     pf.title = title
 
     local closeBtn = (ns and ns.MSUF_EM_UIH and ns.MSUF_EM_UIH.ButtonAt) and ns.MSUF_EM_UIH.ButtonAt(
@@ -1674,17 +1689,17 @@ local UnitFrames = _G.MSUF_UnitFrames or {}
 if not _G.MSUF_GetUnitLabelForKey then
     _G.MSUF_GetUnitLabelForKey = function(key)
         if key == "player" then
-            return "Player"
+            return L["Player"]
         elseif key == "target" then
-            return "Target"
+            return L["Target"]
         elseif key == "targettarget" then
-            return "Target of Target"
+            return L["Target of Target"]
         elseif key == "focus" then
-            return "Focus"
+            return L["Focus"]
         elseif key == "pet" then
-            return "Pet"
+            return L["Pet"]
         elseif key == "boss" then
-            return "Boss"
+            return L["Boss"]
         else
             return key or "Unknown"
         end
@@ -2016,7 +2031,7 @@ local function MSUF_CreateGridFrame()
     local aName = alphaSlider:GetName()
     _G[aName .. "Low"]:SetText("10%")
     _G[aName .. "High"]:SetText("80%")
-    _G[aName .. "Text"]:SetText("Edit Mode Background")
+    _G[aName .. "Text"]:SetText(L["Edit Mode Background"])
 
     alphaSlider:SetScript("OnValueChanged", function(self, value)
         if value < 0.1 then
@@ -2047,7 +2062,7 @@ local function MSUF_CreateGridFrame()
     local gName = gridSlider:GetName()
     _G[gName .. "Low"]:SetText("8")
     _G[gName .. "High"]:SetText("64")
-    _G[gName .. "Text"]:SetText("Grid Size (px)")
+    _G[gName .. "Text"]:SetText(L["Grid Size (px)"])
 
     gridSlider:SetScript("OnValueChanged", function(self, value)
         RebuildGrid(value)
@@ -2059,7 +2074,7 @@ local function MSUF_CreateGridFrame()
 
     -- Always hide the on-frame white arrow buttons in Edit Mode.
 
-    local anchorCheck = ns.MSUF_EM_UIH.TextCheck(f, "MSUF_EditModeAnchorToCooldownCheck", "TOP", gridSlider, "BOTTOM", 0, -12, "Anchor Cooldownmanager")
+    local anchorCheck = ns.MSUF_EM_UIH.TextCheck(f, "MSUF_EditModeAnchorToCooldownCheck", "TOP", gridSlider, "BOTTOM", 0, -12, L["Anchor Cooldownmanager"])
     MSUF_EM_EnsureDB()
     anchorCheck:SetChecked(MSUF_DB and MSUF_DB.general and MSUF_DB.general.anchorToCooldown)
 
@@ -2081,7 +2096,7 @@ local function MSUF_CreateGridFrame()
 
     local anchorNameLabel = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     anchorNameLabel:SetPoint("TOP", anchorCheck, "BOTTOM", 0, -6)
-    anchorNameLabel:SetText("Custom anchor frame name (/fstack)")
+    anchorNameLabel:SetText(L["Custom anchor frame name (/fstack)"])
 
     local anchorNameInput = CreateFrame("EditBox", "MSUF_EditModeAnchorNameInput", f, "InputBoxTemplate")
     anchorNameInput:SetSize(210, 20)
@@ -2114,7 +2129,7 @@ local function MSUF_CreateGridFrame()
         if type(an) == "string" and an ~= "" then
             v = an
         end
-        currentAnchorFS:SetText("Current: " .. tostring(v))
+        currentAnchorFS:SetText(L["Current: "] .. tostring(v))
     end
 
     f._msufUpdateCurrentAnchorDisplay = UpdateCurrentAnchorDisplay
@@ -2231,12 +2246,12 @@ if not f._msufEditUnitSelectorBuilt then
     f._msufEditUnitSelectorBuilt = true
 
     local units = {
-        { key="player",       label="Player" },
-        { key="target",       label="Target" },
-        { key="targettarget", label="ToT" },
-        { key="focus",        label="Focus" },
-        { key="pet",          label="Pet" },
-        { key="boss",         label="Boss" },
+        { key="player",       label=L["Player"] },
+        { key="target",       label=L["Target"] },
+        { key="targettarget", label=L["ToT"] },
+        { key="focus",        label=L["Focus"] },
+        { key="pet",          label=L["Pet"] },
+        { key="boss",         label=L["Boss"] },
     }
 
     local function GetUnitIndex(unitKey)
@@ -2312,7 +2327,7 @@ local function ApplyEnabled(unitKey, enabled)
 
     local label = row:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     label:SetPoint("LEFT", row, "LEFT", 0, 1)
-    label:SetText("Edit Unit:")
+    label:SetText(L["Edit Unit:"])
     f._msufEditUnitLabel = label
 
     local prevBtn = ns.MSUF_EM_UIH.Button(row, nil, 24, 22, "<", "UIPanelButtonTemplate")
@@ -2339,7 +2354,7 @@ local function ApplyEnabled(unitKey, enabled)
         f._msufEditUnitKey = unitKey
 
         local on = IsEnabled(unitKey)
-        toggleBtn:SetText(GetUnitLabel(unitKey) .. ": " .. (on and "ON" or "OFF"))
+        toggleBtn:SetText(GetUnitLabel(unitKey) .. ": " .. (on and L["ON"] or L["OFF"]))
 
         local fs = toggleBtn.GetFontString and toggleBtn:GetFontString()
         if fs then
@@ -2405,7 +2420,7 @@ local exitBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeExitButton", 180, 24, nil
     local _msufActionRowXShift = 0
     exitBtn:ClearAllPoints()
     exitBtn:SetPoint("TOPRIGHT", _msufExitAnchor, "BOTTOMRIGHT", -6 + _msufActionRowXShift, _msufActionRowYOffset)
-    exitBtn:SetText("Exit MSUF Edit Mode")
+    exitBtn:SetText(L["Exit MSUF Edit Mode"])
 
     MSUF_EM_ForceWhiteButtonText(exitBtn)
 if not StaticPopupDialogs then StaticPopupDialogs = {} end
@@ -2429,7 +2444,7 @@ end
 local cancelBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeCancelButton", 140, 22, nil, "UIPanelButtonTemplate")
 cancelBtn:ClearAllPoints()
 cancelBtn:SetPoint("TOP", _msufExitAnchor, "BOTTOM", 0 + _msufActionRowXShift, _msufActionRowYOffset)
-cancelBtn:SetText("Cancel Changes")
+cancelBtn:SetText(L["Cancel Changes"])
 
 MSUF_EM_ForceWhiteButtonText(cancelBtn)
 cancelBtn:SetScript("OnClick", function()
@@ -2543,7 +2558,7 @@ exitBtn:SetScript("OnClick", function()
 local resetBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeResetButton", 140, 22, nil, "UIPanelButtonTemplate")
     resetBtn:ClearAllPoints()
     resetBtn:SetPoint("TOPRIGHT", _msufExitAnchor, "BOTTOMRIGHT", -6 + _msufActionRowXShift, _msufActionRowYOffset)
-    resetBtn:SetText("Reset Frame")
+    resetBtn:SetText(L["Reset Frame"])
 
     -- Exit goes to the right of Reset (Reset takes the old Exit spot)
     exitBtn:ClearAllPoints()
@@ -2582,9 +2597,9 @@ MSUF_EM_ForceWhiteButtonText(resetBtn)
                 fs:SetJustifyH("CENTER")
                 return fs
             end
-            f._msufLayoutHeaders.positioning = MakeHeader("Positioning")
-            f._msufLayoutHeaders.overlay     = MakeHeader("Overlay")
-            f._msufLayoutHeaders.frames      = MakeHeader("Frames")
+            f._msufLayoutHeaders.positioning = MakeHeader(L["Positioning"])
+            f._msufLayoutHeaders.overlay     = MakeHeader(L["Overlay"])
+            f._msufLayoutHeaders.frames      = MakeHeader(L["Frames"])
         end
 
         local posHeader     = f._msufLayoutHeaders.positioning
@@ -2665,7 +2680,7 @@ anchorCheck:SetPoint("LEFT", anchorNameInput, "RIGHT", 10, -1)
         bossPreviewCheck:ClearAllPoints()
         bossPreviewCheck:SetScale(0.9)
         if bossPreviewCheck.text and bossPreviewCheck.text.SetText then
-            bossPreviewCheck.text:SetText("Boss Preview")
+            bossPreviewCheck.text:SetText(L["Boss Preview"])
         end
 
         local unitToggle = f._msufEditUnitToggleBtn
@@ -2687,7 +2702,7 @@ anchorCheck:SetPoint("LEFT", anchorNameInput, "RIGHT", 10, -1)
             auraPreviewCheck:ClearAllPoints()
             auraPreviewCheck:SetScale(0.9)
             if auraPreviewCheck.text and auraPreviewCheck.text.SetText then
-                auraPreviewCheck.text:SetText("Aura Preview")
+                auraPreviewCheck.text:SetText(L["Aura Preview"])
             end
             auraPreviewCheck:SetPoint("BOTTOMLEFT", bossPreviewCheck, "TOPLEFT", 0, 2)
             auraPreviewCheck:Show()
@@ -2760,7 +2775,7 @@ local function MSUF_UpdateEditModeInfo()
         if conf.offsetX ~= x then conf.offsetX = x end
         if conf.offsetY ~= y then conf.offsetY = y end
 
-        textWidget:SetText(string.format("Editing: %s (X: %d, Y: %d)", label, x, y))
+        textWidget:SetText(string.format(L["Editing: %s (X: %d, Y: %d)"], label, x, y))
     end
 
     if MSUF_GridFrame.modeHint then
@@ -2822,7 +2837,7 @@ end
 
 -- Shared popup alignment helpers (Unitframe + Castbar popups)
 -- Fixed label column width + input box size for consistent alignment.
-local MSUF_POPUP_LABEL_W = 88
+local MSUF_POPUP_LABEL_W = 120
 local MSUF_POPUP_BOX_W   = 92
 local MSUF_POPUP_BOX_H   = 20
 
@@ -3098,8 +3113,8 @@ do
 
     UISpec.Unit = UISpec.Unit or {
         copyDropdowns = {
-            size = { labelField="copySizeLabel", dropField="copySizeDrop", text="Copy size settings to:", point="BOTTOMLEFT", x=15, y=66, width=170 },
-            text = { labelField="copyTextLabel", dropField="copyTextDrop", text="Copy text settings to:", point="BOTTOMLEFT", x=15, y=46, width=170 },
+            size = { labelField="copySizeLabel", dropField="copySizeDrop", text=L["Copy size settings to:"], point="BOTTOMLEFT", x=15, y=76, width=170 },
+            text = { labelField="copyTextLabel", dropField="copyTextDrop", text=L["Copy text settings to:"], point="BOTTOMLEFT", x=15, y=46, width=170 },
         },
         footer = {
             ok     = { field="okBtn",     name="$parentOK",     w=70,  h=22, point="BOTTOMRIGHT", rel="BOTTOMRIGHT", x=-10, y=10, text=OKAY },
@@ -3113,8 +3128,8 @@ do
 
     UISpec.Castbar = UISpec.Castbar or {
         copyDropdowns = {
-            size = { labelField="copySizeLabel", dropField="copySizeDrop", text="Copy size settings to:", point="BOTTOMLEFT", x=15, y=66, width=170 },
-            text = { labelField="copyTextLabel", dropField="copyTextDrop", text="Copy text settings to:", point="BOTTOMLEFT", x=15, y=46, width=170 },
+            size = { labelField="copySizeLabel", dropField="copySizeDrop", text=L["Copy size settings to:"], point="BOTTOMLEFT", x=15, y=66, width=170 },
+            text = { labelField="copyTextLabel", dropField="copyTextDrop", text=L["Copy text settings to:"], point="BOTTOMLEFT", x=15, y=46, width=170 },
         },
         footer = {
             ok     = { field="okBtn",     name="$parentOK",     w=70,  h=22, point="BOTTOMRIGHT", rel="BOTTOMRIGHT", x=-10, y=10, text=OKAY },
@@ -3127,7 +3142,7 @@ do
 
     UISpec.Auras2 = UISpec.Auras2 or {
         copyDropdowns = {
-            aura = { labelField="copyAuraLabel", dropField="copyAuraDrop", text="Copy settings to:", point="BOTTOMLEFT", x=15, y=64, width=170, ensureFrames=true },
+            aura = { labelField="copyAuraLabel", dropField="copyAuraDrop", text=L["Copy settings to:"], point="BOTTOMLEFT", x=15, y=50, width=170, ensureFrames=true },
         },
         footer = {
             cancel = { field="cancelBtn", name="$parentCancel", w=120, h=22, point="BOTTOMLEFT",  rel="BOTTOMLEFT",  x=16,  y=16, text="Cancel" },
@@ -3281,7 +3296,7 @@ local function MSUF_EM_UI_BuildTextBlock(pf, spec, anchorFrame, applyFn)
         end
 
         pf[o.field] = MSUF_EM_CreateRightCheckbox(
-            pf, o.name, anchor, o.text or "Override", onClick, o.opts
+            pf, o.name, anchor, o.text or L["Override"], onClick, o.opts
         )
     end
 end
@@ -3289,11 +3304,11 @@ end
 -- Unit Popup: Name block (already migrated in Patch 1; kept as a small helper)
 local function MSUF_EM_UI_BuildUnitPopup_Text_Name(pf, textHeader, applyFn)
     MSUF_EM_UI_BuildTextBlock(pf, {
-        x = { key = "nameX", label = "Name X:", box = "$parentNameXBox", dy = -8 },
-        show = { field = "nameShowCB", name = "$parentShowName", text = "Show" },
+        x = { key = "nameX", label = L["Name X:"], box = "$parentNameXBox", dy = -8 },
+        show = { field = "nameShowCB", name = "$parentShowName", text = L["Show"] },
         rows = {
-            { key = "nameY", label = "Name Y:", box = "$parentNameYBox", dy = -8 },
-            { key = "nameSize", label = "Name Size:", box = "$parentNameSizeBox", dy = -8 },
+            { key = "nameY", label = L["Name Y:"], box = "$parentNameYBox", dy = -8 },
+            { key = "nameSize", label = L["Name Size:"], box = "$parentNameSizeBox", dy = -8 },
         },
     }, textHeader, applyFn)
 end
@@ -3316,11 +3331,11 @@ local UNIT_POPUP_TEXT_EXTRA_SPEC = {
 
     -- HP
     {
-        x = { key = "hpX", label = "HP X:", box = "$parentHPXBox", dy = -12 },
-        show = { field = "hpShowCB", name = "$parentShowHP", text = "Show" },
+        x = { key = "hpX", label = L["HP X:"], box = "$parentHPXBox", dy = -12 },
+        show = { field = "hpShowCB", name = "$parentShowHP", text = L["Show"] },
         rows = {
-            { key = "hpY",    label = "HP Y:",    box = "$parentHPYBox",    dy = -8 },
-            { key = "hpSize", label = "HP Size:", box = "$parentHPSizeBox", dy = -8 },
+            { key = "hpY",    label = L["HP Y:"],    box = "$parentHPYBox",    dy = -8 },
+            { key = "hpSize", label = L["HP Size:"], box = "$parentHPSizeBox", dy = -8 },
         },
         override = {
             field = "hpOverrideCB",
@@ -3329,7 +3344,7 @@ local UNIT_POPUP_TEXT_EXTRA_SPEC = {
             anchorBoxKey  = "hpSizeBox",
             wrapApply = true,
             opts = {
-                tooltipTitle = "Override HP Size",
+                tooltipTitle = L["Override HP Size"],
                 tooltipText  = "This will allow changing the font size of HP text on this unitframe only.\n\nWarning: This may look bad with other unitframes.",
             },
         },
@@ -3337,11 +3352,11 @@ local UNIT_POPUP_TEXT_EXTRA_SPEC = {
 
     -- Power
     {
-        x = { key = "powerX", label = "Power X:", box = "$parentPowerXBox", dy = -12 },
+        x = { key = "powerX", label = L["Power X:"], box = "$parentPowerXBox", dy = -12 },
         show = { field = "powerShowCB", name = "$parentShowPower", text = "Show" },
         rows = {
-            { key = "powerY",    label = "Power Y:",    box = "$parentPowerYBox",    dy = -8 },
-            { key = "powerSize", label = "Power Size:", box = "$parentPowerSizeBox", dy = -8 },
+            { key = "powerY",    label = L["Power Y:"],    box = "$parentPowerYBox",    dy = -8 },
+            { key = "powerSize", label = L["Power Size:"], box = "$parentPowerSizeBox", dy = -8 },
         },
         override = {
             field = "powerOverrideCB",
@@ -3350,7 +3365,7 @@ local UNIT_POPUP_TEXT_EXTRA_SPEC = {
             anchorBoxKey  = "powerSizeBox",
             wrapApply = true,
             opts = {
-                tooltipTitle = "Override Power Size",
+                tooltipTitle = L["Override Power Size"],
                 tooltipText  = "This will allow changing the font size of Power text on this unitframe only.\n\nWarning: This may look bad with other unitframes.",
             },
         },
@@ -3372,11 +3387,11 @@ end
 local CASTBAR_POPUP_TEXT_SPEC = {
     -- CastName
     {
-        x = { key = "castNameX", label = "Spell X:", box = "$parentCastNameXBox", dy = -8 },
-        show = { field = "castNameShowCB", name = "$parentShowCastName", text = "Show" },
+        x = { key = "castNameX", label = L["Spell X:"], box = "$parentCastNameXBox", dy = -8 },
+        show = { field = "castNameShowCB", name = "$parentShowCastName", text = L["Show"] },
         rows = {
-            { key = "castNameY",    label = "Spell Y:",    box = "$parentCastNameYBox",    dy = -8 },
-            { key = "castNameSize", label = "Spell Size:", box = "$parentCastNameSizeBox", dy = -8 },
+            { key = "castNameY",    label = L["Spell Y:"],    box = "$parentCastNameYBox",    dy = -8 },
+            { key = "castNameSize", label = L["Spell Size:"], box = "$parentCastNameSizeBox", dy = -8 },
         },
         override = {
             field = "castNameOverrideCB",
@@ -3385,7 +3400,7 @@ local CASTBAR_POPUP_TEXT_SPEC = {
             anchorBoxKey  = "castNameSizeBox",
             onClick = ApplyCastbarPopupValues, -- keep identical (no wrapper)
             opts = {
-                tooltipTitle = "Override Spell Name Size",
+                tooltipTitle = L["Override Spell Name Size"],
                 tooltipText  = "This will allow changing the font size of Spell Name text on this castbar only.",
                 deferApply   = true,
                 beforeClick  = function(cb, checked)
@@ -3405,11 +3420,11 @@ local CASTBAR_POPUP_TEXT_SPEC = {
 
     -- Icon
     {
-        x = { key = "iconX", label = "Icon X:", box = "$parentIconXBox", dy = -12 },
-        show = { field = "iconShowCB", name = "$parentShowIcon", text = "Show" },
+        x = { key = "iconX", label = L["Icon X:"], box = "$parentIconXBox", dy = -12 },
+        show = { field = "iconShowCB", name = "$parentShowIcon", text = L["Show"] },
         rows = {
-            { key = "iconY",    label = "Icon Y:",    box = "$parentIconYBox",    dy = -8 },
-            { key = "iconSize", label = "Icon Size:", box = "$parentIconSizeBox", dy = -8 },
+            { key = "iconY",    label = L["Icon Y:"],    box = "$parentIconYBox",    dy = -8 },
+            { key = "iconSize", label = L["Icon Size:"], box = "$parentIconSizeBox", dy = -8 },
         },
         override = {
             field = "iconSizeOverrideCB",
@@ -3418,7 +3433,7 @@ local CASTBAR_POPUP_TEXT_SPEC = {
             anchorBoxKey  = "iconSizeBox",
             onClick = ApplyCastbarPopupValues, -- keep identical
             opts = {
-                tooltipTitle = "Override Icon Size",
+                tooltipTitle = L["Override Icon Size"],
                 tooltipText  = "This will allow changing the icon size on this castbar only.",
                 deferApply   = true,
                 beforeClick  = function(cb, checked)
@@ -3438,11 +3453,11 @@ local CASTBAR_POPUP_TEXT_SPEC = {
 
     -- Time
     {
-        x = { key = "timeX", label = "Time X:", box = "$parentTimeXBox", dy = -12 },
-        show = { field = "timeShowCB", name = "$parentShowTime", text = "Show" },
+        x = { key = "timeX", label = L["Time X:"], box = "$parentTimeXBox", dy = -12 },
+        show = { field = "timeShowCB", name = "$parentShowTime", text = L["Show"] },
         rows = {
-            { key = "timeY",    label = "Time Y:",    box = "$parentTimeYBox",    dy = -8 },
-            { key = "timeSize", label = "Time Size:", box = "$parentTimeSizeBox", dy = -8 },
+            { key = "timeY",    label = L["Time Y:"],    box = "$parentTimeYBox",    dy = -8 },
+            { key = "timeSize", label = L["Time Size:"], box = "$parentTimeSizeBox", dy = -8 },
         },
         override = {
             field = "timeOverrideCB",
@@ -3451,7 +3466,7 @@ local CASTBAR_POPUP_TEXT_SPEC = {
             anchorBoxKey  = "timeSizeBox",
             onClick = ApplyCastbarPopupValues, -- keep identical
             opts = {
-                tooltipTitle = "Override Time Size",
+                tooltipTitle = L["Override Time Size"],
                 tooltipText  = "This will allow changing the font size of Time text on this castbar only.",
             },
         },
@@ -3930,17 +3945,17 @@ local function ApplyUnitPopupValues()
             useDefaultBackdrop = true,
         })
         MSUF_EM_AddPopupTitleAndClose(pf, "MSUF Edit")
-        local frameHeader = MSUF_EM_AddSectionHeader(pf, "frameHeader", "Frame", "TOPLEFT", pf, "TOPLEFT", 16, -36)
+        local frameHeader = MSUF_EM_AddSectionHeader(pf, "frameHeader", L["Frame"], "TOPLEFT", pf, "TOPLEFT", 16, -36)
 
 local frameRows = {
-    { key = "x", label = "Offset X:", box = "$parentXBox", dy = -6, live = true },
-    { key = "y", label = "Offset Y:", box = "$parentYBox", dy = -8, live = true },
-    { key = "w", label = "Width:",    box = "$parentWBox", dy = -12 },
-    { key = "h", label = "Height:",   box = "$parentHBox", dy = -8 },
+    { key = "x", label = L["Offset X:"], box = "$parentXBox", dy = -6, live = true },
+    { key = "y", label = L["Offset Y:"], box = "$parentYBox", dy = -8, live = true },
+    { key = "w", label = L["Width:"],    box = "$parentWBox", dy = -12 },
+    { key = "h", label = L["Height:"],   box = "$parentHBox", dy = -8 },
 }
 MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitPopupValues, "UnitPopup:LiveApply")
         local textDivider = MSUF_EM_AddDivider(pf, "textDivider", 330, "TOPLEFT", pf.hLabel, "BOTTOMLEFT", 0, -8)
-        local textHeader  = MSUF_EM_AddSectionHeader(pf, "textHeader", "Text", "TOPLEFT", textDivider, "BOTTOMLEFT", 0, -8)
+        local textHeader  = MSUF_EM_AddSectionHeader(pf, "textHeader", L["Text"], "TOPLEFT", textDivider, "BOTTOMLEFT", 0, -8)
 
         -- Text offsets + per-unit font overrides (Phase 9 shrink)
 
@@ -3997,14 +4012,14 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
             local lastTextRow = pf.powerSizeLabel or pf.powerYLabel or pf.hpSizeLabel
             local anchorLabel = pf:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             anchorLabel:SetPoint("TOPLEFT", lastTextRow, "BOTTOMLEFT", 0, -12)
-            anchorLabel:SetText("Text Anchor")
+            anchorLabel:SetText(L["Text Anchor"])
             if MSUF_PopupStyleLabel then MSUF_PopupStyleLabel(anchorLabel) end
             pf.textAnchorLabel = anchorLabel
 
             local ANCHOR_OPTIONS = {
-                { key = "RIGHT",  label = "Right" },
-                { key = "LEFT",   label = "Left" },
-                { key = "CENTER", label = "Center" },
+                { key = "RIGHT",  label = L["Right"] },
+                { key = "LEFT",   label = L["Left"] },
+                { key = "CENTER", label = L["Center"] },
             }
             local function _AnchorLabel(k)
                 for _, o in ipairs(ANCHOR_OPTIONS) do if o.key == k then return o.label end end
@@ -4063,28 +4078,28 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
         do
             local lastTextRow = pf.textAnchorLabel or pf.powerSizeLabel or pf.powerYLabel or pf.hpSizeLabel
             local pbDivider = MSUF_EM_AddDivider(pf, "pbDivider", 330, "TOPLEFT", lastTextRow, "BOTTOMLEFT", 0, -36)
-            local pbHeader = MSUF_EM_AddSectionHeader(pf, "pbHeader", "Power Bar", "TOPLEFT", pbDivider, "BOTTOMLEFT", 0, -6)
+            local pbHeader = MSUF_EM_AddSectionHeader(pf, "pbHeader", L["Power Bar"], "TOPLEFT", pbDivider, "BOTTOMLEFT", 0, -6)
 
             local detachCB = CreateFrame("CheckButton", "$parentDetachPowerBar", pf, "UICheckButtonTemplate")
             detachCB:SetSize(20, 20)
             detachCB:SetPoint("TOPLEFT", pbHeader, "BOTTOMLEFT", 0, -4)
             local detachText = detachCB.Text or (detachCB.GetName and _G[detachCB:GetName() .. "Text"])
-            if detachText then detachText:SetText("Detach from frame") end
+            if detachText then detachText:SetText(L["Detach from frame"]) end
             pf.detachPowerBarCB = detachCB
 
             detachCB:SetScript("OnEnter", function()
                 MSUF_EM_PopupShowTooltip(pf,
-                    "Detach Power Bar",
-                    "Separates the power bar from the unit frame so you can position and size it freely.")
+                    L["Detach Power Bar"],
+                    L["Separates the power bar from the unit frame so you can position and size it freely."])
             end)
             detachCB:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
             -- Detached power bar numeric rows (W, H, X, Y)
             local detachRows = {
-                { key = "dpbW", label = "Width:",    box = "$parentDPBWBox", dy = -6 },
-                { key = "dpbH", label = "Height:",   box = "$parentDPBHBox", dy = -8 },
-                { key = "dpbX", label = "Offset X:", box = "$parentDPBXBox", dy = -8 },
-                { key = "dpbY", label = "Offset Y:", box = "$parentDPBYBox", dy = -8 },
+                { key = "dpbW", label = L["Width:"],    box = "$parentDPBWBox", dy = -6 },
+                { key = "dpbH", label = L["Height:"],   box = "$parentDPBHBox", dy = -8 },
+                { key = "dpbX", label = L["Offset X:"], box = "$parentDPBXBox", dy = -8 },
+                { key = "dpbY", label = L["Offset Y:"], box = "$parentDPBYBox", dy = -8 },
             }
             MSUF_EM_BuildNumericRows(pf, detachRows, detachCB, "BOTTOMLEFT", 0, ApplyUnitPopupValues)
 
@@ -4106,7 +4121,7 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
                 end
 
                 -- Resize popup
-                local h = 520
+                local h = 580
                 if canDetach then
                     local isDetached = (p.detachPowerBarCB and p.detachPowerBarCB:GetChecked()) and true or false
 
@@ -4233,7 +4248,7 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
     pf.parent = parent
 
     local label = MSUF_GetUnitLabelForKey and MSUF_GetUnitLabelForKey(key) or unit
-    pf.title:SetText(string.format("MSUF Edit  %s", label))
+    pf.title:SetText(string.format(L["MSUF Edit  %s"], label))
 
     local x = MSUF_SanitizePopupOffset(conf.offsetX, 0)
     local y = MSUF_SanitizePopupOffset(conf.offsetY, 0)
@@ -4284,15 +4299,15 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
         local function _AncLbl(k) return k == "LEFT" and "Left" or k == "CENTER" and "Center" or "Right" end
         if pf.nameAnchorDrop then
             UIDropDownMenu_SetSelectedValue(pf.nameAnchorDrop, nameAnc)
-            UIDropDownMenu_SetText(pf.nameAnchorDrop, "Name: " .. _AncLbl(nameAnc))
+            UIDropDownMenu_SetText(pf.nameAnchorDrop, L["Name: "] .. _AncLbl(nameAnc))
         end
         if pf.hpAnchorDrop then
             UIDropDownMenu_SetSelectedValue(pf.hpAnchorDrop, hpAnc)
-            UIDropDownMenu_SetText(pf.hpAnchorDrop, "HP: " .. _AncLbl(hpAnc))
+            UIDropDownMenu_SetText(pf.hpAnchorDrop, L["HP: "] .. _AncLbl(hpAnc))
         end
         if pf.powerAnchorDrop then
             UIDropDownMenu_SetSelectedValue(pf.powerAnchorDrop, pwrAnc)
-            UIDropDownMenu_SetText(pf.powerAnchorDrop, "Power: " .. _AncLbl(pwrAnc))
+            UIDropDownMenu_SetText(pf.powerAnchorDrop, L["Power: "] .. _AncLbl(pwrAnc))
         end
     end
 
@@ -4671,20 +4686,20 @@ end
             h = uh,
             useDefaultBackdrop = true,
         })
-        MSUF_EM_AddPopupTitleAndClose(pf, "MSUF Edit  Castbar")
-        local frameHeader = MSUF_EM_AddSectionHeader(pf, "frameHeader", "Frame", "TOPLEFT", pf, "TOPLEFT", 16, -36)
+        MSUF_EM_AddPopupTitleAndClose(pf, L["MSUF Edit  Castbar"])
+        local frameHeader = MSUF_EM_AddSectionHeader(pf, "frameHeader", L["Frame"], "TOPLEFT", pf, "TOPLEFT", 16, -36)
 
 local frameRows = {
-    { key = "x", label = "Offset X:", box = "$parentXBox", dy = -6 },
-    { key = "y", label = "Offset Y:", box = "$parentYBox", dy = -8 },
-    { key = "w", label = "Width:",    box = "$parentWBox", dy = -12 },
-    { key = "h", label = "Height:",   box = "$parentHBox", dy = -8 },
+    { key = "x", label = L["Offset X:"], box = "$parentXBox", dy = -6 },
+    { key = "y", label = L["Offset Y:"], box = "$parentYBox", dy = -8 },
+    { key = "w", label = L["Width:"],    box = "$parentWBox", dy = -12 },
+    { key = "h", label = L["Height:"],   box = "$parentHBox", dy = -8 },
 }
 MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyCastbarPopupValues)
 
         -- Text section (CastName position + per-castbar font override)
         local textDivider = MSUF_EM_AddDivider(pf, "textDivider", 230, "TOPLEFT", pf.hLabel, "BOTTOMLEFT", 0, -8)
-        local textHeader  = MSUF_EM_AddSectionHeader(pf, "textHeader", "Text", "TOPLEFT", textDivider, "BOTTOMLEFT", 0, -8)
+        local textHeader  = MSUF_EM_AddSectionHeader(pf, "textHeader", L["Text"], "TOPLEFT", textDivider, "BOTTOMLEFT", 0, -8)
 
         MSUF_EM_UI_BuildCastbarPopup_TextBlocks(pf, textHeader)
 
@@ -4960,7 +4975,7 @@ end
     do
         local pf = MSUF_CastbarPositionPopup
         if pf and pf.SetSize then
-            pf:SetSize(360, 470)
+            pf:SetSize(360, 520)
         end
     end
 
@@ -5003,11 +5018,11 @@ end
 
     local label
     if unit == "boss" then
-        label = "Boss"
+        label = L["Boss"]
     else
         label = MSUF_GetUnitLabelForKey(GetConfigKeyForUnit(unit)) or unit
     end
-    pf.title:SetText(string.format("MSUF Edit  %s Castbar", label))
+    pf.title:SetText(string.format(L["MSUF Edit  %s Castbar"], label))
     if pf.menuBtn then
         pf.menuBtn:Show()
     end
@@ -5143,7 +5158,7 @@ function MSUF_SyncCastbarPositionPopup(unit, force)
                 local detached = g.bossCastbarDetached and true or false
                 pf.anchorToUnitCB:SetChecked(not detached)
                 if pf.anchorToUnitCB.Text then
-                    pf.anchorToUnitCB.Text:SetText("Anchor to Boss unitframe")
+                    pf.anchorToUnitCB.Text:SetText(L["Anchor to Boss unitframe"])
                 end
                 pf.anchorToUnitCB:Show()
             else
@@ -5152,8 +5167,8 @@ function MSUF_SyncCastbarPositionPopup(unit, force)
                     local detached = g[prefix .. "Detached"] and true or false
                     pf.anchorToUnitCB:SetChecked(not detached)
                     if pf.anchorToUnitCB.Text then
-                        local label = (unit == "player" and "Player") or (unit == "target" and "Target") or (unit == "focus" and "Focus") or unit
-                        pf.anchorToUnitCB.Text:SetText("Anchor to " .. label .. " unitframe")
+                        local label = (unit == "player" and L["Player"]) or (unit == "target" and L["Target"]) or (unit == "focus" and L["Focus"]) or unit
+                        pf.anchorToUnitCB.Text:SetText(L["Anchor to "] .. label .. L[" unitframe"])
                     end
                     pf.anchorToUnitCB:Show()
                 else
@@ -5368,17 +5383,17 @@ end
 --  - Drag & drop via Aura Edit Mover (in Auras 2.0 module)
 --  - Popup (left/right click) for Offset X/Y + Size + Spacing
 
-local function MSUF_A2_GetAuraPopupTitleSuffix(unitKey)
-    if unitKey == 'player' then return 'Player Aura' end
-    if unitKey == 'target' then return 'Target Aura' end
-    if unitKey == 'focus' then return 'Focus Aura' end
+local function MSUF_A2_GetAuraPopupTitleSuffix(unitKey) 
+    if unitKey == 'player' then return L['Player Aura'] end
+    if unitKey == 'target' then return L['Target Aura'] end
+    if unitKey == 'focus' then return L['Focus Aura'] end
     -- Boss previews will be 'Boss 1 Aura', 'Boss 2 Aura', ...
     if type(unitKey) == 'string' and unitKey:match('^boss%d+$') then
         local n = unitKey:match('^boss(%d+)$')
-        if n then return ('Boss %s Aura'):format(n) end
-        return 'Boss Aura'
+        if n then return (L['Boss %s Aura']):format(n) end
+        return L['Boss Aura']
     end
-    return 'Aura'
+    return L['Aura']
 end
 
 -- Helper: creates the popup once, and can be reused for focus/boss later.
@@ -5401,7 +5416,7 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
 
     local title = pf:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     title:SetPoint('TOP', 0, -12)
-    title:SetText('MSUF Edit  Target Aura')
+    title:SetText(L['MSUF Edit  Target Aura'])
     pf.title = title
 
     -- Top-right close (acts like Cancel)
@@ -5418,7 +5433,7 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
 
     local frameHeader = pf:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     frameHeader:SetPoint('TOPLEFT', pf, 'TOPLEFT', 16, -36)
-    frameHeader:SetText('Frame')
+    frameHeader:SetText(L['Frame'])
     frameHeader:SetTextColor(1, 0.82, 0, 1)
     pf.frameHeader = frameHeader
 
@@ -5662,7 +5677,7 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
 
     -- Phase 10 CLEAN: Build Auras2 numeric rows via rowspec (UI-only)
         local rows = {
-        { key = "spacing", label = "Spacing:", box = "$parentSpacingBox", dy = -6, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "spacing", label = L["Spacing:"], box = "$parentSpacingBox", dy = -6, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
 
         }
 
@@ -5676,22 +5691,22 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
         local bossTogether = CreateFrame('CheckButton', '$parentBossTogetherCheck', pf, 'UICheckButtonTemplate')
         bossTogether:SetPoint('TOPLEFT', (pf.spacingRow or pf.spacingLabel), 'BOTTOMLEFT', 0, -6)
         if bossTogether.text then
-            bossTogether.text:SetText('Boss 1-5 edit together')
+            bossTogether.text:SetText(L['Boss 1-5 edit together'])
             elseif bossTogether.Text then
-            bossTogether.Text:SetText('Boss 1-5 edit together')
+            bossTogether.Text:SetText(L['Boss 1-5 edit together'])
         end
         bossTogether:Hide()
         pf.bossTogetherCheck = bossTogether
 
     -- Remaining rows: stacks + cooldown text sizes
         local rows2 = {
-        { key = "stackTextSize", label = "Text size (Stacks):", box = "$parentStackTextSizeBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
-        { key = "stackTextOffsetX", label = "Stack text X:", box = "$parentStackTextOffsetXBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
-        { key = "stackTextOffsetY", label = "Stack text Y:", box = "$parentStackTextOffsetYBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "stackTextSize", label = L["Text size (Stacks):"], box = "$parentStackTextSizeBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "stackTextOffsetX", label = L["Stack text X:"], box = "$parentStackTextOffsetXBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "stackTextOffsetY", label = L["Stack text Y:"], box = "$parentStackTextOffsetYBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
 
-        { key = "cooldownTextSize", label = "Text size (Cooldown):", box = "$parentCooldownTextSizeBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
-        { key = "cooldownTextOffsetX", label = "Cooldown text X:", box = "$parentCooldownTextOffsetXBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
-        { key = "cooldownTextOffsetY", label = "Cooldown text Y:", box = "$parentCooldownTextOffsetYBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "cooldownTextSize", label = L["Text size (Cooldown):"], box = "$parentCooldownTextSizeBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "cooldownTextOffsetX", label = L["Cooldown text X:"], box = "$parentCooldownTextOffsetXBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "cooldownTextOffsetY", label = L["Cooldown text Y:"], box = "$parentCooldownTextOffsetYBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
         }
 
     -- Initially anchor stacks below spacing; sync code may re-anchor below bossTogetherCheck when visible
@@ -5700,17 +5715,17 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
     -- Buffs / Debuffs (independent X/Y/Size)
         local bdHeader = pf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         bdHeader:SetTextColor(1, 0.82, 0, 1)
-        bdHeader:SetText("Buffs / Debuffs")
+        bdHeader:SetText(L["Buffs / Debuffs"])
         bdHeader:SetPoint('TOPLEFT', (pf.cooldownTextOffsetYRow or pf.cooldownTextOffsetYLabel or pf.cooldownTextOffsetYBox or pf.cooldownTextSizeRow or pf.cooldownTextSizeLabel), 'BOTTOMLEFT', 0, -18)
         pf.buffDebuffHeader = bdHeader
 
         local rowsBD = {
-        { key = "buffGroupOffsetX",  label = "Buff offset X:",   box = "$parentBuffOffsetXBox" },
-        { key = "buffGroupOffsetY",  label = "Buff offset Y:",   box = "$parentBuffOffsetYBox" },
-        { key = "buffGroupIconSize", label = "Buff icon size:",  box = "$parentBuffIconSizeBox" },
-        { key = "debuffGroupOffsetX",  label = "Debuff offset X:",  box = "$parentDebuffOffsetXBox" },
-        { key = "debuffGroupOffsetY",  label = "Debuff offset Y:",  box = "$parentDebuffOffsetYBox" },
-        { key = "debuffGroupIconSize", label = "Debuff icon size:", box = "$parentDebuffIconSizeBox" },
+        { key = "buffGroupOffsetX",  label = L["Buff offset X:"],   box = "$parentBuffOffsetXBox" },
+        { key = "buffGroupOffsetY",  label = L["Buff offset Y:"],   box = "$parentBuffOffsetYBox" },
+        { key = "buffGroupIconSize", label = L["Buff icon size:"],  box = "$parentBuffIconSizeBox" },
+        { key = "debuffGroupOffsetX",  label = L["Debuff offset X:"],  box = "$parentDebuffOffsetXBox" },
+        { key = "debuffGroupOffsetY",  label = L["Debuff offset Y:"],  box = "$parentDebuffOffsetYBox" },
+        { key = "debuffGroupIconSize", label = L["Debuff icon size:"], box = "$parentDebuffIconSizeBox" },
         }
         MSUF_EM_BuildNumericRows(pf, rowsBD, bdHeader, "BOTTOMLEFT", 0, Apply, "Auras2Popup:LiveApply")
 
@@ -5718,16 +5733,16 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
     -- Note: This edits a2.shared.privateOffsetX/Y/privateSize (with per-unit overrides).
         local privateHeader = pf:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
         privateHeader:SetPoint('TOPLEFT', (pf.debuffGroupIconSizeRow or pf.buffDebuffHeader or pf.cooldownTextOffsetYRow or pf.cooldownTextOffsetYLabel or pf.cooldownTextOffsetYBox or pf.cooldownTextSizeRow or pf.cooldownTextSizeLabel), 'BOTTOMLEFT', 0, -20)
-        privateHeader:SetText('Private Auras')
+        privateHeader:SetText(L['Private Auras'])
         privateHeader:SetTextColor(1, 0.82, 0, 1)
         pf.privateHeader = privateHeader
 
         local privatePreview = CreateFrame('CheckButton', '$parentPrivatePreviewCheck', pf, 'UICheckButtonTemplate')
         privatePreview:SetPoint('TOPLEFT', privateHeader, 'BOTTOMLEFT', 0, -6)
         if privatePreview.text then
-            privatePreview.text:SetText('Preview (highlight) private auras')
+            privatePreview.text:SetText(L['Preview (highlight) private auras'])
             elseif privatePreview.Text then
-            privatePreview.Text:SetText('Preview (highlight) private auras')
+            privatePreview.Text:SetText(L['Preview (highlight) private auras'])
         end
         privatePreview:SetScript('OnClick', function()
             Apply()
@@ -5735,9 +5750,9 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
         pf.privatePreviewCheck = privatePreview
 
         local rows3 = {
-        { key = "privateOffsetX", label = "Private offset X:", box = "$parentPrivateOffsetXBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
-        { key = "privateOffsetY", label = "Private offset Y:", box = "$parentPrivateOffsetYBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
-        { key = "privateSize",    label = "Private icon size:", box = "$parentPrivateSizeBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "privateOffsetX", label = L["Private offset X:"], box = "$parentPrivateOffsetXBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "privateOffsetY", label = L["Private offset Y:"], box = "$parentPrivateOffsetYBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
+        { key = "privateSize",    label = L["Private icon size:"], box = "$parentPrivateSizeBox", dy = -8, live = true, labelTemplate = "GameFontHighlightSmall", requireCompleteNumber = false },
         }
         MSUF_EM_BuildNumericRows(pf, rows3, privatePreview, "BOTTOMLEFT", 0, Apply, "Auras2Popup:LiveApply")
 
@@ -5762,12 +5777,12 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
         end
 
         local function MSUF_A2_GetAuraCopyLabel(key)
-            if key == "player" then return "Player" end
-            if key == "target" then return "Target" end
-            if key == "focus" then return "Focus" end
+            if key == "player" then return L["Player"] end
+            if key == "target" then return L["Target"] end
+            if key == "focus" then return L["Focus"] end
             if type(key) == "string" then
                 local n = key:match("^boss(%d+)$")
-                if n then return ("Boss %s"):format(n) end
+                if n then return (L["Boss %s"]):format(n) end
             end
             return tostring(key or "")
         end
@@ -6259,7 +6274,7 @@ function _G.MSUF_OpenAuras2PositionPopup(unit, parent)
 
     if pf.title and pf.title.SetText then
         local suffix = MSUF_A2_GetAuraPopupTitleSuffix(unit)
-        pf.title:SetText('MSUF Edit  ' .. (suffix or 'Aura'))
+        pf.title:SetText(L['MSUF Edit  '] .. (suffix or 'Aura'))
     end
 
     if needReposition and type(MSUF_PositionPopupSmart) == 'function' then
