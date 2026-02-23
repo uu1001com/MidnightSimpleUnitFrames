@@ -390,7 +390,7 @@ end
 if fill and fill.SetVertexColor then fill:SetVertexColor(MSUF_THEME.bgR,MSUF_THEME.bgG,MSUF_THEME.bgB,0.90)
 end
 return fill,border end
-local MSUF_TIPS={"Bigger steps: Hold |cff00ff00SHIFT|r while adjusting sliders to change values faster.","Fine tuning: Hold |cff00ff00CTRL|r while adjusting sliders for smaller steps.","Quick reset: If something feels off, try |cff00ff00/msuf reset|r (frame positions).","Factory reset: Use |cff00ff00Menu → Advanced → Factory Reset|r (or /msuf fullreset confirm + /reload).","Edit Mode: Use |cff00ff00Toggle Edit Mode|r to move frames quickly, then fine-tune with the position popup.","Profiles safety: Create a new profile before big experiments — switch back instantly if needed.","Colors: The |cff00ff00Colors|r tab lets you customize almost everything (fonts, bars, castbars, highlights).","Gameplay: The |cff00ff00Gameplay|r tab contains extra UI tools and warnings you can enable/disable.","Recommended: |cff00ff00Sensei Resource Bar|r pairs insanely well with MSUF to track resources cleanly.","UI scale tip: MSUF has its own UI scale — separate from the Global UI scale.","Troubleshoot: If visuals don’t update, a quick |cff00ff00/reload|r fixes most UI state issues.","Readability: Slightly larger fonts often help more than bigger frames (especially in raids).","During development of MSUF Unhalted, R41z0r and other great addon developers helped out!","Danders is a great Party/Raidframe addon and works really well with MSUF","Community: If you like MSUF, share it with a friend — UI addons grow by word of mouth.",}
+local MSUF_TIPS={L["Bigger steps: Hold |cff00ff00SHIFT|r while adjusting sliders to change values faster."],L["Fine tuning: Hold |cff00ff00CTRL|r while adjusting sliders for smaller steps."],L["Quick reset: If something feels off, try |cff00ff00/msuf reset|r (frame positions)."],L["Factory reset: Use |cff00ff00Menu → Advanced → Factory Reset|r (or /msuf fullreset confirm + /reload)."],L["Edit Mode: Use |cff00ff00Toggle Edit Mode|r to move frames quickly, then fine-tune with the position popup."],L["Profiles safety: Create a new profile before big experiments — switch back instantly if needed."],L["Colors: The |cff00ff00Colors|r tab lets you customize almost everything (fonts, bars, castbars, highlights)."],L["Gameplay: The |cff00ff00Gameplay|r tab contains extra UI tools and warnings you can enable/disable."],L["Recommended: |cff00ff00Sensei Resource Bar|r pairs insanely well with MSUF to track resources cleanly."],L["UI scale tip: MSUF has its own UI scale — separate from the Global UI scale."],L["Troubleshoot: If visuals don’t update, a quick |cff00ff00/reload|r fixes most UI state issues."],L["Readability: Slightly larger fonts often help more than bigger frames (especially in raids)."],L["During development of MSUF Unhalted, R41z0r and other great addon developers helped out!"],L["Danders is a great Party/Raidframe addon and works really well with MSUF"],L["Community: If you like MSUF, share it with a friend — UI addons grow by word of mouth."],}
 MSUF_GetNextTip=function() local tips=MSUF_TIPS if not tips or#tips==0 then return nil,0,0 end
 local general=MSUF_EnsureGeneral();
 local idx=1 if general then idx=(tonumber(general.tipCycleIndex)
@@ -2457,22 +2457,22 @@ home:Hide()
 S.mirror.homePanel=home f._msufHomePanel=home MSUF_ApplyMidnightControlsToFrame(home)
 local homeTitle=home:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
 homeTitle:SetPoint("TOPLEFT",12,-10)
-homeTitle:SetText("Main Menu")
+homeTitle:SetText(L["Main Menu"])
 MSUF_SkinTitle(homeTitle)
 local homeHint=home:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
 homeHint:SetPoint("TOPLEFT",homeTitle,"BOTTOMLEFT",0,-2)
-homeHint:SetText("Quick tools & UI scale (same content as /msuf options).")
+homeHint:SetText(L["Quick tools & UI scale (same content as /msuf options)."])
 MSUF_SkinText(homeHint)
 local tipBox=CreateFrame("Frame",nil,home)
-tipBox:SetPoint("TOPLEFT",home,"TOPLEFT",12,-44)
-tipBox:SetPoint("TOPRIGHT",home,"TOPRIGHT",-12,-44)
+tipBox:SetPoint("TOPLEFT",home,"TOPLEFT",12,-50)
+tipBox:SetPoint("TOPRIGHT",home,"TOPRIGHT",-12,-50)
 tipBox:SetHeight(22)
 local tipLabel=tipBox:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
 tipLabel:SetPoint("TOPLEFT",tipBox,"TOPLEFT",0,0)
 tipLabel:SetJustifyH("LEFT")
 tipLabel:SetJustifyV("TOP")
 tipLabel:SetAlpha(0.82)
-tipLabel:SetText("Tip:")
+tipLabel:SetText(L["Tip:"])
 MSUF_SkinMuted(tipLabel)
 local tipText=tipBox:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
 tipText:SetPoint("TOPLEFT",tipLabel,"TOPRIGHT",6,0)
@@ -2664,7 +2664,7 @@ end
 local function AdvApplyState(open) if open then advToggle:SetText("Hide")
 advHint:SetText("")
 advBody:Show()
-else advToggle:SetText("Show")
+else advToggle:SetText(L["Show"])
 advHint:SetText(L["Hidden. Click Show to reveal slash commands + power tools."])
 advBody:Hide()
 end

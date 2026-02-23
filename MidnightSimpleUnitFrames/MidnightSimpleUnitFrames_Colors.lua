@@ -3307,15 +3307,15 @@ powerColorResetBtn:SetPoint("LEFT", powerColorSwatch, "RIGHT", 10, 0)
 
 -- Common power tokens (keep simple, but cover modern classes)
 local POWER_TOKEN_OPTIONS = {
-    { token = "MANA",        label = "Mana" },
-    { token = "RAGE",        label = "Rage" },
-    { token = "ENERGY",      label = "Energy" },
-    { token = "FOCUS",       label = "Focus" },
-    { token = "RUNIC_POWER", label = "Runic Power" },
-    { token = "INSANITY",    label = "Insanity" },
-    { token = "FURY",        label = "Fury" },
-    { token = "PAIN",        label = "Pain" },
-    { token = "ESSENCE",     label = "Essence" },
+    { token = "MANA",        label = ns.L["Mana"] },
+    { token = "RAGE",        label = ns.L["Rage"] },
+    { token = "ENERGY",      label = ns.L["Energy"] },
+    { token = "FOCUS",       label = ns.L["Focus"] },
+    { token = "RUNIC_POWER", label = ns.L["Runic Power"] },
+    { token = "INSANITY",    label = ns.L["Insanity"] },
+    { token = "FURY",        label = ns.L["Fury"] },
+    { token = "PAIN",        label = ns.L["Pain"] },
+    { token = "ESSENCE",     label = ns.L["Essence"] },
 }
 
 F.EnsurePowerColorsDB = function()

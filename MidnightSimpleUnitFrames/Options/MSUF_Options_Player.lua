@@ -1279,16 +1279,16 @@ function ns.MSUF_Options_Player_Build(panel, frameGroup, helpers)
     -- Right column: conditions that hide based on group/location state.
     local LOAD_COND_UI_SPECS = {
         -- { panelField, dbField, label, x, y }
-        { "playerLoadCondMountedCB",    "loadCondHideMounted",      "Mounted",       12, -32 },
-        { "playerLoadCondVehicleCB",    "loadCondHideInVehicle",    "In vehicle",    12, -54 },
-        { "playerLoadCondRestingCB",    "loadCondHideResting",      "Resting",       12, -76 },
-        { "playerLoadCondStealthedCB",  "loadCondHideStealthed",    "Stealthed",     12, -98 },
-        { "playerLoadCondInCombatCB",   "loadCondHideInCombat",     "In combat",     12, -120 },
+        { "playerLoadCondMountedCB",    "loadCondHideMounted",      L["Mounted"],       12, -32 },
+        { "playerLoadCondVehicleCB",    "loadCondHideInVehicle",    L["In vehicle"],    12, -54 },
+        { "playerLoadCondRestingCB",    "loadCondHideResting",      L["Resting"],       12, -76 },
+        { "playerLoadCondStealthedCB",  "loadCondHideStealthed",    L["Stealthed"],     12, -98 },
+        { "playerLoadCondInCombatCB",   "loadCondHideInCombat",     L["In combat"],     12, -120 },
         -- Right column
-        { "playerLoadCondOutCombatCB",  "loadCondHideOutOfCombat",  "Out of combat", 132, -32 },
-        { "playerLoadCondSoloCB",       "loadCondHideSolo",         "Solo",          132, -54 },
-        { "playerLoadCondInGroupCB",    "loadCondHideInGroup",      "In group",      132, -76 },
-        { "playerLoadCondInInstanceCB", "loadCondHideInInstance",   "In instance",   132, -98 },
+        { "playerLoadCondOutCombatCB",  "loadCondHideOutOfCombat",  L["Out of combat"], 132, -32 },
+        { "playerLoadCondSoloCB",       "loadCondHideSolo",         L["Solo"],          132, -54 },
+        { "playerLoadCondInGroupCB",    "loadCondHideInGroup",      L["In group"],      132, -76 },
+        { "playerLoadCondInInstanceCB", "loadCondHideInInstance",   L["In instance"],   132, -98 },
     }
     panel._msufLoadCondSpecs = LOAD_COND_UI_SPECS
     for _, s in ipairs(LOAD_COND_UI_SPECS) do
@@ -2667,12 +2667,12 @@ end
         local k = currentKey
         if k == "tot" or k == "targetoftarget" then k = "targettarget" end
         local lcTitleMap = {
-            player = "Player Load Conditions",
-            target = "Target Load Conditions",
-            focus = "Focus Load Conditions",
-            pet = "Pet Load Conditions",
-            boss = "Boss Load Conditions",
-            targettarget = "ToT Load Conditions",
+            player = L["Player Load Conditions"],
+            target = L["Target Load Conditions"],
+            focus = L["Focus Load Conditions"],
+            pet = L["Pet Load Conditions"],
+            boss = L["Boss Load Conditions"],
+            targettarget = L["ToT Load Conditions"],
         }
         panel.playerLoadCondBox._msufTitleText:SetText(lcTitleMap[k] or "Load Conditions")
     end

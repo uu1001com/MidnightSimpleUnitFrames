@@ -1653,9 +1653,9 @@ end
     local h3 = leftTop:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     h3:SetPoint("TOPLEFT", leftTop, "TOPLEFT", 12, -156)
     h3:SetText(TR("Display"))
-    local TIP_SHOW_STACK = 'Shows stack/application counts (e.g. "2") on aura icons. Disable to hide stack numbers.'
-    local TIP_HIDE_PERMANENT = 'Hides buffs with no duration. Debuffs are never hidden by this option.\n\nNote: Target/Focus APIs may still show permanent buffs during combat due to API limitations.'
-    local TIP_ADV_INFO = 'Use "Enable filters" in the Auras 2.0 box as the master switch.\n\nInclude toggles are additive (they never hide your normal auras).\nHighlight toggles only change border colors.'
+    local TIP_SHOW_STACK = L['Shows stack/application counts (e.g. "2") on aura icons. Disable to hide stack numbers.']
+    local TIP_HIDE_PERMANENT = L['Hides buffs with no duration. Debuffs are never hidden by this option.\n\nNote: Target/Focus APIs may still show permanent buffs during combat due to API limitations.']
+    local TIP_ADV_INFO = L['Use "Enable filters" in the Auras 2.0 box as the master switch.\n\nInclude toggles are additive (they never hide your normal auras).\nHighlight toggles only change border colors.']
     do
         local displayCB = {}
         local TIP_SWIPE_STYLE = L["When enabled, the cooldown swipe represents elapsed time (darkens as time is lost).\n\nTurn this OFF to keep the default cooldown-style swipe."]
@@ -1704,9 +1704,9 @@ end
     do
         local filterCB = {}
         BuildBoolPathCheckboxes(leftTop, {
-            { "Only my buffs", 12, -204, A2_FilterBuffs, "onlyMine", nil, nil, "cbOnlyMyBuffs", SyncLegacySharedFromSharedFilters },
-            { "Only my debuffs", 200, -204, A2_FilterDebuffs, "onlyMine", nil, nil, "cbOnlyMyDebuffs", SyncLegacySharedFromSharedFilters },
-            { "Hide permanent buffs", 200, -252, GetEditingFilters, "hidePermanent", nil, TIP_HIDE_PERMANENT, "cbHidePermanent", SyncLegacySharedFromSharedFilters },
+            { L["Only my buffs"], 12, -204, A2_FilterBuffs, "onlyMine", nil, nil, "cbOnlyMyBuffs", SyncLegacySharedFromSharedFilters },
+            { L["Only my debuffs"], 200, -204, A2_FilterDebuffs, "onlyMine", nil, nil, "cbOnlyMyDebuffs", SyncLegacySharedFromSharedFilters },
+            { L["Hide permanent buffs"], 200, -252, GetEditingFilters, "hidePermanent", nil, TIP_HIDE_PERMANENT, "cbHidePermanent", SyncLegacySharedFromSharedFilters },
         }, filterCB)
         for _, key in ipairs({ "cbOnlyMyBuffs", "cbOnlyMyDebuffs", "cbHidePermanent" }) do
             local cb = filterCB[key]
@@ -1837,15 +1837,15 @@ end
     MSUF_StyleAuras2CompactSlider(perRowSlider, { leftTitle = true })
     AttachSliderValueBox(perRowSlider, 4, 20, 1, GetPerRow)
     -- Per-type grow direction (right column)
-    local buffGrowthDD = CreateDropdown(leftTop, "Buff Growth", A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 8),
+    local buffGrowthDD = CreateDropdown(leftTop, L["Buff Growth"], A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 8),
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "buffGrowth", A2_GetCapsValue(key, "growth", "RIGHT")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "buffGrowth", v)  end)
     A2_Track("caps", buffGrowthDD)
-    local debuffGrowthDD = CreateDropdown(leftTop, "Debuff Growth", A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 10),
+    local debuffGrowthDD = CreateDropdown(leftTop, L["Debuff Growth"], A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 10),
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "debuffGrowth", A2_GetCapsValue(key, "growth", "RIGHT")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "debuffGrowth", v)  end)
     A2_Track("caps", debuffGrowthDD)
-    local privateGrowthCapsDD = CreateDropdown(leftTop, "Private Growth", A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 12),
+    local privateGrowthCapsDD = CreateDropdown(leftTop, L["Private Growth"], A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 12),
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "privateGrowth", A2_GetCapsValue(key, "growth", "RIGHT")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "privateGrowth", v)  end)
     A2_Track("caps", privateGrowthCapsDD)
@@ -1854,12 +1854,12 @@ end
 	local buffRowWrapDD = CreateRowWrapDropdown(leftTop, A2_DD_X, A2_DD_Y0,
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "buffRowWrap", A2_GetCapsValue(key, "rowWrap", "DOWN")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "buffRowWrap", v)  end,
-        "Buff wrap rows")
+        L["Buff wrap rows"])
     A2_Track("caps", buffRowWrapDD)
 	local debuffRowWrapDD = CreateRowWrapDropdown(leftTop, A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 2),
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "debuffRowWrap", A2_GetCapsValue(key, "rowWrap", "DOWN")) end,
         function(v)  A2_AutoOverrideCapsIfNeeded(); local key = GetEditingKey(); A2_SetCapsValue(key, "debuffRowWrap", v)  end,
-        "Debuff wrap rows")
+        L["Debuff wrap rows"])
     A2_Track("caps", debuffRowWrapDD)
     local layoutDD = CreateLayoutDropdown(leftTop, A2_DD_X, A2_DD_Y0 - (A2_DD_STEP * 4),
         function()  local key = GetEditingKey(); return A2_GetCapsValue(key, "layoutMode", "SEPARATE") end,
@@ -2012,14 +2012,14 @@ end
     do
         local refs = {}
         BuildBoolPathCheckboxes(advBox, {
-            { "Include boss buffs", 12, -58, A2_FilterBuffs, "includeBoss", nil, nil, "cbBossBuffs" },
-            { "Include boss debuffs", 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
-            { "Only show boss auras", 380, -58, GetEditingFilters, "onlyBossAuras", nil,
-                "Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown.", "cbOnlyBoss" },
-            { "Only show IMPORTANT buffs", 380, -86, A2_FilterBuffs, "onlyImportant", nil,
-                "Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.).", "cbOnlyImpBuffs" },
-            { "Only show IMPORTANT debuffs", 380, -114, A2_FilterDebuffs, "onlyImportant", nil,
-                "Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.).", "cbOnlyImpDebuffs" },
+            { L["Include boss buffs"], 12, -58, A2_FilterBuffs, "includeBoss", nil, nil, "cbBossBuffs" },
+            { L["Include boss debuffs"], 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
+            { L["Only show boss auras"], 380, -58, GetEditingFilters, "onlyBossAuras", nil,
+                L["Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown."], "cbOnlyBoss" },
+            { L["Only show IMPORTANT buffs"], 380, -86, A2_FilterBuffs, "onlyImportant", nil,
+                L["Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpBuffs" },
+            { L["Only show IMPORTANT debuffs"], 380, -114, A2_FilterDebuffs, "onlyImportant", nil,
+                L["Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpDebuffs" },
         }, refs)
 -- Track scopes + auto-override wrappers (Auras 2 menu only)
 do
@@ -2058,12 +2058,12 @@ end
             L["Master switch for anchoring Blizzard Private Auras to MSUF."])
         A2_Track("global", btnPrivateEnable)
         BuildBoolPathCheckboxes(privateBox, {
-            { "Show (Player)", 12, -64, A2_Settings, "showPrivateAurasPlayer", nil,
-                "Re-anchors Blizzard Private Auras to MSUF (no spell lists).", "cbPrivateShowP" },
-            { "Show (Focus)", 12, -92, A2_Settings, "showPrivateAurasFocus", nil,
-                "Re-anchors Blizzard Private Auras to MSUF Focus.", "cbPrivateShowF" },
-            { "Show (Boss)", 12, -120, A2_Settings, "showPrivateAurasBoss", nil,
-                "Re-anchors Blizzard Private Auras to MSUF Boss frames.", "cbPrivateShowB" },
+            { L["Show (Player)"], 12, -64, A2_Settings, "showPrivateAurasPlayer", nil,
+                L["Re-anchors Blizzard Private Auras to MSUF (no spell lists)."], "cbPrivateShowP" },
+            { L["Show (Focus)"], 12, -92, A2_Settings, "showPrivateAurasFocus", nil,
+                L["Re-anchors Blizzard Private Auras to MSUF Focus."], "cbPrivateShowF" },
+            { L["Show (Boss)"], 12, -120, A2_Settings, "showPrivateAurasBoss", nil,
+                L["Re-anchors Blizzard Private Auras to MSUF Boss frames."], "cbPrivateShowB" },
         }, refs)
         -- Track: these are Shared-scope controls (so per-unit overrides can grey them out correctly).
         if refs.cbPrivateShowP then A2_Track("global", refs.cbPrivateShowP) end
@@ -2109,10 +2109,10 @@ end
             if v > 12 then v = 12 end
             s.privateAuraMaxOther = v
          end
-        local privateMaxPlayer = CreateAuras2CompactSlider(privateBox, "Max (Player)", 0, 12, 1, 340, -34, 150, GetPrivateMaxPlayer, SetPrivateMaxPlayer)
+        local privateMaxPlayer = CreateAuras2CompactSlider(privateBox, L["Max (Player)"], 0, 12, 1, 340, -34, 150, GetPrivateMaxPlayer, SetPrivateMaxPlayer)
         MSUF_StyleAuras2CompactSlider(privateMaxPlayer, { hideMinMax = true, leftTitle = true })
         AttachSliderValueBox(privateMaxPlayer, 0, 12, 1, GetPrivateMaxPlayer)
-        local privateMaxOther  = CreateAuras2CompactSlider(privateBox, "Max (Focus/Boss)", 0, 12, 1, 540, -34, 150, GetPrivateMaxOther, SetPrivateMaxOther)
+        local privateMaxOther  = CreateAuras2CompactSlider(privateBox, L["Max (Focus/Boss)"], 0, 12, 1, 540, -34, 150, GetPrivateMaxOther, SetPrivateMaxOther)
         MSUF_StyleAuras2CompactSlider(privateMaxOther, { hideMinMax = true, leftTitle = true })
         AttachSliderValueBox(privateMaxOther, 0, 12, 1, GetPrivateMaxOther)
         if privateMaxPlayer then A2_Track("global", privateMaxPlayer) end

@@ -333,9 +333,9 @@ end
 
     local LEFT_W, RIGHT_W = 330, 330
 
-    local leftPanel = UI:MakePanel(miscGroup, "Updates", miscGroup, 0, -110, LEFT_W, 396)
-    local rightPanel = UI:MakePanel(miscGroup, "Unit info panel", leftPanel, LEFT_W, 0, RIGHT_W, 396)
-    local bottomPanel = UI:MakePanel(miscGroup, "Indicators", leftPanel, 0, -(396 + 16), LEFT_W + RIGHT_W, 180)
+    local leftPanel = UI:MakePanel(miscGroup, L["Updates"], miscGroup, 0, -110, LEFT_W, 396)
+    local rightPanel = UI:MakePanel(miscGroup, L["Unit info panel"], leftPanel, LEFT_W, 0, RIGHT_W, 396)
+    local bottomPanel = UI:MakePanel(miscGroup, L["Indicators"], leftPanel, 0, -(396 + 16), LEFT_W + RIGHT_W, 180)
 
     local centerDivider = miscGroup:CreateTexture(nil, "ARTWORK")
     centerDivider:SetColorTexture(1, 1, 1, 0.10)
@@ -532,7 +532,7 @@ end
         template = "UICheckButtonTemplate",
         anchor = sliders.ufcoreUrgent,
         x = 0, y = -20,
-        label  = "Show welcome message on login",
+        label  = L["Show welcome message on login"],
         get = function()
             local g = EnsureGeneral()
             return (g.showWelcomeMessage ~= false)
@@ -550,7 +550,7 @@ end
         template = "UICheckButtonTemplate",
         anchor = welcomeMsgCheck,
         x = 0, y = -6,
-        label  = "Enable version check (peer-to-peer)",
+        label  = L["Enable version check (peer-to-peer)"],
         get = function()
             local g = EnsureGeneral()
             return (g.versionCheckEnabled ~= false)

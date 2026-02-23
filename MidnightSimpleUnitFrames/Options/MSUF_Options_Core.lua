@@ -2156,7 +2156,7 @@ local function MSUF_StyleToggleText(cb)
     end
     end
     StaticPopupDialogs["MSUF_CONFIRM_RESET_PROFILE"] = {
-        text = "Reset all font size overrides?\n\nThis clears per-unit overrides for Name/Health/Power AND per-castbar overrides for Cast Name/Time so everything inherits the global defaults.",
+        text = L["Reset all font size overrides?\n\nThis clears per-unit overrides for Name/Health/Power AND per-castbar overrides for Cast Name/Time so everything inherits the global defaults."],
             button1 = YES,
         button2 = NO,
         OnAccept = function(self, data)
@@ -2174,7 +2174,7 @@ local function MSUF_StyleToggleText(cb)
         preferredIndex = 3,
     }
     StaticPopupDialogs["MSUF_CONFIRM_DELETE_PROFILE"] = {
-        text = "Are you sure you want to delete '%s'?",
+        text = L["Are you sure you want to delete '%s'?"],
         button1 = YES,
         button2 = NO,
         OnAccept = function(self, data)
@@ -2189,7 +2189,7 @@ local function MSUF_StyleToggleText(cb)
         preferredIndex = 3,
     }
     StaticPopupDialogs["MSUF_COPY_PROFILE_INPUT"] = {
-        text = "Copy profile '%s' to new name:",
+        text = L["Copy profile '%s' to new name:"],
         button1 = "Copy",
         button2 = CANCEL,
         hasEditBox = true,
@@ -2255,7 +2255,7 @@ local headerRow, _btns = MSUF_BuildButtonRowList(profileGroup, profileTitle, 8, 
     {
         id   = "copy",
         name = "MSUF_ProfileCopyButton",
-        text = "Copy profile",
+        text = L["Copy profile"],
         w    = 140,
         h    = 24,
     },
@@ -4724,7 +4724,7 @@ powerModeLabel = barGroup:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 -- Selected unitframe indicator + info icon (selection is done by clicking the unitframe itself).
 hpSpacerSelectedLabel = barGroup:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 hpSpacerSelectedLabel:ClearAllPoints()
-hpSpacerSelectedLabel:SetPoint("TOPLEFT", hpSepDrop, "BOTTOMLEFT", 16, -8)
+hpSpacerSelectedLabel:SetPoint("TOPLEFT", hpSepDrop, "BOTTOMLEFT", 16, 0)
 hpSpacerSelectedLabel:SetTextColor(1, 0.82, 0, 1)
 hpSpacerSelectedLabel:SetText(TR("Selected: Shared"))
 hpSpacerInfoButton = CreateFrame("Button", "MSUF_HPSpacerInfoButton", barGroup)
