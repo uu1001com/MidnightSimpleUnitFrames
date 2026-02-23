@@ -648,6 +648,17 @@ local MSUF_COPY_BASIC_FIELDS = {
     "alphaFGOutOfCombat",
     "alphaBGInCombat",
     "alphaBGOutOfCombat",
+    -- Load Conditions (per-unit visibility rules)
+    "loadCondHideMounted",
+    "loadCondHideInVehicle",
+    "loadCondHideResting",
+    "loadCondHideInCombat",
+    "loadCondHideOutOfCombat",
+    "loadCondHideStealthed",
+    "loadCondHideSolo",
+    "loadCondHideInGroup",
+    "loadCondHideInInstance",
+    "loadCondActive",
 }
 local MSUF_COPY_INDICATOR_FIELDS = {
     "showLeaderIcon",
@@ -1258,12 +1269,38 @@ function ns.MSUF_Options_Player_Build(panel, frameGroup, helpers)
     end
     dd._msufDropWidth = 170
     MSUF_ExpandDropdownClickArea(dd)
-    -- Left: Unit Alpha
-    local sizeBox = CreateGroupBox(frameGroup, "Unit Alpha", leftX, topY - basicsH - 12, leftW, sizeH, texWhite, texWhite2)
+    -- Left: Load Conditions (between Frame Basics and Unit Alpha)
+    local loadCondH = 160
+    local loadCondBox = CreateGroupBox(frameGroup, "Load Conditions", leftX, topY - basicsH - 12, leftW, loadCondH, texWhite, texWhite2)
+    loadCondBox:Hide()
+    panel.playerLoadCondBox = loadCondBox
+    -- Two-column checkbox layout for compact display.
+    -- Left column: conditions that hide based on player activity state.
+    -- Right column: conditions that hide based on group/location state.
+    local LOAD_COND_UI_SPECS = {
+        -- { panelField, dbField, label, x, y }
+        { "playerLoadCondMountedCB",    "loadCondHideMounted",      "Mounted",       12, -32 },
+        { "playerLoadCondVehicleCB",    "loadCondHideInVehicle",    "In vehicle",    12, -54 },
+        { "playerLoadCondRestingCB",    "loadCondHideResting",      "Resting",       12, -76 },
+        { "playerLoadCondStealthedCB",  "loadCondHideStealthed",    "Stealthed",     12, -98 },
+        { "playerLoadCondInCombatCB",   "loadCondHideInCombat",     "In combat",     12, -120 },
+        -- Right column
+        { "playerLoadCondOutCombatCB",  "loadCondHideOutOfCombat",  "Out of combat", 132, -32 },
+        { "playerLoadCondSoloCB",       "loadCondHideSolo",         "Solo",          132, -54 },
+        { "playerLoadCondInGroupCB",    "loadCondHideInGroup",      "In group",      132, -76 },
+        { "playerLoadCondInInstanceCB", "loadCondHideInInstance",   "In instance",   132, -98 },
+    }
+    panel._msufLoadCondSpecs = LOAD_COND_UI_SPECS
+    for _, s in ipairs(LOAD_COND_UI_SPECS) do
+        panel[s[1]] = CreateCheck(loadCondBox, "MSUF_UF_" .. s[1], s[3], s[4], s[5])
+    end
+    -- Left: Unit Alpha (shifted down to accommodate Load Conditions box)
+    local sizeBox = CreateGroupBox(frameGroup, "Unit Alpha", leftX, topY - basicsH - 12 - loadCondH - 12, leftW, sizeH, texWhite, texWhite2)
     sizeBox:Hide()
     panel.playerSizeBox = sizeBox
     -- Store base/boss heights for dynamic boss-only extension
     panel._msufBasicsH = basicsH
+    panel._msufLoadCondH = loadCondH
     panel._msufSizeBaseH = sizeH
     panel._msufSizeBossH = sizeBossH
     -- Unit Alpha controls (in/out of combat)
@@ -2625,6 +2662,33 @@ end
         UIDropDownMenu_SetSelectedValue(panel.playerPortraitDropDown, mode)
         UIDropDownMenu_SetText(panel.playerPortraitDropDown, MSUF_PortraitModeText(mode))
     end
+    -- Load Conditions box: dynamic title per-unit + checkbox restore from DB.
+    if panel.playerLoadCondBox and panel.playerLoadCondBox._msufTitleText then
+        local k = currentKey
+        if k == "tot" or k == "targetoftarget" then k = "targettarget" end
+        local lcTitleMap = {
+            player = "Player Load Conditions",
+            target = "Target Load Conditions",
+            focus = "Focus Load Conditions",
+            pet = "Pet Load Conditions",
+            boss = "Boss Load Conditions",
+            targettarget = "ToT Load Conditions",
+        }
+        panel.playerLoadCondBox._msufTitleText:SetText(lcTitleMap[k] or "Load Conditions")
+    end
+    -- Restore load condition checkboxes from DB.
+    local lcSpecs = panel._msufLoadCondSpecs
+    if lcSpecs then
+        for _, s in ipairs(lcSpecs) do
+            local cb = panel[s[1]]
+            if cb and cb.SetChecked then
+                cb:SetChecked((conf[s[2]] == true) and true or false)
+            end
+        end
+    end
+    -- Ensure the fast-path flag is in sync (covers profile import/Copy-To/DB reset).
+    local lcRecompute = _G.MSUF_LoadCond_RecomputeActive
+    if type(lcRecompute) == "function" then lcRecompute(conf) end
     -- Unit Alpha (in/out of combat) [spec-driven]
     local excludeTP = (conf.alphaExcludeTextPortrait == true)
     if panel.playerAlphaExcludeTextPortraitCB then
@@ -3867,6 +3931,59 @@ local function ApplyAlphaOnly()
     local fn = (_G and _G.MSUF_RefreshAllUnitAlphas) or MSUF_RefreshAllUnitAlphas
     if type(fn) == "function" then pcall(fn) end
  end
+-- Load Conditions checkboxes (per-unit hide rules)
+do
+    local specs = panel._msufLoadCondSpecs
+    if specs then
+        -- Collect all load-cond checkboxes for combat enable/disable.
+        local allLoadCondCBs = {}
+        for _, s in ipairs(specs) do
+            local cb = panel[s[1]]
+            local dbField = s[2]
+            if cb then
+                allLoadCondCBs[#allLoadCondCBs + 1] = cb
+                cb:SetScript("OnClick", function(self)
+                    if not IsFramesTab() then return end
+                    -- Block changes during combat (EnableMouse on secure frames = taint).
+                    if InCombatLockdown and InCombatLockdown() then
+                        -- Revert the visual check (click already toggled it).
+                        self:SetChecked(not self:GetChecked())
+                        return
+                    end
+                    local conf = EnsureKeyDB()
+                    conf[dbField] = self:GetChecked() and true or false
+                    -- Recompute the fast-path flag (zero overhead when no conditions set).
+                    local recompute = _G.MSUF_LoadCond_RecomputeActive
+                    if type(recompute) == "function" then recompute(conf) end
+                    -- Trigger load conditions re-evaluation immediately.
+                    local lcRefresh = _G.MSUF_LoadCond_RefreshAll
+                    if type(lcRefresh) == "function" then lcRefresh() end
+                end)
+            end
+        end
+        -- Combat lockdown: grey out checkboxes on enter, restore on leave.
+        local function _SetLoadCondCBsEnabled(enabled)
+            for i = 1, #allLoadCondCBs do
+                local cb = allLoadCondCBs[i]
+                if enabled then
+                    if cb.Enable then cb:Enable() end
+                else
+                    if cb.Disable then cb:Disable() end
+                end
+            end
+        end
+        local lcCombatFrame = CreateFrame("Frame")
+        lcCombatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+        lcCombatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+        lcCombatFrame:SetScript("OnEvent", function(_, event)
+            _SetLoadCondCBsEnabled(event == "PLAYER_REGEN_ENABLED")
+        end)
+        -- If we load mid-combat, disable immediately.
+        if InCombatLockdown and InCombatLockdown() then
+            _SetLoadCondCBsEnabled(false)
+        end
+    end
+end
 -- Alpha sync checkbox
 if panel.playerAlphaSyncCB then
     panel.playerAlphaSyncCB:SetScript("OnClick", function(self)

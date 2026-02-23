@@ -52,7 +52,7 @@ MSUF_RestorePanelState=MSUF_RestorePanelState or function(panel,st) if not panel
 local sf=panel.ScrollFrame or panel.scrollFrame or panel.scroll or panel.Scroll or panel.scrollChild if sf and sf.SetVerticalScroll and st.vScroll then pcall(sf.SetVerticalScroll,sf,st.vScroll)
 end
 end
-local S={win=nil,content=nil,scale={},mirror={host=nil,currentKey="home",currentPanel=nil,homePanel=nil,homeToolsApi=nil,tipText=nil,},}
+local S={win=nil,content=nil,scale={},mirror={host=nil,currentKey="home",currentPanel=nil,homePanel=nil,homeToolsApi=nil,tipText=nil,selectEpoch=0,},}
 -- Transition helpers (populated after MSUF_Transitions loads; nil-safe fallback)
 local function _T() return ns.MSUF_Transitions end
 local function _TFadeIn(f,d,cb)  local t=_T() if t then t.FadeIn(f,d,cb)  elseif f and f.Show then f:Show() end end
@@ -2143,9 +2143,9 @@ local sel=info and info.select;
 local wantSub=subkey if wantSub==nil and S and S.mirror then wantSub=S.mirror.pendingSubKey S.mirror.pendingSubKey=nil end
 if S and S.mirror then if isCastbarKey and type(wantSub)=="string"and wantSub~=""then S.mirror.currentSubKey=wantSub elseif not isCastbarKey then S.mirror.currentSubKey=nil end
 end
-if type(sel)=="function"then if C_Timer and C_Timer.After then C_Timer.After(0,function() pcall(sel,wantSub) end
+if type(sel)=="function"then local epoch=S.mirror.selectEpoch if C_Timer and C_Timer.After then C_Timer.After(0,function() if S.mirror.selectEpoch~=epoch then return end pcall(sel,wantSub) end
 )
-C_Timer.After(0.05,function() pcall(sel,wantSub) end
+C_Timer.After(0.05,function() if S.mirror.selectEpoch~=epoch then return end pcall(sel,wantSub) end
 )
 else pcall(sel,wantSub)
 end
@@ -2165,13 +2165,13 @@ end
 return panel end
 local function MSUF_Standalone_AfterAttachFixups(key,isCastbarKey) if not isCastbarKey then return end
 MSUF_Standalone_SetCastbarTopButtonsHidden(true)
-if C_Timer and C_Timer.After then C_Timer.After(0,function() MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
+if C_Timer and C_Timer.After then local epoch=S.mirror.selectEpoch C_Timer.After(0,function() if S.mirror.selectEpoch~=epoch then return end MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
 )
-C_Timer.After(0.05,function() MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
+C_Timer.After(0.05,function() if S.mirror.selectEpoch~=epoch then return end MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
 )
-C_Timer.After(0.15,function() MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
+C_Timer.After(0.15,function() if S.mirror.selectEpoch~=epoch then return end MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
 )
-C_Timer.After(0.30,function() MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
+C_Timer.After(0.30,function() if S.mirror.selectEpoch~=epoch then return end MSUF_Standalone_SetCastbarTopButtonsHidden(true) end
 )
 end
 local p=S and S.mirror and S.mirror.currentPanel if p and p.HookScript and not p.__MSUF_FocusKickResizeHooked then p.__MSUF_FocusKickResizeHooked=true p:HookScript("OnSizeChanged",function() if S and S.mirror and MSUF_IsCastbarKey(S.mirror.currentKey)
@@ -2191,12 +2191,13 @@ end
 end
 end
 local function MSUF_SwitchMirrorPage(key,subkey) key=MSUF_NormalizeMirrorKey(key,true)
+S.mirror.selectEpoch=(S.mirror.selectEpoch or 0)+1
 if key=="home"then if S.mirror and MSUF_IsCastbarKey(S.mirror.currentKey)
 and not MSUF_IsCastbarKey(key)
 then MSUF_Standalone_SetCastbarTopButtonsHidden(false)
 end
-if S.mirror.currentPanel then MSUF_DetachMirroredPanel(S.mirror.currentPanel)
-S.mirror.currentPanel=nil end
+if S.mirror.currentPanel then local _p=S.mirror.currentPanel MSUF_DetachMirroredPanel(_p)
+S.mirror.currentPanel=nil if _p and _p.Hide then pcall(_p.Hide,_p) end end
 S.mirror.currentKey="home"if S.mirror.homePanel then _TFadeIn(S.mirror.homePanel,TRANS_PAGE)
 MSUF_UpdateHomePanel(S.mirror.homePanel)
 end
@@ -2215,8 +2216,8 @@ if S.mirror and MSUF_IsCastbarKey(S.mirror.currentKey)
 and not isCastbarKey then MSUF_Standalone_SetCastbarTopButtonsHidden(false)
 end
 local prevPanel = S.mirror.currentPanel
-if S.mirror.currentPanel then MSUF_DetachMirroredPanel(S.mirror.currentPanel)
-S.mirror.currentPanel=nil end
+if S.mirror.currentPanel then local _p=S.mirror.currentPanel MSUF_DetachMirroredPanel(_p)
+S.mirror.currentPanel=nil if _p and _p.Hide then pcall(_p.Hide,_p) end end
 S.mirror.currentKey=key S.mirror.currentPanel=MSUF_Standalone_AttachMirrorPanel(key)
 if S.mirror.currentPanel and S.mirror.currentPanel ~= prevPanel then _TFadeIn(S.mirror.currentPanel,TRANS_PAGE) end
 MSUF_Standalone_ApplySelection(key,subkey,isCastbarKey)
@@ -2713,6 +2714,7 @@ presetHint:SetText(L["Overwrites your current active profile settings."])
 MSUF_SkinMuted(presetHint)
 do local KO_FI_URL="https://ko-fi.com/midnightsimpleunitframes#linkModal";
 local PAYPAL_URL="https://www.paypal.com/ncp/payment/H3N2P87S53KBQ";
+local PATREON_URL="https://www.patreon.com/cw/MidnightSimpleUnitframes";
 local GITHUB_URL="https://github.com/Mapkov2/MidnightSimpleUnitFrames";
 local ICON_DIR="Interface\\AddOns\\MidnightSimpleUnitFrames\\Media\\Masks\\";
 local supportLabel=presetsCard:CreateFontString(nil,"OVERLAY","GameFontNormal")
@@ -2725,7 +2727,7 @@ if MSUF_SkinMuted then pcall(MSUF_SkinMuted,supportLabel)
 end
 local row=CreateFrame("Frame",nil,presetsCard)
 row:SetHeight(24)
-row:SetWidth(120)
+row:SetWidth(150)
 row:SetPoint("BOTTOMRIGHT",presetsCard,"BOTTOMRIGHT",-12,12)
 local function CreateIcon(texFile,size,tooltipTitle,tooltipText,onClick) local b=CreateFrame("Button",nil,row)
 b:SetSize(size,size)
@@ -2751,7 +2753,8 @@ end
 end
 return b end
 local sz=22;
-local gap=7 local icons={{tex="PayPal.png",title="PayPal",tip="Click to copy the PayPal support link.",onClick=function() MSUF_ShowCopyLink("PayPal",PAYPAL_URL) end
+local gap=7 local icons={{tex="Patreon.png",title="Patreon",tip="Click to copy the Patreon support link.",onClick=function() MSUF_ShowCopyLink("Patreon",PATREON_URL) end
+},{tex="PayPal.png",title="PayPal",tip="Click to copy the PayPal support link.",onClick=function() MSUF_ShowCopyLink("PayPal",PAYPAL_URL) end
 },{tex="Ko-Fi.png",title="Ko-fi",tip="Click to copy the Ko-fi link.",onClick=function() MSUF_ShowCopyLink("Ko-fi",KO_FI_URL) end
 },{tex="GitHub.png",title="GitHub",tip="Click to copy the GitHub repository link.",onClick=function() MSUF_ShowCopyLink("GitHub",GITHUB_URL) end
 },}
@@ -2846,8 +2849,8 @@ S.mirror.currentKey=startKey MSUF_SwitchMirrorPage(startKey,startSubKey) end
 f:SetScript("OnHide",function() MSUF_Standalone_SetCastbarTopButtonsHidden(false)
 if MSUF_SaveWindowGeometry then MSUF_SaveWindowGeometry(f,f._msufGeomKey or"full")
 end
-if S.mirror.currentPanel then MSUF_DetachMirroredPanel(S.mirror.currentPanel);
-S.mirror.currentPanel=nil end
+if S.mirror.currentPanel then local _p=S.mirror.currentPanel MSUF_DetachMirroredPanel(_p);
+S.mirror.currentPanel=nil if _p and _p.Hide then pcall(_p.Hide,_p) end end
 end
 )
 f:Hide()
@@ -2911,6 +2914,7 @@ else openKey("castbar")
 end
 return end
 if first=="profiles"then openKey("profiles") return end
+if first=="versiontest"then if _G.MSUF_VersionCheck_DebugFakeUpdate then _G.MSUF_VersionCheck_DebugFakeUpdate() end return end
 return original(msg) end
 end
 SLASH_MSUFOPTIONS1="/msufoptions"SlashCmdList["MSUFOPTIONS"]=function() MSUF_ToggleOptionsWindow("main") end

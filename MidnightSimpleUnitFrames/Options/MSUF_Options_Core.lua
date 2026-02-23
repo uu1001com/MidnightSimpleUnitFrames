@@ -887,6 +887,7 @@ panel = (_G and _G.MSUF_OptionsPanel) or CreateFrame("Frame")
             if panel and panel.playerBasicsBox then
                 panel.playerBasicsBox:SetShown(isUnitFrame)
             end
+            if panel and panel.playerLoadCondBox then panel.playerLoadCondBox:SetShown(isUnitFrame) end
             if panel and panel.playerSizeBox then panel.playerSizeBox:SetShown(isUnitFrame) end
         end
         if editModeButton then
@@ -3601,6 +3602,7 @@ local absorbAnchorOptions = {
     { key = 2, label = "Anchor to right side" },
 	    { key = 3, label = "Follow HP bar" },
 	    { key = 4, label = "Follow HP bar (overflow)" },
+	    { key = 5, label = "Reverse from max" },
 }
 local function MSUF_GetAbsorbAnchorMode()
     EnsureDB()

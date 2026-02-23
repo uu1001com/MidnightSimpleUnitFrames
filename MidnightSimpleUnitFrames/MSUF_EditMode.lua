@@ -1112,6 +1112,11 @@ end
 
 local function MSUF_EditMode_HardTeardown()
 
+    -- Clear undo/redo history on exit
+    if type(_G.MSUF_EM_UndoClear) == "function" then
+        _G.MSUF_EM_UndoClear()
+    end
+
     MSUF__EditModeFlushSeq = (MSUF__EditModeFlushSeq or 0) + 1
 
     MSUF__EM_AfterSeq = (MSUF__EM_AfterSeq or 0) + 1
@@ -1559,12 +1564,24 @@ function MSUF_EditMode_FlushPendingApplies()
 
     -- Castbars (player/target/focus)
     if MSUF__EditModePendingApplies.castbar then
+        local PREVIEW_FNS = {
+            player = { "MSUF_UpdatePlayerCastbarPreview", "MSUF_PositionPlayerCastbarPreview" },
+            target = { "MSUF_UpdateTargetCastbarPreview", "MSUF_PositionTargetCastbarPreview" },
+            focus  = { "MSUF_UpdateFocusCastbarPreview",  "MSUF_PositionFocusCastbarPreview"  },
+        }
         for unit in pairs(MSUF__EditModePendingApplies.castbar) do
             MSUF__EditModePendingApplies.castbar[unit] = nil
             if type(MSUF_ApplyCastbarUnitAndSync) == "function" then
                 MSUF_SafeCall("Flush:CastbarApply:" .. tostring(unit), MSUF_ApplyCastbarUnitAndSync, unit)
             elseif type(_G.MSUF_UpdateCastbarVisuals) == "function" then
                 MSUF_SafeCall("Flush:CastbarVisuals", _G.MSUF_UpdateCastbarVisuals)
+            end
+            -- Sync preview position + dimensions after apply
+            local fns = PREVIEW_FNS[unit]
+            if fns then
+                for _, fn in ipairs(fns) do
+                    if type(_G[fn]) == "function" then pcall(_G[fn]) end
+                end
             end
         end
     end
@@ -2578,12 +2595,70 @@ MSUF_EM_ForceWhiteButtonText(resetBtn)
             return
         end
 
+        -- Undo: capture state BEFORE reset
+        if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+            _G.MSUF_EM_UndoBeforeChange("unit", MSUF_CurrentEditUnitKey)
+        end
+
         if MSUF_ResetCurrentEditUnit then
             MSUF_ResetCurrentEditUnit()
         end
     end)
 
     f.resetButton = resetBtn
+
+    -- Undo / Redo buttons (Edit Mode history)
+    local undoBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeUndoBtn", 80, 22, nil, "UIPanelButtonTemplate")
+    undoBtn:SetText("< Undo")
+    undoBtn:SetEnabled(false)
+    undoBtn:SetAlpha(0.4)
+    MSUF_EM_ForceWhiteButtonText(undoBtn)
+    undoBtn:SetScript("OnClick", function()
+        if not MSUF_UnitEditModeActive then return end
+        local EM_U = _G.MSUF_Edit and _G.MSUF_Edit.Undo
+        if EM_U and EM_U.DoUndo then EM_U.DoUndo() end
+    end)
+    undoBtn:SetScript("OnEnter", function(self)
+        if GameTooltip then
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetText("Undo last change", 1, 1, 1)
+            GameTooltip:Show()
+        end
+    end)
+    undoBtn:SetScript("OnLeave", function()
+        if GameTooltip then GameTooltip:Hide() end
+    end)
+    f.undoButton = undoBtn
+
+    local redoBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeRedoBtn", 80, 22, nil, "UIPanelButtonTemplate")
+    redoBtn:SetText("Redo >")
+    redoBtn:SetEnabled(false)
+    redoBtn:SetAlpha(0.4)
+    MSUF_EM_ForceWhiteButtonText(redoBtn)
+    redoBtn:SetScript("OnClick", function()
+        if not MSUF_UnitEditModeActive then return end
+        local EM_U = _G.MSUF_Edit and _G.MSUF_Edit.Undo
+        if EM_U and EM_U.DoRedo then EM_U.DoRedo() end
+    end)
+    redoBtn:SetScript("OnEnter", function(self)
+        if GameTooltip then
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetText("Redo last undone change", 1, 1, 1)
+            GameTooltip:Show()
+        end
+    end)
+    redoBtn:SetScript("OnLeave", function()
+        if GameTooltip then GameTooltip:Hide() end
+    end)
+    f.redoButton = redoBtn
+
+    -- Register buttons with the Undo module (deferred: module loads after this file)
+    C_Timer.After(0, function()
+        local EM_U = _G.MSUF_Edit and _G.MSUF_Edit.Undo
+        if EM_U and EM_U.SetButtons then
+            EM_U.SetButtons(undoBtn, redoBtn)
+        end
+    end)
 
     -- Edit Mode UI layout refresh (visual only)
     -- Goal: clearer sections + boss preview toggle near Boss ON + bottom action bar.
@@ -2708,27 +2783,33 @@ anchorCheck:SetPoint("LEFT", anchorNameInput, "RIGHT", 10, -1)
             auraPreviewCheck:Show()
         end
 
-        -- Actions: Cancel | Reset | Exit as one row
-        local gap = 10
-        local cW, rW, eW, h = 160, 150, 190, 24
+        -- Actions: Cancel | Undo | Redo | Reset | Exit as one row
+        local gap = 6
+        local cW, uW, rdW, rW, eW, h = 140, 80, 80, 130, 170, 24
 
         cancelBtn:SetSize(cW, h)
+        undoBtn:SetSize(uW, h)
+        redoBtn:SetSize(rdW, h)
         resetBtn:SetSize(rW, h)
         exitBtn:SetSize(eW, h)
 
-        actionRow:SetSize(cW + rW + eW + (gap * 2), h)
+        actionRow:SetSize(cW + uW + rdW + rW + eW + (gap * 4), h)
         actionRow:ClearAllPoints()
         actionRow:SetPoint("TOP", (row or framesHeader), "BOTTOM", _msufCenterShiftX, -18)
         actionRow:Show()
 
         cancelBtn:ClearAllPoints()
+        undoBtn:ClearAllPoints()
+        redoBtn:ClearAllPoints()
         resetBtn:ClearAllPoints()
         exitBtn:ClearAllPoints()
 
         cancelBtn:SetPoint("LEFT", actionRow, "LEFT", 0, 0)
-        resetBtn:SetPoint("LEFT", cancelBtn, "RIGHT", gap, 0)
+        undoBtn:SetPoint("LEFT", cancelBtn, "RIGHT", gap, 0)
+        redoBtn:SetPoint("LEFT", undoBtn, "RIGHT", gap, 0)
+        resetBtn:SetPoint("LEFT", redoBtn, "RIGHT", gap, 0)
         exitBtn:SetPoint("LEFT", resetBtn, "RIGHT", gap, 0)
-        cancelBtn:Show(); resetBtn:Show(); exitBtn:Show()
+        cancelBtn:Show(); undoBtn:Show(); redoBtn:Show(); resetBtn:Show(); exitBtn:Show()
     end
 
     MSUF_EM_ApplyEditModeLayout()
@@ -3748,6 +3829,8 @@ local function ApplyUnitPopupValues()
         if MSUF__UnitPopupSyncing or MSUF__UnitPopupApplying then
             return
         end
+        -- Block popup re-fire during undo/redo restore
+        if _G.MSUF__UndoRestoring then return end
 
         MSUF__UnitPopupApplying = true
         local ok, err = MSUF_FastCall(function()
@@ -3794,6 +3877,12 @@ local function ApplyUnitPopupValues()
             if pf.powerShowCB and pf.powerShowCB.GetChecked then
                 showPowerVal = (pf.powerShowCB:GetChecked() and true or false)
             end
+
+            -- Undo: capture state BEFORE popup apply writes
+            if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+                _G.MSUF_EM_UndoBeforeChange("unit", key)
+            end
+
             conf.offsetX = xVal
             conf.offsetY = yVal
             conf.width   = wVal
@@ -4462,6 +4551,8 @@ function MSUF_OpenCastbarPositionPopup(unit, parent)
         if MSUF__CastbarPopupSyncing or MSUF__CastbarPopupApplying then
             return
         end
+        -- Block popup re-fire during undo/redo restore
+        if _G.MSUF__UndoRestoring then return end
 
         MSUF__CastbarPopupApplying = true
         local ok, err = MSUF_FastCall(function()
@@ -4485,6 +4576,25 @@ function MSUF_OpenCastbarPositionPopup(unit, parent)
             local unit = pf._msufUnitKey or pf.unit
             local parent = pf.parent
 
+            -- Helper: proper default castbar dimensions per unit.
+            -- NEVER fall back to parent:GetWidth() (could be preview frame or UIParent).
+            local function GetCastbarDefaultDimensions(unitKey, pfx)
+                local w = tonumber(g[pfx .. "BarWidth"])  or tonumber(g.castbarGlobalWidth)
+                local h = tonumber(g[pfx .. "BarHeight"]) or tonumber(g.castbarGlobalHeight)
+                if not w or w <= 0 then
+                    if unitKey == "player" then w = 271
+                    elseif unitKey == "focus" then w = 175
+                    else w = 272 end
+                end
+                if not h or h <= 0 then h = 18 end
+                return w, h
+            end
+
+            -- Undo: capture castbar state BEFORE popup apply writes
+            if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+                _G.MSUF_EM_UndoBeforeChange("castbar", unit)
+            end
+
             local function GlobalCastFont()
                 local baseSize = tonumber(g.fontSize) or 14
                 local globalOverride = tonumber(g.castbarSpellNameFontSize) or 0
@@ -4493,8 +4603,8 @@ function MSUF_OpenCastbarPositionPopup(unit, parent)
 
             -- Boss Castbar (stored on g via bossCast*)
             if unit == "boss" then
-                local currentW = tonumber(g.bossCastbarWidth)  or (parent and parent.GetWidth and parent:GetWidth())  or 240
-                local currentH = tonumber(g.bossCastbarHeight) or (parent and parent.GetHeight and parent:GetHeight()) or 18
+                local currentW = tonumber(g.bossCastbarWidth)  or 176
+                local currentH = tonumber(g.bossCastbarHeight) or 12
 
                 -- Apply numeric fields via specs (store=true does the DB writeback)
                 P.ReadFields(pf, { conf = g, currentW = currentW, currentH = currentH }, specs.BossCastbarFramePosition)
@@ -4554,8 +4664,7 @@ function MSUF_OpenCastbarPositionPopup(unit, parent)
                 defaultX, defaultY = _G.MSUF_GetCastbarDefaultOffsets(unit)
             end
 
-            local currentW = tonumber(g[prefix .. "BarWidth"])  or tonumber(g.castbarGlobalWidth)  or (parent and parent.GetWidth and parent:GetWidth())  or 200
-            local currentH = tonumber(g[prefix .. "BarHeight"]) or tonumber(g.castbarGlobalHeight) or (parent and parent.GetHeight and parent:GetHeight()) or 16
+            local currentW, currentH = GetCastbarDefaultDimensions(unit, prefix)
 
             -- Apply numeric fields via specs
             P.ReadFields(pf, { conf = g, prefix = prefix, defaultX = defaultX, defaultY = defaultY, currentW = currentW, currentH = currentH }, specs.CastbarFramePosition)
@@ -4589,7 +4698,8 @@ function MSUF_OpenCastbarPositionPopup(unit, parent)
             U.ApplyOptionalOverrideNumber(g, prefix .. "IconSize", pf.iconSizeBox, pf.iconSizeOverrideCB,
                 pf.SetCastbarSizeControlsEnabled, pf.iconSizeMinus, pf.iconSizePlus, (g[prefix .. "ShowIcon"] ~= false), baseIcon, 6, 128)
 
-            -- reanchor + visuals
+            -- Correct order: reanchor → visuals → preview sync
+            -- 1) Reanchor: positions real castbar using new DB offset values
             local reanchorName = (unit == "player" and "MSUF_ReanchorPlayerCastBar") or
                                  (unit == "target" and "MSUF_ReanchorTargetCastBar") or
                                  (unit == "focus"  and "MSUF_ReanchorFocusCastBar")
@@ -4598,6 +4708,46 @@ function MSUF_OpenCastbarPositionPopup(unit, parent)
                 reanchorFn()
             end
 
+            -- 2) Visuals: applies new width/height/fonts/icons to ALL castbar frames
+            --    (real + preview) using the DB values just written by ReadFields
+            if type(_G.MSUF_UpdateCastbarVisuals) == "function" then
+                _G.MSUF_UpdateCastbarVisuals()
+            end
+
+            -- 3) Preview sync: reposition + resize preview frame to match real castbar.
+            --    Both "Update" and "Position" variants exist; call both to cover all LoD patterns.
+            local previewUpdateName = (unit == "player" and "MSUF_UpdatePlayerCastbarPreview") or
+                                      (unit == "target" and "MSUF_UpdateTargetCastbarPreview") or
+                                      (unit == "focus"  and "MSUF_UpdateFocusCastbarPreview")
+            if type(_G[previewUpdateName]) == "function" then
+                _G[previewUpdateName]()
+            end
+            local previewPosName = (unit == "player" and "MSUF_PositionPlayerCastbarPreview") or
+                                   (unit == "target" and "MSUF_PositionTargetCastbarPreview") or
+                                   (unit == "focus"  and "MSUF_PositionFocusCastbarPreview")
+            if type(_G[previewPosName]) == "function" then
+                _G[previewPosName]()
+            end
+
+            -- 4) Belt-and-suspenders: explicitly size the preview frame from DB.
+            --    ApplyMSUF may skip preview if it lacks a .statusBar child.
+            local previewGlobalName = (unit == "player" and "MSUF_PlayerCastbarPreview") or
+                                      (unit == "target" and "MSUF_TargetCastbarPreview") or
+                                      (unit == "focus"  and "MSUF_FocusCastbarPreview")
+            local previewFrame = previewGlobalName and _G[previewGlobalName]
+            if previewFrame and previewFrame.SetSize then
+                local dbW = tonumber(g[prefix .. "BarWidth"])  or tonumber(g.castbarGlobalWidth)  or currentW
+                local dbH = tonumber(g[prefix .. "BarHeight"]) or tonumber(g.castbarGlobalHeight) or currentH
+                previewFrame:SetSize(dbW, dbH)
+                -- Also resize statusBar if present (for ApplyMSUF consistency)
+                local sb = previewFrame.statusBar
+                if sb and sb.SetSize then
+                    sb:SetHeight(dbH - 2)
+                    -- Width depends on icon visibility, re-apply visuals to handle it
+                end
+            end
+
+            -- 5) Final visuals pass to ensure preview statusBar matches after explicit resize
             if type(_G.MSUF_UpdateCastbarVisuals) == "function" then
                 _G.MSUF_UpdateCastbarVisuals()
             end
@@ -5188,8 +5338,8 @@ function MSUF_SyncCastbarPositionPopup(unit, force)
         -- Boss castbar is stored on MSUF_DB.general using "bossCast*" keys.
         if unit == "boss" then
             local parent = pf.parent or UIParent
-            local currentW = tonumber(g.bossCastbarWidth)  or (parent.GetWidth and parent:GetWidth())  or 240
-            local currentH = tonumber(g.bossCastbarHeight) or (parent.GetHeight and parent:GetHeight()) or 18
+            local currentW = tonumber(g.bossCastbarWidth)  or 176
+            local currentH = tonumber(g.bossCastbarHeight) or 12
             if P and P.SyncFields then
                 local specs = (Edit and Edit.Popups and Edit.Popups.Specs)
                 if specs then
@@ -5241,8 +5391,11 @@ function MSUF_SyncCastbarPositionPopup(unit, force)
         end
 
         local parent = pf.parent or UIParent
-        local currentW = g[prefix .. "BarWidth"]  or g.castbarGlobalWidth  or (parent.GetWidth and parent:GetWidth())  or 200
-        local currentH = g[prefix .. "BarHeight"] or g.castbarGlobalHeight or (parent.GetHeight and parent:GetHeight()) or 16
+        -- Use proper per-unit defaults. NEVER fall back to parent:GetWidth()
+        -- (parent could be a preview frame with wrong size or UIParent with screen width).
+        local CASTBAR_DEFAULT_W = { player = 271, target = 272, focus = 175 }
+        local currentW = tonumber(g[prefix .. "BarWidth"])  or tonumber(g.castbarGlobalWidth)  or CASTBAR_DEFAULT_W[unit] or 272
+        local currentH = tonumber(g[prefix .. "BarHeight"]) or tonumber(g.castbarGlobalHeight) or 18
 
         if P and P.SyncFields then
             local ctxForce = force and true or false
@@ -5439,6 +5592,8 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
 
     local function Apply()
         if (pf and (pf._msufAuras2PopupApplying or pf._msufAuras2PopupSyncing)) or _G.MSUF__Auras2PopupApplying then return end
+        -- Block popup re-fire during undo/redo restore
+        if _G.MSUF__UndoRestoring then return end
         if pf then pf._msufAuras2PopupApplying = true end
         _G.MSUF__Auras2PopupApplying = true
 
@@ -5447,6 +5602,12 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
         if not MSUF_DB or not MSUF_DB.auras2 then return end
 
         local unitKey = pf.unit or 'target'
+
+        -- Undo: capture aura state BEFORE popup apply writes
+        if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+            _G.MSUF_EM_UndoBeforeChange("aura", unitKey)
+        end
+
         local a2db = MSUF_DB.auras2
         a2db.shared = a2db.shared or {}
         a2db.perUnit = a2db.perUnit or {}
@@ -5770,6 +5931,38 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
         pf.privateOffsetXBox, pf.privateOffsetYBox, pf.privateSizeBox
         )
 
+        -- Track which aura group section was last interacted with for arrow-key nudging.
+        -- Clicking/focusing a buff/debuff/private offset or size box sets the active group.
+        -- Arrow keys will then only nudge that specific group (buff/debuff/private).
+        local AURA_GROUP_FOCUS_MAP = {
+            { group = "buff",    boxes = { pf.buffGroupOffsetXBox,   pf.buffGroupOffsetYBox,   pf.buffGroupIconSizeBox  } },
+            { group = "debuff",  boxes = { pf.debuffGroupOffsetXBox, pf.debuffGroupOffsetYBox, pf.debuffGroupIconSizeBox } },
+            { group = "private", boxes = { pf.privateOffsetXBox,     pf.privateOffsetYBox,     pf.privateSizeBox         } },
+        }
+        for _, entry in ipairs(AURA_GROUP_FOCUS_MAP) do
+            for _, box in ipairs(entry.boxes) do
+                if box and box.HookScript then
+                    local grp = entry.group
+                    box:HookScript("OnEditFocusGained", function()
+                        pf._msufActiveNudgeGroup = grp
+                    end)
+                end
+            end
+        end
+        -- Frame-level / shared boxes: reset to nil → arrow keys nudge all groups
+        local AURA_FRAME_BOXES = {
+            pf.offsetXBox, pf.offsetYBox, pf.iconSizeBox, pf.spacingBox,
+            pf.stackTextSizeBox, pf.stackTextOffsetXBox, pf.stackTextOffsetYBox,
+            pf.cooldownTextSizeBox, pf.cooldownTextOffsetXBox, pf.cooldownTextOffsetYBox,
+        }
+        for _, box in ipairs(AURA_FRAME_BOXES) do
+            if box and box.HookScript then
+                box:HookScript("OnEditFocusGained", function()
+                    pf._msufActiveNudgeGroup = nil
+                end)
+            end
+        end
+
         local UISpec = Edit and Edit.Popups and Edit.Popups.UISpec
         local AS = UISpec and UISpec.Auras2
         if AS and AS.copyDropdowns and AS.copyDropdowns.aura then
@@ -6024,6 +6217,217 @@ function _G.MSUF_A2_EnsureAuraPositionPopup()
         end)
     end
 
+    -- ===================================================================
+    -- Scrollable + Resizable popup  (fixes zhCN / zhTW font clipping)
+    -- ===================================================================
+    -- Strategy: wrap all *content* widgets (between title bar and footer
+    -- buttons) in a ScrollFrame.  Widget-to-widget anchors survive
+    -- SetParent() in modern WoW so existing layout chains remain valid.
+    -- The title, close button, copy dropdown, and Cancel/Okay buttons
+    -- stay parented to pf (they are in the fixed header/footer areas).
+    -- ===================================================================
+    do
+        local SCROLL_TOP_INSET  = 38   -- px below pf top  (title + gap)
+        local SCROLL_BOT_INSET  = 88   -- px above pf bottom (copy dd + btns)
+        local SCROLL_SIDE_PAD   = 6
+
+        -- --- ScrollFrame (clips content, provides vertical scroll) ---
+        local sf = CreateFrame("ScrollFrame", nil, pf)
+        sf:SetPoint("TOPLEFT",  pf, "TOPLEFT",  SCROLL_SIDE_PAD, -SCROLL_TOP_INSET)
+        sf:SetPoint("BOTTOMRIGHT", pf, "BOTTOMRIGHT", -SCROLL_SIDE_PAD, SCROLL_BOT_INSET)
+        sf:SetFrameLevel((pf:GetFrameLevel() or 0) + 1)
+        sf:SetClipsChildren(true)
+
+        local sc = CreateFrame("Frame", nil, sf)
+        sf:SetScrollChild(sc)
+        sc:SetWidth(math.max(100, (pf:GetWidth() or 320) - SCROLL_SIDE_PAD * 2))
+        sc:SetHeight(1)  -- placeholder; computed on first show
+        pf._scrollFrame  = sf
+        pf._scrollChild  = sc
+
+        -- Mouse-wheel scrolling (no visible scrollbar – clean look)
+        sf:EnableMouseWheel(true)
+        sf:SetScript("OnMouseWheel", function(self, delta)
+            local maxV = math.max(0, sc:GetHeight() - self:GetHeight())
+            if maxV <= 0 then return end
+            local cur  = self:GetVerticalScroll()
+            local step = 30
+            if IsShiftKeyDown and IsShiftKeyDown() then step = 90 end
+            local nv = math.max(0, math.min(maxV, cur - delta * step))
+            self:SetVerticalScroll(nv)
+        end)
+
+        -- Minimal scroll indicator (thin bar, right edge)
+        local ind = sf:CreateTexture(nil, "OVERLAY")
+        ind:SetWidth(3)
+        ind:SetTexture("Interface\\Buttons\\WHITE8x8")
+        ind:SetVertexColor(1, 1, 1, 0.18)
+        ind:Hide()
+        pf._scrollIndicator = ind
+
+        local function UpdateScrollIndicator()
+            local sfH = sf:GetHeight() or 0
+            local scH = sc:GetHeight() or 0
+            if scH <= sfH or scH <= 0 or sfH <= 0 then
+                ind:Hide()
+                return
+            end
+            local ratio = sfH / scH
+            local barH  = math.max(20, math.floor(sfH * ratio))
+            ind:SetHeight(barH)
+            local scroll    = sf:GetVerticalScroll() or 0
+            local maxScroll = scH - sfH
+            local pct    = (maxScroll > 0) and (scroll / maxScroll) or 0
+            local travel = sfH - barH
+            ind:ClearAllPoints()
+            ind:SetPoint("TOPRIGHT", sf, "TOPRIGHT", -1, -(pct * travel))
+            ind:Show()
+        end
+
+        sf:SetScript("OnScrollRangeChanged", function() UpdateScrollIndicator() end)
+        sf:HookScript("OnMouseWheel",        function() UpdateScrollIndicator() end)
+
+        -- --- Re-parent content widgets into the scroll child ---
+        -- Only frameHeader is anchored directly to pf; every other
+        -- content widget chains to the previous one (widget-to-widget),
+        -- so anchors survive the SetParent() call intact.
+        local CONTENT_REFS = {
+            "frameHeader",
+            -- Frame / Spacing
+            "spacingRow", "spacingLabel", "spacingBox", "spacingMinus", "spacingPlus",
+            "bossTogetherCheck",
+            -- Stacks text
+            "stackTextSizeRow",    "stackTextSizeLabel",    "stackTextSizeBox",    "stackTextSizeMinus",    "stackTextSizePlus",
+            "stackTextOffsetXRow", "stackTextOffsetXLabel", "stackTextOffsetXBox", "stackTextOffsetXMinus", "stackTextOffsetXPlus",
+            "stackTextOffsetYRow", "stackTextOffsetYLabel", "stackTextOffsetYBox", "stackTextOffsetYMinus", "stackTextOffsetYPlus",
+            -- Cooldown text
+            "cooldownTextSizeRow",    "cooldownTextSizeLabel",    "cooldownTextSizeBox",    "cooldownTextSizeMinus",    "cooldownTextSizePlus",
+            "cooldownTextOffsetXRow", "cooldownTextOffsetXLabel", "cooldownTextOffsetXBox", "cooldownTextOffsetXMinus", "cooldownTextOffsetXPlus",
+            "cooldownTextOffsetYRow", "cooldownTextOffsetYLabel", "cooldownTextOffsetYBox", "cooldownTextOffsetYMinus", "cooldownTextOffsetYPlus",
+            -- Buffs / Debuffs header + rows
+            "buffDebuffHeader",
+            "buffGroupOffsetXRow",   "buffGroupOffsetXLabel",   "buffGroupOffsetXBox",   "buffGroupOffsetXMinus",   "buffGroupOffsetXPlus",
+            "buffGroupOffsetYRow",   "buffGroupOffsetYLabel",   "buffGroupOffsetYBox",   "buffGroupOffsetYMinus",   "buffGroupOffsetYPlus",
+            "buffGroupIconSizeRow",  "buffGroupIconSizeLabel",  "buffGroupIconSizeBox",  "buffGroupIconSizeMinus",  "buffGroupIconSizePlus",
+            "debuffGroupOffsetXRow", "debuffGroupOffsetXLabel", "debuffGroupOffsetXBox", "debuffGroupOffsetXMinus", "debuffGroupOffsetXPlus",
+            "debuffGroupOffsetYRow", "debuffGroupOffsetYLabel", "debuffGroupOffsetYBox", "debuffGroupOffsetYMinus", "debuffGroupOffsetYPlus",
+            "debuffGroupIconSizeRow","debuffGroupIconSizeLabel","debuffGroupIconSizeBox","debuffGroupIconSizeMinus","debuffGroupIconSizePlus",
+            -- Private Auras header + rows
+            "privateHeader",
+            "privatePreviewCheck",
+            "privateOffsetXRow", "privateOffsetXLabel", "privateOffsetXBox", "privateOffsetXMinus", "privateOffsetXPlus",
+            "privateOffsetYRow", "privateOffsetYLabel", "privateOffsetYBox", "privateOffsetYMinus", "privateOffsetYPlus",
+            "privateSizeRow",    "privateSizeLabel",    "privateSizeBox",    "privateSizeMinus",    "privateSizePlus",
+        }
+
+        for i = 1, #CONTENT_REFS do
+            local w = pf[CONTENT_REFS[i]]
+            if w and type(w.SetParent) == "function" then
+                w:SetParent(sc)
+            end
+        end
+
+        -- Re-anchor the first content widget to scroll-child top
+        -- (it was anchored to pf TOPLEFT which would pin it outside the scroll).
+        if pf.frameHeader then
+            pf.frameHeader:ClearAllPoints()
+            pf.frameHeader:SetPoint("TOPLEFT", sc, "TOPLEFT", 16, 0)
+        end
+
+        -- --- Auto-calculate scroll child height ---
+        local function MSUF_A2_RecalcScrollHeight()
+            if not pf:IsShown() or not sf:IsShown() then return end
+            local top = sc:GetTop()
+            if not top then
+                sc:SetHeight(600)   -- safe fallback
+                return
+            end
+            local lowestBottom = top
+            for i = 1, #CONTENT_REFS do
+                local w = pf[CONTENT_REFS[i]]
+                if w and type(w.GetBottom) == "function" then
+                    local ok2, b = pcall(w.GetBottom, w)
+                    if ok2 and b and b < lowestBottom then
+                        lowestBottom = b
+                    end
+                end
+            end
+            local h = math.max(200, (top - lowestBottom) + 28)
+            sc:SetHeight(h)
+            UpdateScrollIndicator()
+        end
+        pf._recalcScrollHeight = MSUF_A2_RecalcScrollHeight
+
+        -- Trigger height recalc on show (deferred so layout is ready)
+        pf:HookScript("OnShow", function()
+            sf:SetVerticalScroll(0)
+            if C_Timer and C_Timer.After then
+                C_Timer.After(0,    MSUF_A2_RecalcScrollHeight)
+                C_Timer.After(0.15, MSUF_A2_RecalcScrollHeight)
+            end
+        end)
+
+        -- --- Resizable popup ---
+        pf:SetResizable(true)
+        if pf.SetResizeBounds then
+            pf:SetResizeBounds(300, 340, 500, 900)
+        elseif pf.SetMinResize then  -- legacy API fallback
+            pf:SetMinResize(300, 340)
+            pf:SetMaxResize(500, 900)
+        end
+
+        local grip = CreateFrame("Button", nil, pf)
+        grip:SetPoint("BOTTOMRIGHT", pf, "BOTTOMRIGHT", -3, 3)
+        grip:SetSize(16, 16)
+        grip:SetFrameLevel((pf:GetFrameLevel() or 0) + 30)
+        grip:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+        grip:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+        grip:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+
+        -- CRITICAL: The parent pf has RegisterForDrag("LeftButton") + OnDragStart
+        -- that calls StartMoving().  If we only call StartSizing() in OnMouseDown,
+        -- the parent's drag detection will fire once the drag threshold is reached
+        -- and override our sizing with a move.
+        -- Fix: temporarily disable SetMovable(false) so the parent's
+        -- "if self:IsMovable()" guard in OnDragStart fails.
+        grip:SetScript("OnMouseDown", function(self, button)
+            if button ~= "LeftButton" then return end
+            pf.__msufWasMovable = pf:IsMovable()
+            pf:SetMovable(false)
+            pf:StartSizing("BOTTOMRIGHT")
+        end)
+        grip:SetScript("OnMouseUp", function(self, button)
+            if button ~= "LeftButton" then return end
+            pf:StopMovingOrSizing()
+            if pf.__msufWasMovable then
+                pf:SetMovable(true)
+            end
+            pf.__msufWasMovable = nil
+            if C_Timer and C_Timer.After then
+                C_Timer.After(0, MSUF_A2_RecalcScrollHeight)
+            end
+        end)
+        pf._resizeGrip = grip
+
+        -- Safety: restore movable if popup hides mid-resize (Escape, combat, etc.)
+        pf:HookScript("OnHide", function(self)
+            if self.__msufWasMovable then
+                self:SetMovable(true)
+                self.__msufWasMovable = nil
+            end
+        end)
+
+        -- Keep scroll child width in sync on resize
+        pf:HookScript("OnSizeChanged", function(self, w)
+            w = tonumber(w) or 320
+            sc:SetWidth(math.max(100, w - SCROLL_SIDE_PAD * 2))
+            if C_Timer and C_Timer.After then
+                C_Timer.After(0, MSUF_A2_RecalcScrollHeight)
+            end
+        end)
+    end
+    -- === End scrollable + resizable wrapper ===
+
     return pf
 end
 
@@ -6224,6 +6628,10 @@ end
     if pf.RefreshCopyAuraDropdown then
         pf.RefreshCopyAuraDropdown()
     end
+    -- Recalc scroll height (boss toggle visibility may have changed layout)
+    if pf._recalcScrollHeight and C_Timer and C_Timer.After then
+        C_Timer.After(0, pf._recalcScrollHeight)
+    end
     pf._msufAuras2PopupSyncing = false
 end
 
@@ -6306,6 +6714,17 @@ end
 -- IMPORTANT: SetOverrideBindingClick's "clickButton" param MUST be a real mouse button name.
 -- Note: Uses globals deliberately to avoid hitting the "200 locals" limit in large files.
 local MSUF_EM_GetCastbarOffsetKeys -- castbar offset key helper (used by snap + arrow-key nudging)
+MSUF_EM_GetCastbarOffsetKeys = function(unit)
+    if not unit then return nil, nil end
+    if unit == "boss" then
+        return "bossCastbarOffsetX", "bossCastbarOffsetY"
+    end
+    local getPrefix = _G.MSUF_GetCastbarPrefix
+    if type(getPrefix) ~= "function" then return nil, nil end
+    local prefix = getPrefix(unit)
+    if not prefix or prefix == "" then return nil, nil end
+    return prefix .. "OffsetX", prefix .. "OffsetY"
+end
 
 if not _G.MSUF_EnableArrowKeyNudge then
 function _G.MSUF_EnableArrowKeyNudge(enable)
@@ -6360,6 +6779,23 @@ function _G.MSUF_EnableArrowKeyNudge(enable)
         return step
     end
 
+    -- Aura nudge: per-group and combined offset key pairs
+    local MSUF_AURA_NUDGE_PAIRS_BUFF = {
+        { "buffGroupOffsetX",   "buffGroupOffsetY"   },
+    }
+    local MSUF_AURA_NUDGE_PAIRS_DEBUFF = {
+        { "debuffGroupOffsetX", "debuffGroupOffsetY" },
+    }
+    local MSUF_AURA_NUDGE_PAIRS_PRIVATE = {
+        { "privateOffsetX",     "privateOffsetY"     },
+    }
+    -- Fallback: all three together (no specific group selected)
+    local MSUF_AURA_NUDGE_OFFSET_PAIRS = {
+        MSUF_AURA_NUDGE_PAIRS_BUFF[1],
+        MSUF_AURA_NUDGE_PAIRS_DEBUFF[1],
+        MSUF_AURA_NUDGE_PAIRS_PRIVATE[1],
+    }
+
     local function NudgeTarget(dx, dy)
         if not MSUF_UnitEditModeActive then return end
         if InCombatLockdown and InCombatLockdown() then return end
@@ -6382,6 +6818,11 @@ function _G.MSUF_EnableArrowKeyNudge(enable)
             end
             if not xKey or not yKey then return end
 
+            -- Undo: capture castbar state BEFORE nudge (debounced)
+            if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+                _G.MSUF_EM_UndoBeforeChange("castbar", unit, true)
+            end
+
             g[xKey] = math.floor(((tonumber(g[xKey]) or 0) + ndx) + 0.5)
             g[yKey] = math.floor(((tonumber(g[yKey]) or 0) + ndy) + 0.5)
 
@@ -6391,6 +6832,81 @@ function _G.MSUF_EnableArrowKeyNudge(enable)
             end
             if MSUF_UpdateCastbarEditInfo then
                 MSUF_UpdateCastbarEditInfo()
+            end
+            return
+        end
+
+        -- ── Aura popup: nudge per-group or all together ──
+        local auraPF = _G.MSUF_Auras2PositionPopup
+        if auraPF and auraPF.IsShown and auraPF:IsShown() and auraPF.unit then
+            MSUF_DB.auras2 = MSUF_DB.auras2 or {}
+            local a2 = MSUF_DB.auras2
+            a2.perUnit = a2.perUnit or {}
+            local unitKey = tostring(auraPF.unit)
+            local s = GetStep()
+            local ndx, ndy = dx * s, dy * s
+
+            -- Undo: capture aura state BEFORE nudge (debounced)
+            if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+                _G.MSUF_EM_UndoBeforeChange("aura", unitKey, true)
+            end
+
+            -- Boss edit-together
+            local isBoss = unitKey:match("^boss%d+$")
+            local applyKeys
+            if isBoss and a2.shared and a2.shared.bossEditTogether ~= false then
+                applyKeys = { "boss1","boss2","boss3","boss4","boss5" }
+            else
+                applyKeys = { unitKey }
+            end
+
+            -- Determine which group(s) to nudge based on last-clicked mover or editbox focus
+            local activeGroup = auraPF._msufActiveNudgeGroup -- "buff" / "debuff" / "private" / nil
+            local pairs_to_nudge
+            if activeGroup == "buff" then
+                pairs_to_nudge = MSUF_AURA_NUDGE_PAIRS_BUFF
+            elseif activeGroup == "debuff" then
+                pairs_to_nudge = MSUF_AURA_NUDGE_PAIRS_DEBUFF
+            elseif activeGroup == "private" then
+                pairs_to_nudge = MSUF_AURA_NUDGE_PAIRS_PRIVATE
+            else
+                pairs_to_nudge = MSUF_AURA_NUDGE_OFFSET_PAIRS -- all three
+            end
+
+            for _, k in ipairs(applyKeys) do
+                a2.perUnit[k] = a2.perUnit[k] or {}
+                local pu = a2.perUnit[k]
+                pu.layout = pu.layout or {}
+                pu.overrideLayout = true
+                local lay = pu.layout
+                local shared = a2.shared or {}
+                for _, pair in ipairs(pairs_to_nudge) do
+                    local kx, ky = pair[1], pair[2]
+                    local curX = (lay[kx] ~= nil) and lay[kx] or (shared[kx] or 0)
+                    local curY = (lay[ky] ~= nil) and lay[ky] or (shared[ky] or 0)
+                    lay[kx] = math.floor(((tonumber(curX) or 0) + ndx) + 0.5)
+                    lay[ky] = math.floor(((tonumber(curY) or 0) + ndy) + 0.5)
+                end
+            end
+
+            -- Refresh aura anchors + icons
+            if type(_G.MSUF_Auras2_RefreshUnit) == "function" then
+                for _, k in ipairs(applyKeys) do _G.MSUF_Auras2_RefreshUnit(k) end
+            elseif type(_G.MSUF_Auras2_RefreshAll) == "function" then
+                _G.MSUF_Auras2_RefreshAll()
+            end
+            -- Re-position movers
+            local API = ns and ns.MSUF_Auras2
+            if API and API.EditMode and API.EditMode.PositionMovers then
+                local aby = API.state and API.state.aurasByUnit
+                for _, k in ipairs(applyKeys) do
+                    local entry = aby and aby[k]
+                    if entry then pcall(API.EditMode.PositionMovers, entry, a2.shared) end
+                end
+            end
+            -- Sync popup editboxes
+            if type(_G.MSUF_SyncAuras2PositionPopup) == "function" then
+                _G.MSUF_SyncAuras2PositionPopup(unitKey)
             end
             return
         end
@@ -6407,6 +6923,12 @@ function _G.MSUF_EnableArrowKeyNudge(enable)
 
         local s = GetStep()
         local ndx, ndy = dx * s, dy * s
+
+        -- Undo: capture state BEFORE nudge (debounced)
+        if type(_G.MSUF_EM_UndoBeforeChange) == "function" then
+            _G.MSUF_EM_UndoBeforeChange("unit", key, true)
+        end
+
         conf.offsetX = math.floor(((tonumber(conf.offsetX) or 0) + ndx) + 0.5)
         conf.offsetY = math.floor(((tonumber(conf.offsetY) or 0) + ndy) + 0.5)
 
@@ -6847,6 +7369,12 @@ if type(_G.MSUF_SyncCastbarEditModeWithUnitEdit) ~= "function" then
             _G.MSUF_EnsureCastbarsLoaded("msuf_edit_mode")
         end
 
+        -- Apply visuals FIRST to ensure all castbar frames (including previews)
+        -- get correct width/height from DB before position functions run.
+        if type(_G.MSUF_UpdateCastbarVisuals) == "function" then
+            _G.MSUF_UpdateCastbarVisuals()
+        end
+
         if type(_G.MSUF_UpdatePlayerCastbarPreview) == "function" then
             _G.MSUF_UpdatePlayerCastbarPreview()
         end
@@ -6858,6 +7386,139 @@ if type(_G.MSUF_SyncCastbarEditModeWithUnitEdit) ~= "function" then
         end
         if type(_G.MSUF_UpdateBossCastbarPreview) == "function" then
             _G.MSUF_UpdateBossCastbarPreview()
+        end
+    end
+end
+
+-- ═══════════════════════════════════════════════════════════════
+-- Hook castbar preview frames for Undo (drag capture)
+-- The LoD castbar addon makes preview frames movable/draggable.
+-- We hook multiple drag mechanisms (OnMouseDown + OnDragStart) to capture
+-- the undo snapshot BEFORE the drag writes to DB.
+-- Boss castbar preview may be recreated by the LoD addon, so we track
+-- the actual frame reference and re-hook when it changes.
+-- ═══════════════════════════════════════════════════════════════
+local CASTBAR_PREVIEW_UNDO_MAP = {
+    MSUF_PlayerCastbarPreview = "player",
+    MSUF_TargetCastbarPreview = "target",
+    MSUF_FocusCastbarPreview  = "focus",
+    MSUF_BossCastbarPreview   = "boss",
+    MSUF_BossCastbarPreview1  = "boss",
+}
+
+-- Track which frame OBJECT was hooked (not just a bool flag).
+-- If the LoD addon recreates the frame, _G[name] points to a new object
+-- and we must re-hook.
+local _msufHookedFrameRef = {}
+
+local function MSUF_HookCastbarPreviewsForUndo()
+    local bc = _G.MSUF_EM_UndoBeforeChange
+    if type(bc) ~= "function" then return end
+
+    for globalName, unitKey in pairs(CASTBAR_PREVIEW_UNDO_MAP) do
+        local frame = _G[globalName]
+        if frame and frame.HookScript and _msufHookedFrameRef[globalName] ~= frame then
+            _msufHookedFrameRef[globalName] = frame
+            local gn = globalName  -- capture for closure
+            local function CaptureBeforeDrag()
+                if not MSUF_UnitEditModeActive then return end
+                if _G.MSUF__UndoRestoring then return end
+                -- DEBUG: remove once boss castbar undo is confirmed working
+                if unitKey == "boss" then
+                    print("|cffffd700MSUF DEBUG:|r Boss castbar undo snapshot captured (" .. gn .. ")")
+                end
+                bc("castbar", unitKey)
+            end
+            -- Cover ALL possible drag mechanisms:
+            frame:HookScript("OnMouseDown", CaptureBeforeDrag)
+            -- Standard WoW drag API (SetMovable + RegisterForDrag)
+            pcall(frame.HookScript, frame, "OnDragStart", CaptureBeforeDrag)
+            -- DEBUG: remove once boss castbar undo is confirmed working
+            if unitKey == "boss" then
+                print("|cffffd700MSUF DEBUG:|r Hooked " .. gn .. " for undo (OnMouseDown + OnDragStart)")
+            end
+        end
+    end
+end
+
+-- Boss castbar preview is created lazily by the LoD addon.
+-- Multi-strategy approach to catch the frame no matter how/when it appears:
+--   (a) hooksecurefunc on setup/update globals (fires after the function runs)
+--   (b) Polling ticker for first 3 seconds of edit mode (catches all edge cases)
+local _msufBossCB_HookedSetup, _msufBossCB_HookedUpdate = false, false
+local _msufBossCB_Ticker = nil
+local function MSUF_EnsureBossCastbarPreviewUndoHook()
+    -- Always retry immediate
+    MSUF_HookCastbarPreviewsForUndo()
+
+    -- (a) Install permanent hooksecurefunc (one-time per function)
+    local function TryHookBoss()
+        MSUF_HookCastbarPreviewsForUndo()
+    end
+    if not _msufBossCB_HookedSetup and type(_G.MSUF_SetupBossCastbarPreviewEditMode) == "function" then
+        _msufBossCB_HookedSetup = true
+        hooksecurefunc(_G, "MSUF_SetupBossCastbarPreviewEditMode", TryHookBoss)
+    end
+    if not _msufBossCB_HookedUpdate and type(_G.MSUF_UpdateBossCastbarPreview) == "function" then
+        _msufBossCB_HookedUpdate = true
+        hooksecurefunc(_G, "MSUF_UpdateBossCastbarPreview", TryHookBoss)
+    end
+
+    -- (b) Polling ticker: check every 0.15s for 3 seconds
+    if _msufBossCB_Ticker then return end
+    if not (C_Timer and C_Timer.NewTicker) then return end
+    local tries = 0
+    _msufBossCB_Ticker = C_Timer.NewTicker(0.15, function(ticker)
+        tries = tries + 1
+        MSUF_HookCastbarPreviewsForUndo()
+        if tries >= 20 then
+            ticker:Cancel()
+            _msufBossCB_Ticker = nil
+        end
+    end)
+end
+
+-- ═══════════════════════════════════════════════════════════════
+-- Hook unit frames for Undo (drag capture)
+-- MSUF_EnableUnitFrameDrag (MidnightSimpleUnitFrames.lua) sets up
+-- drag via OnDragStart/OnDragStop but has no undo hook.
+-- We HookScript("OnMouseDown") to snapshot BEFORE the drag writes to DB.
+-- ═══════════════════════════════════════════════════════════════
+local UNITFRAME_UNDO_LIST = {
+    { global = "MSUF_player",       key = "player" },
+    { global = "MSUF_target",       key = "target" },
+    { global = "MSUF_focus",        key = "focus" },
+    { global = "MSUF_targettarget", key = "targettarget" },
+    { global = "MSUF_pet",          key = "pet" },
+}
+local MSUF_MAX_BOSS_FRAMES_UNDO = 5
+
+local function MSUF_HookUnitFramesForUndo()
+    local bc = _G.MSUF_EM_UndoBeforeChange
+    if type(bc) ~= "function" then return end
+
+    for _, entry in ipairs(UNITFRAME_UNDO_LIST) do
+        local frame = _G[entry.global]
+        if frame and frame.HookScript and not frame.__msufUndoDragHooked then
+            frame.__msufUndoDragHooked = true
+            local cfgKey = entry.key
+            frame:HookScript("OnMouseDown", function()
+                if not MSUF_UnitEditModeActive then return end
+                if _G.MSUF__UndoRestoring then return end
+                bc("unit", cfgKey)
+            end)
+        end
+    end
+    -- Boss frames: boss1..boss5
+    for i = 1, MSUF_MAX_BOSS_FRAMES_UNDO do
+        local frame = _G["MSUF_boss" .. i]
+        if frame and frame.HookScript and not frame.__msufUndoDragHooked then
+            frame.__msufUndoDragHooked = true
+            frame:HookScript("OnMouseDown", function()
+                if not MSUF_UnitEditModeActive then return end
+                if _G.MSUF__UndoRestoring then return end
+                bc("unit", "boss")
+            end)
         end
     end
 end
@@ -6889,6 +7550,12 @@ if not _G.MSUF_SetMSUFEditModeDirect then
             end
 
             MSUF_EM_SetActive(true, unitKey)
+
+            -- Clear undo/redo history for the new session
+            if type(_G.MSUF_EM_UndoClear) == "function" then
+                _G.MSUF_EM_UndoClear()
+            end
+
             if type(_G.MSUF_Auras2_RefreshAll) == "function" then
                 _G.MSUF_Auras2_RefreshAll()
             end
@@ -6914,6 +7581,20 @@ MSUF_EditMode_StartCombatWarningListener()
             end
             if type(MSUF_SyncBossUnitframePreviewWithUnitEdit) == "function" then
                 MSUF_SyncBossUnitframePreviewWithUnitEdit()
+            end
+
+            -- Hook castbar preview frames for undo (drag capture).
+            -- Immediate + delayed: LoD addon may create frames asynchronously.
+            MSUF_HookCastbarPreviewsForUndo()
+            -- Hook unit frames for undo (drag capture).
+            MSUF_HookUnitFramesForUndo()
+            -- Install hooksecurefunc for boss castbar preview (created lazily by LoD addon).
+            MSUF_EnsureBossCastbarPreviewUndoHook()
+            if C_Timer and C_Timer.After then
+                C_Timer.After(0.3, MSUF_HookCastbarPreviewsForUndo)
+                -- Boss castbar LoD addon may install its setup function after a delay
+                C_Timer.After(0.5, MSUF_EnsureBossCastbarPreviewUndoHook)
+                C_Timer.After(1.0, MSUF_HookCastbarPreviewsForUndo)
             end
 
             if MSUF_UpdateEditModeVisuals then

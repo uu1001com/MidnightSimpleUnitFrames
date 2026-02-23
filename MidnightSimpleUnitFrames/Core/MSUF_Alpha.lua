@@ -216,6 +216,36 @@ function _G.MSUF_ApplyUnitAlpha(frame, key)
     if not frame or not frame.SetAlpha then  return end
     local conf = (MSUF_DB and key) and MSUF_DB[key] or nil
     if ns and ns.UF and ns.UF.IsDisabled and ns.UF.IsDisabled(conf) then  return end
+    local isEditMode = (_G.MSUF_UnitEditModeActive == true)
+    local isCombatLocked = (F.InCombatLockdown and F.InCombatLockdown()) and true or false
+    -- -----------------------------------------------------------------------
+    -- Load Conditions gate (secret-safe, zero overhead when unused).
+    -- conf.loadCondActive is a boolean flag maintained by Options UI.
+    -- When nil/false no function call is made → zero overhead per frame.
+    -- -----------------------------------------------------------------------
+    if conf and conf.loadCondActive and (not isEditMode) then
+        local _lcShouldHide = _G.MSUF_LoadCond_ShouldHide
+        if type(_lcShouldHide) == "function" and _lcShouldHide(key) then
+            if not frame._msufLoadCondHidden then
+                frame._msufLoadCondHidden = true
+                frame:SetAlpha(0)
+                -- EnableMouse is protected on secure frames — defer during combat.
+                -- The existing PLAYER_REGEN_ENABLED → MSUF_DoAlphaRefresh will
+                -- re-run this path with InCombatLockdown() == false and flush it.
+                if frame.EnableMouse and (not isCombatLocked) then
+                    frame:EnableMouse(false)
+                end
+            end
+            return
+        end
+    end
+    -- Restore from load-condition hide (condition cleared or Edit Mode entered).
+    if frame._msufLoadCondHidden then
+        frame._msufLoadCondHidden = nil
+        if frame.EnableMouse and (not isCombatLocked) then
+            frame:EnableMouse(true)
+        end
+    end
     local unit = frame.unit or key
     if not unit then  return end
     -- Do not fade the local player by range; also keep existing "dead/disconnected" behavior.
@@ -253,6 +283,10 @@ function _G.MSUF_ApplyUnitAlpha(frame, key)
             end
         end
         MSUF_Alpha_ApplyLayered(frame, alphaFG, alphaBG, layerMode)
+        -- Edit Mode preview floor: ensure frame remains visible + draggable.
+        if isEditMode and frame.GetAlpha and (frame:GetAlpha() or 0) < 0.35 then
+            frame:SetAlpha(0.35)
+        end
          return
     end
     -- Non-layered alpha mode: apply one alpha to the frame.
@@ -278,6 +312,10 @@ function _G.MSUF_ApplyUnitAlpha(frame, key)
         end
     else
         frame:SetAlpha(a)
+    end
+    -- Edit Mode preview floor: ensure frame remains visible + draggable even at alpha=0.
+    if isEditMode and a < 0.35 then
+        frame:SetAlpha(0.35)
     end
  end
 function _G.MSUF_RefreshAllUnitAlphas()
