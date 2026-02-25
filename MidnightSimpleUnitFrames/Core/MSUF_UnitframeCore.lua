@@ -330,8 +330,9 @@ local function InitUnitFlags(f)
     f._msufIsFocus  = (u == "focus")
     f._msufIsPet    = (u == "pet")
     f._msufIsToT    = (u == "targettarget")
-    local bi = u and u:match("^boss(%d+)$")
-    f._msufBossIndex = bi and tonumber(bi) or nil
+    -- Perf: avoid pattern matching.
+    local bi = (_G.MSUF_GetBossIndexFromToken and _G.MSUF_GetBossIndexFromToken(u))
+    f._msufBossIndex = bi or nil
     f._msufUnitFlagsInited = true
 end
 
@@ -531,9 +532,11 @@ local function UFCore_UpdateIdentityFast(frame, conf)
     end
 
     if frame.levelText then
+        -- IMPORTANT: Level indicator must NOT depend on showName.
+        -- Users can hide the name but still want the level shown/positioned.
         local showLevel = false
         if conf and conf.showLevelIndicator == true then
-            showLevel = (showName and exists)
+            showLevel = exists
         end
         if showLevel then
             local lvl = UnitLevel and UnitLevel(unit) or 0
@@ -548,8 +551,13 @@ local function UFCore_UpdateIdentityFast(frame, conf)
         _SetShown(frame.levelText, showLevel)
     end
 
-    if showName and exists then
-        _UpdateIdentityColors(frame)
+    -- Keep identity coloring in sync if either name OR level is visible.
+    if exists then
+        local wantName = (showName == true)
+        local wantLevel = (conf and conf.showLevelIndicator == true) and true or false
+        if wantName or wantLevel then
+            _UpdateIdentityColors(frame)
+        end
     end
 
     return true
