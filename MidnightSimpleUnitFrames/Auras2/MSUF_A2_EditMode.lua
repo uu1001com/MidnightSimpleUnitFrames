@@ -14,6 +14,20 @@
 
 local addonName, ns = ...
 ns = (rawget(_G, "MSUF_NS") or ns) or {}
+
+------------
+ns.L = ns.L or (_G and _G.MSUF_L) or {}
+local L = ns.L
+if not getmetatable(L) then
+    setmetatable(L, { __index = function(t, k) return k end })
+end
+local isEn = (ns and ns.LOCALE) == "enUS"
+local function TR(v)
+    if type(v) ~= "string" then return v end
+    if isEn then return v end
+    return L[v] or v
+end
+
 local type, tostring = type, tostring
 local pairs = pairs
 local CreateFrame, GetTime = CreateFrame, GetTime
@@ -381,11 +395,11 @@ end
 -- Ensure all three movers exist for a unit
 
 local function UnitLabel(unit)
-    if unit == "player" then return "Player" end
-    if unit == "target" then return "Target" end
-    if unit == "focus"  then return "Focus"  end
+    if unit == "player" then return L["Player"] end
+    if unit == "target" then return L["Target"] end
+    if unit == "focus"  then return L["Focus"]  end
     local n = (_G.MSUF_GetBossIndexFromToken and _G.MSUF_GetBossIndexFromToken(unit))
-    if n then return "Boss " .. n end
+    if n then return L["Boss "] .. n end
     return tostring(unit)
 end
 
@@ -393,11 +407,11 @@ function EM.EnsureMovers(entry, unit, shared, iconSize, spacing)
     if not entry or not unit then return end
 
     local base = UnitLabel(unit)
-    CreateMover(entry, unit, "buff",    base .. " Buffs")
-    CreateMover(entry, unit, "debuff",  base .. " Debuffs")
+    CreateMover(entry, unit, "buff",    base .. L[" Buffs"])
+    CreateMover(entry, unit, "debuff",  base .. L[" Debuffs"])
     -- Private auras are player-only; no mover for target.
     if unit ~= "target" then
-        CreateMover(entry, unit, "private", base .. " Private")
+        CreateMover(entry, unit, "private", base .. L[" Private"])
     end
     -- Mover positioning is handled by Render's UpdateAnchor after containers are placed
 end

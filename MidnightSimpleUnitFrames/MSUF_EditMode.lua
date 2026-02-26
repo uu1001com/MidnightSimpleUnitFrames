@@ -2609,7 +2609,7 @@ MSUF_EM_ForceWhiteButtonText(resetBtn)
 
     -- Undo / Redo buttons (Edit Mode history)
     local undoBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeUndoBtn", 80, 22, nil, "UIPanelButtonTemplate")
-    undoBtn:SetText("< Undo")
+    undoBtn:SetText(L["< Undo"])
     undoBtn:SetEnabled(false)
     undoBtn:SetAlpha(0.4)
     MSUF_EM_ForceWhiteButtonText(undoBtn)
@@ -2621,7 +2621,7 @@ MSUF_EM_ForceWhiteButtonText(resetBtn)
     undoBtn:SetScript("OnEnter", function(self)
         if GameTooltip then
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
-            GameTooltip:SetText("Undo last change", 1, 1, 1)
+            GameTooltip:SetText(L["Undo last change"], 1, 1, 1)
             GameTooltip:Show()
         end
     end)
@@ -2631,7 +2631,7 @@ MSUF_EM_ForceWhiteButtonText(resetBtn)
     f.undoButton = undoBtn
 
     local redoBtn = ns.MSUF_EM_UIH.Button(f, "MSUF_EditModeRedoBtn", 80, 22, nil, "UIPanelButtonTemplate")
-    redoBtn:SetText("Redo >")
+    redoBtn:SetText(L["Redo >"])
     redoBtn:SetEnabled(false)
     redoBtn:SetAlpha(0.4)
     MSUF_EM_ForceWhiteButtonText(redoBtn)
@@ -2643,7 +2643,7 @@ MSUF_EM_ForceWhiteButtonText(resetBtn)
     redoBtn:SetScript("OnEnter", function(self)
         if GameTooltip then
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
-            GameTooltip:SetText("Redo last undone change", 1, 1, 1)
+            GameTooltip:SetText(L["Redo last undone change"], 1, 1, 1)
             GameTooltip:Show()
         end
     end)
@@ -3201,7 +3201,7 @@ do
             ok     = { field="okBtn",     name="$parentOK",     w=70,  h=22, point="BOTTOMRIGHT", rel="BOTTOMRIGHT", x=-10, y=10, text=OKAY },
             cancel = { field="cancelBtn", name="$parentCancel", w=70,  h=22, point="RIGHT",       relField="okBtn", relPoint="LEFT", x=-6, y=0, text=CANCEL },
             menu   = { field="menuBtn",   name="$parentMenu",   w=86,  h=22, point="BOTTOMLEFT",  rel="BOTTOMLEFT", x=10,  y=10, text="Menu" },
-            stepHint = { field="stepHint", point="BOTTOM", x=0, y=40, text="Hold Shift" },
+            stepHint = { field="stepHint", point="BOTTOM", x=0, y=40, text=L["Hold Shift"] },
             levelBoost = 20,
             closeBoost = 25,
         },

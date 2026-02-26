@@ -33,7 +33,9 @@ local T = {
     ["Off"] = "关",
     ["ON"]  = "开",
     ["OFF"]  = "关",
-   
+    ["Copy to"] = "复制到",
+    ["Copy"] = "复制",
+
 
     ["Override"] = "覆盖",
     ["Overrides"] = "覆盖",
@@ -52,6 +54,7 @@ local T = {
     ["Top Right"] = "右上",
     ["Bottom Left"] = "左下",
     ["Bottom Right"] = "右下",
+    ["Hold Shift"]  = "按住Shift",
 
 
 
@@ -508,7 +511,11 @@ local T = {
     ["Buff wrap rows"] = "Buff换行",
     ["Debuff wrap rows"] = "Debuff换行",
 
-    
+    ---------A2-----------
+    [" Buffs"] = " Buffs",
+    [" Debuffs"] = " Debuffs",
+    [" Private"] = " 私人",
+    ["Boss "] = "首领 ",
 
 
 
@@ -666,7 +673,7 @@ local T = {
     ["Mana"] =    "法力",
     ["Rage"] =    "怒气",
     ["Energy"] =    "能量",
-    ["Focus"] =    "集中值",
+    ["Power:Focus"] =    "集中值",
     ["Runic Power"]     = "符文能量",
     ["Insanity"] =    "虚空能量",
     ["Fury"] =    "恶魔之怒",
@@ -802,6 +809,10 @@ local T = {
     ["Cancel Changes"] =   "取消更改",
     ["Reset Frame"] =    "重置框架",
     ["Exit MSUF Edit Mode"] =    "退出MSUF编辑模式",
+    ["< Undo"] =    "< 撤销",
+    ["Undo last change"] =    "撤销上次更改",
+    ["Redo >"] =    "重做 >",
+    ["Redo last undone change"] =    "重做上次撤销的更改",
 
 
 

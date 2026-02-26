@@ -3310,7 +3310,7 @@ local POWER_TOKEN_OPTIONS = {
     { token = "MANA",        label = ns.L["Mana"] },
     { token = "RAGE",        label = ns.L["Rage"] },
     { token = "ENERGY",      label = ns.L["Energy"] },
-    { token = "FOCUS",       label = ns.L["Focus"] },
+    { token = "FOCUS",       label = ns.L["Power:Focus"] },
     { token = "RUNIC_POWER", label = ns.L["Runic Power"] },
     { token = "INSANITY",    label = ns.L["Insanity"] },
     { token = "FURY",        label = ns.L["Fury"] },
