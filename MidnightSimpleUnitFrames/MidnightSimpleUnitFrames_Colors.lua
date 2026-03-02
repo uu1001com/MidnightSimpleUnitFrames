@@ -3435,14 +3435,14 @@ lastControl = powerColorResetBtn
 --------------------------------------------------
 local cpColHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 cpColHeader:SetPoint("TOPLEFT", powerTypeDrop, "BOTTOMLEFT", 16, -34)
-cpColHeader:SetText("Class Power colors")
+cpColHeader:SetText(ns.L["Class Power colors"])
 F.CreateHeaderDividerAbove(cpColHeader)
 
 local cpColSub = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 cpColSub:SetPoint("TOPLEFT", cpColHeader, "BOTTOMLEFT", 0, -4)
 cpColSub:SetWidth(600)
 cpColSub:SetJustifyH("LEFT")
-cpColSub:SetText("Configure colors for secondary resource bars: Combo Points, Holy Power, Soul Shards, Chi, Runes, Arcane Charges, Essence, Soul Fragments (DH), Maelstrom (Enh/Ele), Stagger (BrM), Insanity (Shadow), Whirlwind (Fury), Tip of the Spear (SV), Ebon Might (Aug), Eclipse + Prediction (Balance).")
+cpColSub:SetText(ns.L["Configure colors for secondary resource bars: Combo Points, Holy Power, Soul Shards, Chi, Runes, Arcane Charges, Essence, Soul Fragments (DH), Maelstrom (Enh/Ele), Stagger (BrM), Insanity (Shadow), Whirlwind (Fury), Tip of the Spear (SV), Ebon Might (Aug), Eclipse + Prediction (Balance)."])
 
 local cpColTypeDrop = CreateFrame("Frame", "MSUF_Colors_ClassPowerTypeDropdown", content, "UIDropDownMenuTemplate")
 cpColTypeDrop:SetPoint("TOPLEFT", cpColSub, "BOTTOMLEFT", -16, -8)
@@ -3456,47 +3456,47 @@ local cpColTex = cpColSwatch:CreateTexture(nil, "ARTWORK")
 cpColTex:SetAllPoints()
 
 local cpColResetBtn = CreateFrame("Button", "MSUF_Colors_ClassPowerColorResetBtn", content, "UIPanelButtonTemplate")
-cpColResetBtn:SetText("Reset")
+cpColResetBtn:SetText(ns.L["Reset"])
 cpColResetBtn:SetSize(70, 18)
 cpColResetBtn:SetPoint("LEFT", cpColSwatch, "RIGHT", 10, 0)
 
 -- Class power token options (secondary resources)
 local CP_TOKEN_OPTIONS = {
     -- ── Standard segmented ──
-    { token = "COMBO_POINTS",   label = "Combo Points" },
-    { token = "HOLY_POWER",     label = "Holy Power" },
-    { token = "SOUL_SHARDS",    label = "Soul Shards" },
-    { token = "CHI",            label = "Chi" },
-    { token = "ARCANE_CHARGES", label = "Arcane Charges" },
-    { token = "RUNES",          label = "Runes" },
-    { token = "ESSENCE",        label = "Essence" },
-    { token = "CHARGED",        label = "Empowered (Charged)" },
+    { token = "COMBO_POINTS",   label = ns.L["Combo Points"] },
+    { token = "HOLY_POWER",     label = ns.L["Holy Power"] },
+    { token = "SOUL_SHARDS",    label = ns.L["Soul Shards"] },
+    { token = "CHI",            label = ns.L["Chi"] },
+    { token = "ARCANE_CHARGES", label = ns.L["Arcane Charges"] },
+    { token = "RUNES",          label = ns.L["Runes"] },
+    { token = "ESSENCE",        label = ns.L["Essence"] },
+    { token = "CHARGED",        label = ns.L["Empowered (Charged)"] },
     -- ── New: aura-based class powers ──
-    { token = "SOUL_FRAGMENTS",      label = "Soul Fragments (DH)" },
-    { token = "SOUL_FRAGMENTS_META", label = "Soul Fragments \124cFF9933EE(Void Meta)\124r" },
-    { token = "MAELSTROM",           label = "Maelstrom Weapon (Enh)" },
+    { token = "SOUL_FRAGMENTS",      label = ns.L["Soul Fragments (DH)"] },
+    { token = "SOUL_FRAGMENTS_META", label = ns.L["Soul Fragments \124cFF9933EE(Void Meta)\124r"] },
+    { token = "MAELSTROM",           label = ns.L["Maelstrom Weapon (Enh)"] },
     -- ── Balance Druid: Astral Power + Eclipse ──
-    { token = "ASTRAL_POWER",   label = "Astral Power (Balance)" },
-    { token = "AP_PREDICTION",  label = "Astral Power \124cFF7799CC(Prediction Overlay)\124r" },
-    { token = "ECLIPSE_SOLAR",  label = "Eclipse \124cFFD18F3F(Solar)\124r" },
-    { token = "ECLIPSE_LUNAR",  label = "Eclipse \124cFF697ED1(Lunar)\124r" },
-    { token = "ECLIPSE_CA",     label = "Eclipse \124cFF4DFF6D(Celestial Alignment)\124r" },
+    { token = "ASTRAL_POWER",   label = ns.L["Astral Power (Balance)"] },
+    { token = "AP_PREDICTION",  label = ns.L["Astral Power \124cFF7799CC(Prediction Overlay)\124r"] },
+    { token = "ECLIPSE_SOLAR",  label = ns.L["Eclipse \124cFFD18F3F(Solar)\124r"] },
+    { token = "ECLIPSE_LUNAR",  label = ns.L["Eclipse \124cFF697ED1(Lunar)\124r"] },
+    { token = "ECLIPSE_CA",     label = ns.L["Eclipse \124cFF4DFF6D(Celestial Alignment)\124r"] },
     -- ── Stagger (Brewmaster Monk) ──
-    { token = "STAGGER_GREEN",  label = "Stagger \124cFF85FF85(Light)\124r" },
-    { token = "STAGGER_YELLOW", label = "Stagger \124cFFFFFAB8(Moderate)\124r" },
-    { token = "STAGGER_RED",    label = "Stagger \124cFFFF6B6B(Heavy)\124r" },
+    { token = "STAGGER_GREEN",  label = ns.L["Stagger \124cFF85FF85(Light)\124r"] },
+    { token = "STAGGER_YELLOW", label = ns.L["Stagger \124cFFFFFAB8(Moderate)\124r"] },
+    { token = "STAGGER_RED",    label = ns.L["Stagger \124cFFFF6B6B(Heavy)\124r"] },
     -- ── DH Vengeance ──
-    { token = "SOUL_FRAGMENTS_VENG", label = "Soul Fragments \124cFF570B76(Vengeance)\124r" },
+    { token = "SOUL_FRAGMENTS_VENG", label = ns.L["Soul Fragments \124cFF570B76(Vengeance)\124r"] },
     -- ── Continuous bars ──
-    { token = "INSANITY",       label = "Insanity (Shadow)" },
-    { token = "MAELSTROM_POWER", label = "Maelstrom Power (Ele)" },
+    { token = "INSANITY",       label = ns.L["Insanity (Shadow)"] },
+    { token = "MAELSTROM_POWER", label = ns.L["Maelstrom Power (Ele)"] },
     -- ── Spell Trackers ──
-    { token = "WHIRLWIND",      label = "Whirlwind (Fury)" },
-    { token = "TIP_OF_THE_SPEAR", label = "Tip of the Spear (SV)" },
+    { token = "WHIRLWIND",      label = ns.L["Whirlwind (Fury)"] },
+    { token = "TIP_OF_THE_SPEAR", label = ns.L["Tip of the Spear (SV)"] },
     -- ── Timer Bar ──
-    { token = "EBON_MIGHT",     label = "Ebon Might (Aug)" },
+    { token = "EBON_MIGHT",     label = ns.L["Ebon Might (Aug)"] },
     -- ── Text ──
-    { token = "RESOURCE_TEXT",  label = "Resource Text" },
+    { token = "RESOURCE_TEXT",  label = ns.L["Resource Text"] },
 }
 
 F.EnsureClassPowerColorsDB = function()
@@ -3668,7 +3668,7 @@ end
 UIDropDownMenu_Initialize(cpColTypeDrop, F.ClassPowerTypeDropdown_Init)
 cpColTypeDrop._msufSelectedToken = "COMBO_POINTS"
 UIDropDownMenu_SetSelectedValue(cpColTypeDrop, "COMBO_POINTS")
-UIDropDownMenu_SetText(cpColTypeDrop, "Combo Points")
+UIDropDownMenu_SetText(cpColTypeDrop, ns.L["Combo Points"])
 
 cpColSwatch:SetScript("OnClick", function()
     local token = cpColTypeDrop._msufSelectedToken or "COMBO_POINTS"
@@ -3710,7 +3710,7 @@ lastControl = cpColResetBtn
 --------------------------------------------------
 local aurasHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 aurasHeader:SetPoint("TOPLEFT", cpColTypeDrop, "BOTTOMLEFT", 16, -34)
-aurasHeader:SetText("Auras")
+aurasHeader:SetText(ns.L["Auras"])
 F.CreateHeaderDividerAbove(aurasHeader)
 
 local aurasSub = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
