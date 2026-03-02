@@ -167,6 +167,32 @@ local function RefreshSharedFlags(shared, gen)
     _useDispelBorders = (shared and shared.useDebuffTypeBorders == true) or false
 end
 
+-- ---------------------------------------------------------------------------
+-- Masque backdrop compatibility
+--
+-- When Masque skins are used (often non-square shapes like circles), MSUF's
+-- subtle background texture can remain visible as a square "box" behind the
+-- skinned icon. This can also appear intermittently due to icon reuse.
+--
+-- Fix: diff-gated show/hide of the background texture whenever Masque is
+-- enabled and the icon has been registered with Masque.
+-- ---------------------------------------------------------------------------
+
+local function ApplyMasqueBackdrop(icon, shared)
+    local bg = icon and icon._msufBG
+    if not bg then return end
+
+    local hide = (shared and shared.masqueEnabled == true and icon.MSUF_MasqueAdded == true) or false
+    if icon._msufA2_bgHidden ~= hide then
+        icon._msufA2_bgHidden = hide
+        if hide then
+            bg:Hide()
+        else
+            bg:Show()
+        end
+    end
+end
+
 -- --
 -- Text config resolution (per-icon; cached by configGen)
 -- Applies stack/cooldown text sizes + offsets from shared + per-unit layout
@@ -587,6 +613,9 @@ function Icons.CommitIcon(icon, unit, aura, shared, isHelpful, hidePermanent, ma
     if _sharedFlagsGen ~= gen then
         RefreshSharedFlags(shared, gen)
     end
+
+    -- Masque: hide MSUF square backdrop behind non-square skins
+    ApplyMasqueBackdrop(icon, shared)
 
     if not aura then
         local container = icon._msufA2_container or icon:GetParent()

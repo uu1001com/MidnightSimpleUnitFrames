@@ -3430,14 +3430,275 @@ F.UpdatePowerColorControls()
 lastControl = powerColorResetBtn
 
 
+--------------------------------------------------
+-- Class Power colors (Combo Points, Holy Power, etc.)
+--------------------------------------------------
+local cpColHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+cpColHeader:SetPoint("TOPLEFT", powerTypeDrop, "BOTTOMLEFT", 16, -34)
+cpColHeader:SetText("Class Power colors")
+F.CreateHeaderDividerAbove(cpColHeader)
+
+local cpColSub = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+cpColSub:SetPoint("TOPLEFT", cpColHeader, "BOTTOMLEFT", 0, -4)
+cpColSub:SetWidth(600)
+cpColSub:SetJustifyH("LEFT")
+cpColSub:SetText("Configure colors for secondary resource bars: Combo Points, Holy Power, Soul Shards, Chi, Runes, Arcane Charges, Essence, Soul Fragments (DH), Maelstrom (Enh/Ele), Stagger (BrM), Insanity (Shadow), Whirlwind (Fury), Tip of the Spear (SV), Ebon Might (Aug).")
+
+local cpColTypeDrop = CreateFrame("Frame", "MSUF_Colors_ClassPowerTypeDropdown", content, "UIDropDownMenuTemplate")
+cpColTypeDrop:SetPoint("TOPLEFT", cpColSub, "BOTTOMLEFT", -16, -8)
+UIDropDownMenu_SetWidth(cpColTypeDrop, 260)
+MSUF_ExpandDropdownClickArea(cpColTypeDrop)
+
+local cpColSwatch = CreateFrame("Button", "MSUF_Colors_ClassPowerColorSwatch", content)
+cpColSwatch:SetSize(32, 16)
+cpColSwatch:SetPoint("LEFT", cpColTypeDrop, "RIGHT", 18, 2)
+local cpColTex = cpColSwatch:CreateTexture(nil, "ARTWORK")
+cpColTex:SetAllPoints()
+
+local cpColResetBtn = CreateFrame("Button", "MSUF_Colors_ClassPowerColorResetBtn", content, "UIPanelButtonTemplate")
+cpColResetBtn:SetText("Reset")
+cpColResetBtn:SetSize(70, 18)
+cpColResetBtn:SetPoint("LEFT", cpColSwatch, "RIGHT", 10, 0)
+
+-- Class power token options (secondary resources)
+local CP_TOKEN_OPTIONS = {
+    -- ── Standard segmented ──
+    { token = "COMBO_POINTS",   label = "Combo Points" },
+    { token = "HOLY_POWER",     label = "Holy Power" },
+    { token = "SOUL_SHARDS",    label = "Soul Shards" },
+    { token = "CHI",            label = "Chi" },
+    { token = "ARCANE_CHARGES", label = "Arcane Charges" },
+    { token = "RUNES",          label = "Runes" },
+    { token = "ESSENCE",        label = "Essence" },
+    { token = "CHARGED",        label = "Empowered (Charged)" },
+    -- ── New: aura-based class powers ──
+    { token = "SOUL_FRAGMENTS",      label = "Soul Fragments (DH)" },
+    { token = "SOUL_FRAGMENTS_META", label = "Soul Fragments \124cFF9933EE(Void Meta)\124r" },
+    { token = "MAELSTROM",           label = "Maelstrom Weapon (Enh)" },
+    -- ── Balance Druid: Astral Power + Eclipse ──
+    { token = "ASTRAL_POWER",   label = "Astral Power (Balance)" },
+    { token = "ECLIPSE_SOLAR",  label = "Eclipse \124cFFD18F3F(Solar)\124r" },
+    { token = "ECLIPSE_LUNAR",  label = "Eclipse \124cFF697ED1(Lunar)\124r" },
+    { token = "ECLIPSE_CA",     label = "Eclipse \124cFF4DFF6D(Celestial Alignment)\124r" },
+    -- ── Stagger (Brewmaster Monk) ──
+    { token = "STAGGER_GREEN",  label = "Stagger \124cFF85FF85(Light)\124r" },
+    { token = "STAGGER_YELLOW", label = "Stagger \124cFFFFFAB8(Moderate)\124r" },
+    { token = "STAGGER_RED",    label = "Stagger \124cFFFF6B6B(Heavy)\124r" },
+    -- ── DH Vengeance ──
+    { token = "SOUL_FRAGMENTS_VENG", label = "Soul Fragments \124cFF570B76(Vengeance)\124r" },
+    -- ── Continuous bars ──
+    { token = "INSANITY",       label = "Insanity (Shadow)" },
+    { token = "MAELSTROM_POWER", label = "Maelstrom Power (Ele)" },
+    -- ── Spell Trackers ──
+    { token = "WHIRLWIND",      label = "Whirlwind (Fury)" },
+    { token = "TIP_OF_THE_SPEAR", label = "Tip of the Spear (SV)" },
+    -- ── Timer Bar ──
+    { token = "EBON_MIGHT",     label = "Ebon Might (Aug)" },
+    -- ── Text ──
+    { token = "RESOURCE_TEXT",  label = "Resource Text" },
+}
+
+F.EnsureClassPowerColorsDB = function()
+    EnsureDB()
+    MSUF_DB.general = MSUF_DB.general or {}
+    local g = MSUF_DB.general
+    if type(g.classPowerColorOverrides) ~= "table" then
+        g.classPowerColorOverrides = {}
+    end
+    return g
+end
+
+F.GetDefaultClassPowerColor = function(token)
+    -- Charged/empowered has a built-in default (not in PowerBarColor)
+    if token == "CHARGED" then
+        return 0.60, 0.20, 0.80  -- MidnightRogueBars purple
+    end
+    -- Resource text: default = global font color from MSUF settings
+    if token == "RESOURCE_TEXT" then
+        if type(_G.MSUF_GetGlobalFontSettings) == "function" then
+            local _, _, fr, fg, fb = _G.MSUF_GetGlobalFontSettings()
+            if type(fr) == "number" then return fr, fg, fb end
+        end
+        return 1, 1, 1
+    end
+    -- DH Devourer: Soul Fragments (normal green)
+    if token == "SOUL_FRAGMENTS" then
+        return 0.00, 0.80, 0.00
+    end
+    -- DH Devourer: Void Metamorphosis purple
+    if token == "SOUL_FRAGMENTS_META" then
+        return 0.60, 0.20, 0.93
+    end
+    -- Enhancement Shaman: Maelstrom Weapon (use Maelstrom power bar color)
+    if token == "MAELSTROM" then
+        local col = PowerBarColor and PowerBarColor["MAELSTROM"]
+        if type(col) == "table" then
+            local r = col.r or col[1]
+            local g = col.g or col[2]
+            local b = col.b or col[3]
+            if type(r) == "number" then return r, g, b end
+        end
+        return 0.00, 0.50, 1.00  -- blue fallback
+    end
+    -- Balance Druid: Astral Power (Blizzard LunarPower blue)
+    if token == "ASTRAL_POWER" then
+        local col = PowerBarColor and PowerBarColor["LUNAR_POWER"]
+        if type(col) == "table" then
+            local r = col.r or col[1]
+            local g = col.g or col[2]
+            local b = col.b or col[3]
+            if type(r) == "number" then return r, g, b end
+        end
+        return 0.30, 0.52, 0.90  -- MCR default
+    end
+    -- Balance Druid: Eclipse colors (MCR/Shrom defaults)
+    if token == "ECLIPSE_SOLAR" then return 0.82, 0.56, 0.25 end
+    if token == "ECLIPSE_LUNAR" then return 0.41, 0.49, 0.82 end
+    if token == "ECLIPSE_CA"    then return 0.30, 1.00, 0.43 end
+    -- Stagger: Brewmaster Monk (oUF threshold colors)
+    if token == "STAGGER_GREEN" then
+        return 0.52, 1.00, 0.52
+    end
+    if token == "STAGGER_YELLOW" then
+        return 1.00, 0.98, 0.72
+    end
+    if token == "STAGGER_RED" then
+        return 1.00, 0.42, 0.42
+    end
+    -- DH Vengeance: Soul Fragments (MCR default — dark purple)
+    if token == "SOUL_FRAGMENTS_VENG" then return 0.34, 0.06, 0.46 end
+    -- Shadow Priest: Insanity (Blizzard PowerBarColor or MCR default)
+    if token == "INSANITY" then
+        local col = PowerBarColor and PowerBarColor["INSANITY"]
+        if type(col) == "table" then
+            local r = col.r or col[1]
+            local g = col.g or col[2]
+            local b = col.b or col[3]
+            if type(r) == "number" then return r, g, b end
+        end
+        return 0.44, 0.00, 0.74  -- MCR default purple
+    end
+    -- Ele Shaman: Maelstrom Power (Blizzard PowerBarColor or MCR default)
+    if token == "MAELSTROM_POWER" then
+        local col = PowerBarColor and PowerBarColor["MAELSTROM"]
+        if type(col) == "table" then
+            local r = col.r or col[1]
+            local g = col.g or col[2]
+            local b = col.b or col[3]
+            if type(r) == "number" then return r, g, b end
+        end
+        return 0.00, 0.50, 1.00  -- MCR default blue
+    end
+    -- Warrior Fury: Whirlwind (MCR default — green)
+    if token == "WHIRLWIND" then return 0.20, 0.80, 0.20 end
+    -- Hunter SV: Tip of the Spear (MCR default — lime-green)
+    if token == "TIP_OF_THE_SPEAR" then return 0.60, 0.80, 0.20 end
+    -- Evoker Aug: Ebon Might (MCR default — teal)
+    if token == "EBON_MIGHT" then return 0.40, 0.80, 0.60 end
+    -- Look up in PowerBarColor
+    local col = (PowerBarColor and token and PowerBarColor[token]) or nil
+    if type(col) == "table" then
+        local r = col.r or col[1]
+        local g = col.g or col[2]
+        local b = col.b or col[3]
+        if type(r) == "number" and type(g) == "number" and type(b) == "number" then
+            return r, g, b
+        end
+    end
+    return 0.8, 0.8, 0.8
+end
+
+F.GetEffectiveClassPowerColor = function(token)
+    local g = (MSUF_DB and MSUF_DB.general) or nil
+    local ov = g and g.classPowerColorOverrides
+    local t = (type(ov) == "table" and token) and ov[token] or nil
+    if type(t) == "table" then
+        local r = t[1] or t.r
+        local gg = t[2] or t.g
+        local b = t[3] or t.b
+        if type(r) == "number" and type(gg) == "number" and type(b) == "number" then
+            return r, gg, b, true
+        end
+    end
+    local dr, dg, db = F.GetDefaultClassPowerColor(token)
+    return dr, dg, db, false
+end
+
+F.UpdateClassPowerColorControls = function()
+    local token = cpColTypeDrop._msufSelectedToken or "COMBO_POINTS"
+    local r, gCol, bCol, hasOverride = F.GetEffectiveClassPowerColor(token)
+    if cpColTex then
+        cpColTex:SetColorTexture(r, gCol, bCol)
+    end
+    if cpColResetBtn then
+        cpColResetBtn:SetEnabled(hasOverride)
+        cpColResetBtn:SetAlpha(hasOverride and 1 or 0.35)
+    end
+end
+
+F.ClassPowerTypeDropdown_Init = function(self, level)
+    local selected = cpColTypeDrop._msufSelectedToken or "COMBO_POINTS"
+    for _, opt in ipairs(CP_TOKEN_OPTIONS) do
+        local info = UIDropDownMenu_CreateInfo()
+        info.text  = opt.label
+        info.value = opt.token
+        info.func  = function()
+            cpColTypeDrop._msufSelectedToken = opt.token
+            UIDropDownMenu_SetSelectedValue(cpColTypeDrop, opt.token)
+            UIDropDownMenu_SetText(cpColTypeDrop, opt.label)
+            F.UpdateClassPowerColorControls()
+        end
+        info.checked = (opt.token == selected)
+        UIDropDownMenu_AddButton(info, level)
+    end
+end
+
+UIDropDownMenu_Initialize(cpColTypeDrop, F.ClassPowerTypeDropdown_Init)
+cpColTypeDrop._msufSelectedToken = "COMBO_POINTS"
+UIDropDownMenu_SetSelectedValue(cpColTypeDrop, "COMBO_POINTS")
+UIDropDownMenu_SetText(cpColTypeDrop, "Combo Points")
+
+cpColSwatch:SetScript("OnClick", function()
+    local token = cpColTypeDrop._msufSelectedToken or "COMBO_POINTS"
+    local r, gCol, bCol = F.GetEffectiveClassPowerColor(token)
+    OpenColorPicker(r, gCol, bCol, function(nr, ng, nb)
+        local g = F.EnsureClassPowerColorsDB()
+        g.classPowerColorOverrides[token] = { nr, ng, nb }
+        F.UpdateClassPowerColorControls()
+        -- Live refresh class power bars
+        if type(_G.MSUF_ClassPower_InvalidateColors) == "function" then
+            _G.MSUF_ClassPower_InvalidateColors()
+        end
+        PushVisualUpdates()
+    end)
+end)
+
+cpColResetBtn:SetScript("OnClick", function()
+    MSUF_ConfirmColorReset("class power color", function()
+        local token = cpColTypeDrop._msufSelectedToken or "COMBO_POINTS"
+        F.EnsureClassPowerColorsDB()
+        if MSUF_DB and MSUF_DB.general and type(MSUF_DB.general.classPowerColorOverrides) == "table" then
+            MSUF_DB.general.classPowerColorOverrides[token] = nil
+        end
+        F.UpdateClassPowerColorControls()
+        if type(_G.MSUF_ClassPower_InvalidateColors) == "function" then
+            _G.MSUF_ClassPower_InvalidateColors()
+        end
+        PushVisualUpdates()
+    end)
+end)
+
+F.UpdateClassPowerColorControls()
+
+lastControl = cpColResetBtn
 
 
 --------------------------------------------------
 -- Auras (Auras 2.0)
 --------------------------------------------------
 local aurasHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-aurasHeader:SetPoint("TOPLEFT", powerTypeDrop, "BOTTOMLEFT", 16, -34)
-aurasHeader:SetText(ns.L["Auras"])
+aurasHeader:SetPoint("TOPLEFT", cpColTypeDrop, "BOTTOMLEFT", 16, -34)
+aurasHeader:SetText("Auras")
 F.CreateHeaderDividerAbove(aurasHeader)
 
 local aurasSub = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
@@ -3860,6 +4121,11 @@ lastControl = auraCDUrgentSwatch
         -- Power bar colors
         if F.UpdatePowerColorControls then
             F.UpdatePowerColorControls()
+        end
+
+        -- Class power colors (CP, DH, Stagger, etc.)
+        if F.UpdateClassPowerColorControls then
+            F.UpdateClassPowerColorControls()
         end
 
         -- Auras colors
