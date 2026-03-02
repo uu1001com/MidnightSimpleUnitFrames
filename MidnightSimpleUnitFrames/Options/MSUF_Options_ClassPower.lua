@@ -342,7 +342,7 @@ local function BuildClassPowerOptions()
     cpLine:SetWidth(LINE_W)
 
     -- [x] Show class power
-    cpShowCheck = MakeCheck("MSUF_ClassPowerShowCheck", "Show class power", cpPanel)
+    cpShowCheck = MakeCheck("MSUF_ClassPowerShowCheck", TR("Show class power"), cpPanel)
     cpShowCheck:SetPoint("TOPLEFT", cpLine, "BOTTOMLEFT", PAD_X, -10)
 
     -- Column alignment: fixed label width per column
@@ -375,14 +375,14 @@ local function BuildClassPowerOptions()
     }
 
     -- Width (custom only)
-    cpWidthRow = MakeCompactSlider("MSUF_CPWidth", "Width", cpPanel, 30, 800, 1, "classPowerWidth",
+    cpWidthRow = MakeCompactSlider("MSUF_CPWidth", TR("Width"), cpPanel, 30, 800, 1, "classPowerWidth",
         cpWidthModeLabel, "TOPLEFT", 0, -12, nil, L_LABEL_W)
 
     -- X / Y offset
-    cpXOffsetRow = MakeCompactSlider("MSUF_CPXOffset", "X offset", cpPanel, -1000, 1000, 1, "classPowerOffsetX",
+    cpXOffsetRow = MakeCompactSlider("MSUF_CPXOffset", TR("X offset"), cpPanel, -1000, 1000, 1, "classPowerOffsetX",
         cpWidthRow.label, "TOPLEFT", 0, -10, nil, L_LABEL_W)
 
-    cpYOffsetRow = MakeCompactSlider("MSUF_CPYOffset", "Y offset", cpPanel, -1000, 1000, 1, "classPowerOffsetY",
+    cpYOffsetRow = MakeCompactSlider("MSUF_CPYOffset", TR("Y offset"), cpPanel, -1000, 1000, 1, "classPowerOffsetY",
         cpXOffsetRow.label, "TOPLEFT", 0, -10, nil, L_LABEL_W)
 
     -- Wire width mode dropdown
@@ -544,28 +544,28 @@ local function BuildClassPowerOptions()
     styleLine:SetWidth(LINE_W)
 
     -- [x] Color by resource type
-    cpColorCheck = MakeCheck("MSUF_ClassPowerColorCheck", "Color by resource type", cpPanel)
+    cpColorCheck = MakeCheck("MSUF_ClassPowerColorCheck", TR("Color by resource type"), cpPanel)
     cpColorCheck:SetPoint("TOPLEFT", styleLine, "BOTTOMLEFT", PAD_X, -10)
 
     -- BG opacity / Separator / Outline
-    cpBgAlphaRow = MakeCompactSlider("MSUF_CPBgAlpha", "BG opacity", cpPanel, 0, 100, 1, "classPowerBgAlpha",
+    cpBgAlphaRow = MakeCompactSlider("MSUF_CPBgAlpha", TR("BG opacity"), cpPanel, 0, 100, 1, "classPowerBgAlpha",
         cpColorCheck, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
-    cpTickRow = MakeCompactSlider("MSUF_CPTick", "Separator", cpPanel, 0, 4, 1, "classPowerTickWidth",
+    cpTickRow = MakeCompactSlider("MSUF_CPTick", TR("Separator"), cpPanel, 0, 4, 1, "classPowerTickWidth",
         cpBgAlphaRow.label, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
-    cpOutlineRow = MakeCompactSlider("MSUF_CPOutline", "Outline", cpPanel, 0, 4, 1, "classPowerOutline",
+    cpOutlineRow = MakeCompactSlider("MSUF_CPOutline", TR("Outline"), cpPanel, 0, 4, 1, "classPowerOutline",
         cpTickRow.label, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
     -- Filled / Empty alpha
-    cpFilledAlphaRow = MakeCompactSlider("MSUF_CPFilledAlpha", "Filled %", cpPanel, 0, 100, 5, "classPowerFilledAlpha",
+    cpFilledAlphaRow = MakeCompactSlider("MSUF_CPFilledAlpha", TR("Filled %"), cpPanel, 0, 100, 5, "classPowerFilledAlpha",
         cpOutlineRow.label, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
-    cpEmptyAlphaRow = MakeCompactSlider("MSUF_CPEmptyAlpha", "Empty %", cpPanel, 0, 100, 5, "classPowerEmptyAlpha",
+    cpEmptyAlphaRow = MakeCompactSlider("MSUF_CPEmptyAlpha", TR("Empty %"), cpPanel, 0, 100, 5, "classPowerEmptyAlpha",
         cpFilledAlphaRow.label, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
     -- Gap between pips
-    cpGapRow = MakeCompactSlider("MSUF_CPGap", "Pip gap", cpPanel, 0, 8, 1, "classPowerGap",
+    cpGapRow = MakeCompactSlider("MSUF_CPGap", TR("Pip gap"), cpPanel, 0, 8, 1, "classPowerGap",
         cpEmptyAlphaRow.label, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
     -- ── Auto-hide subsection ──
@@ -807,14 +807,14 @@ local function BuildClassPowerOptions()
     amSub:SetJustifyH("LEFT")
 
     -- [x] Show mana bar
-    amShowCheck = MakeCheck("MSUF_AltManaShowCheck", "Show mana bar (dual resource)", cpPanel)
+    amShowCheck = MakeCheck("MSUF_AltManaShowCheck", TR("Show mana bar (dual resource)"), cpPanel)
     amShowCheck:SetPoint("TOPLEFT", amSub, "BOTTOMLEFT", 0, -6)
 
     -- Height / Y offset
-    amHeightRow = MakeCompactSlider("MSUF_AMHeight", "Height", cpPanel, 2, 30, 1, "altManaHeight",
+    amHeightRow = MakeCompactSlider("MSUF_AMHeight", TR("Height"), cpPanel, 2, 30, 1, "altManaHeight",
         amShowCheck, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
-    amOffsetRow = MakeCompactSlider("MSUF_AMOffset", "Y offset", cpPanel, -50, 50, 1, "altManaOffsetY",
+    amOffsetRow = MakeCompactSlider("MSUF_AMOffset", TR("Y offset"), cpPanel, -50, 50, 1, "altManaOffsetY",
         amHeightRow.label, "TOPLEFT", 0, -10, nil, R_LABEL_W)
 
     -- ── Bind checkboxes to DB ──

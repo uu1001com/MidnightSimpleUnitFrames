@@ -3784,11 +3784,11 @@ MSUF_ExpandDropdownClickArea(absorbAnchorDrop)
 absorbAnchorDrop:SetPoint("TOPLEFT", absorbAnchorLabel, "BOTTOMLEFT", -16, -4)
 UIDropDownMenu_SetWidth(absorbAnchorDrop, BAR_DROPDOWN_WIDTH)
 local absorbAnchorOptions = {
-    { key = 1, label = "Anchor to left side" },
-    { key = 2, label = "Anchor to right side" },
-	    { key = 3, label = "Follow HP bar" },
-	    { key = 4, label = "Follow HP bar (overflow)" },
-	    { key = 5, label = "Reverse from max" },
+    { key = 1, label = L["Anchor to left side"] },
+    { key = 2, label = L["Anchor to right side"] },
+	    { key = 3, label = L["Follow HP bar"] },
+	    { key = 4, label = L["Follow HP bar (overflow)"] },
+	    { key = 5, label = L["Reverse from max"] },
 }
 local function MSUF_GetAbsorbAnchorMode()
     EnsureDB()
@@ -5027,11 +5027,11 @@ smoothBarHint:SetText(TR("C-side interpolation for fluid bar movement"))
 smoothBarHint:SetTextColor(0.45, 0.45, 0.45)
 smoothBarCheck:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddLine("Smooth Power Bar", 1, 1, 1)
-    GameTooltip:AddLine("Uses ExponentialEaseOut interpolation on the", 0.9, 0.9, 0.9, true)
-    GameTooltip:AddLine("StatusBar for silky-smooth bar animation.", 0.9, 0.9, 0.9, true)
+    GameTooltip:AddLine(L["Smooth Power Bar"], 1, 1, 1)
+    GameTooltip:AddLine(L["Uses ExponentialEaseOut interpolation on the"], 0.9, 0.9, 0.9, true)
+    GameTooltip:AddLine(L["StatusBar for silky-smooth bar animation."], 0.9, 0.9, 0.9, true)
     GameTooltip:AddLine(" ", 0.9, 0.9, 0.9)
-    GameTooltip:AddLine("When OFF: Bar snaps instantly to new values.", 0.7, 0.7, 0.7, true)
+    GameTooltip:AddLine(L["When OFF: Bar snaps instantly to new values."], 0.7, 0.7, 0.7, true)
     GameTooltip:Show()
 end)
 smoothBarCheck:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -5065,12 +5065,12 @@ rtTextHint:SetText(TR("Update text every event (higher CPU, pixel-accurate)"))
 rtTextHint:SetTextColor(0.45, 0.45, 0.45)
 rtTextCheck:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddLine("Real-time Power Text", 1, 1, 1)
-    GameTooltip:AddLine("Updates the power number on every game event", 0.9, 0.9, 0.9, true)
-    GameTooltip:AddLine("for pixel-accurate text that matches the bar.", 0.9, 0.9, 0.9, true)
+    GameTooltip:AddLine(L["Real-time Power Text"], 1, 1, 1)
+    GameTooltip:AddLine(L["Updates the power number on every game event"], 0.9, 0.9, 0.9, true)
+    GameTooltip:AddLine(L["for pixel-accurate text that matches the bar."], 0.9, 0.9, 0.9, true)
     GameTooltip:AddLine(" ", 0.9, 0.9, 0.9)
-    GameTooltip:AddLine("When OFF: Text updates are budget-gated", 0.7, 0.7, 0.7, true)
-    GameTooltip:AddLine("(player 33Hz, others 10Hz) for lower CPU.", 0.7, 0.7, 0.7, true)
+    GameTooltip:AddLine(L["When OFF: Text updates are budget-gated"], 0.7, 0.7, 0.7, true)
+    GameTooltip:AddLine(L["(player 33Hz, others 10Hz) for lower CPU."], 0.7, 0.7, 0.7, true)
     GameTooltip:Show()
 end)
 rtTextCheck:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -5516,7 +5516,7 @@ end
 -- is detached; otherwise greyed out and falls back to the global outline.
 local dpbOutlineSlider = CreateLabeledSlider(
     "MSUF_DPBOutlineThicknessSlider",
-    "Power bar outline",
+    L["Power bar outline"],
     barGroup,
     0, 6, 1,
     16, -350  -- temp Y; re-anchored below
