@@ -3472,9 +3472,10 @@ local CP_TOKEN_OPTIONS = {
     { token = "ESSENCE",        label = ns.L["Essence"] },
     { token = "CHARGED",        label = ns.L["Empowered (Charged)"] },
     -- ── New: aura-based class powers ──
-    { token = "SOUL_FRAGMENTS",      label = ns.L["Soul Fragments (DH)"] },
-    { token = "SOUL_FRAGMENTS_META", label = ns.L["Soul Fragments \124cFF9933EE(Void Meta)\124r"] },
-    { token = "MAELSTROM",           label = ns.L["Maelstrom Weapon (Enh)"] },
+    { token = "SOUL_FRAGMENTS",      label = "Soul Fragments (DH)" },
+    { token = "SOUL_FRAGMENTS_META", label = "Soul Fragments \124cFF9933EE(Void Meta)\124r" },
+    { token = "MAELSTROM",           label = "Maelstrom Weapon (Enh)" },
+    { token = "MAELSTROM_ABOVE_5",  label = "Maelstrom Weapon \124cFFFF8000(5+ Spender Ready)\124r" },
     -- ── Balance Druid: Astral Power + Eclipse ──
     { token = "ASTRAL_POWER",   label = ns.L["Astral Power (Balance)"] },
     { token = "AP_PREDICTION",  label = ns.L["Astral Power \124cFF7799CC(Prediction Overlay)\124r"] },
@@ -3541,6 +3542,8 @@ F.GetDefaultClassPowerColor = function(token)
         end
         return 0.00, 0.50, 1.00  -- blue fallback
     end
+    -- Enhancement Shaman: Maelstrom Weapon 5+ stacks (spender empowered threshold)
+    if token == "MAELSTROM_ABOVE_5" then return 1.00, 0.50, 0.00 end
     -- Balance Druid: Astral Power (Blizzard LunarPower blue)
     if token == "ASTRAL_POWER" then
         local col = PowerBarColor and PowerBarColor["LUNAR_POWER"]

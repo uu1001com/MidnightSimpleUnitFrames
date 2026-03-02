@@ -569,6 +569,13 @@ local function _MSUF_Bars_SyncPower(frame, bar, unit, barsConf, isBoss, isPlayer
     pType, pTok = UnitPowerType(unit)
     if pType == nil then return _MSUF_Bars_HidePower(bar, false) end
 
+    -- Ele Shaman: when Maelstrom is shown as class power, main bar shows Mana.
+    -- Flag set by MSUF_ClassPower FullRefresh — zero-cost boolean check.
+    if isPlayer and _G.MSUF_EleMaelstromActive then
+        pType = 0   -- Enum.PowerType.Mana
+        pTok  = "MANA"
+    end
+
     ns.Bars.ApplyPowerBarVisual(frame, bar, pType, pTok)
     bar:SetScript("OnUpdate", nil)
 
@@ -609,6 +616,23 @@ ns.Bars.Spec.power_pct = ns.Bars.Spec.power_pct or function(frame, unit, barsCon
     return _MSUF_Bars_SyncPower(frame, bar, unit, barsConf, isBoss, isPlayer, isTarget, isFocus, true)
 end
 ns.Bars._msufPatchC = ns.Bars._msufPatchC or { version = "C1" }
+
+-- Global: force-refresh player power bar (called by ClassPower when Ele Maelstrom flag changes)
+_G.MSUF_RefreshPlayerPowerBar = function()
+    local pf = _G.MSUF_player or (_G.MSUF_UnitFrames and _G.MSUF_UnitFrames.player)
+    if pf and pf.targetPowerBar then
+        local barsConf = (MSUF_DB and MSUF_DB.bars) or {}
+        MSUF_EnsureUnitFlags(pf)
+        _MSUF_Bars_SyncPower(pf, pf.targetPowerBar, "player", barsConf, false, true, false, false, false)
+        -- Invalidate power text caches so text + color update immediately
+        pf._msufCachedPSerial = nil  -- forces C-API re-fetch in RenderPowerText
+        pf._msufPTColorType = nil    -- forces color re-apply
+        pf._msufLastPwrC = nil       -- forces text re-render
+        pf._msufLastPwrM = nil
+        pf._msufLastPwrP = nil
+        pf._msufPwrTextConf = nil    -- forces config re-read (mode may differ)
+    end
+end
 -- Player self-heal prediction (own incoming heals only).
 -- Implemented as a behind-the-HP statusbar so the additional segment only appears past current HP.
 
@@ -1465,6 +1489,17 @@ local function _MSUF_ApplyStateDriverHide(frame)
     return true
 end
 
+
+-- Secret-safe / secure: never call protected methods on protected/forbidden frames.
+local function _MSUF_SafeDisableMouse(frame)
+    if not frame or not frame.EnableMouse then return end
+    -- Protected/forbidden frames block EnableMouse calls and can trigger ADDON_ACTION_BLOCKED.
+    if (frame.IsForbidden and frame:IsForbidden()) or (frame.IsProtected and frame:IsProtected()) then
+        return
+    end
+    frame:EnableMouse(false)
+end
+
 local function KillFrame(frame, allowInEditMode)
     if not frame then  return end
 
@@ -1516,9 +1551,7 @@ local function KillFrame(frame, allowInEditMode)
         end
     end
 
-    if frame.EnableMouse then
-        frame:EnableMouse(false)
-    end
+    _MSUF_SafeDisableMouse(frame)
  end
 
 -- Re-assert all killed frames. Called on PLAYER_ENTERING_WORLD only.
@@ -1557,10 +1590,7 @@ _MSUF_ReassertKilledFrames = function()
                 end
             end
         end
-
-        if frame.EnableMouse then
-            frame:EnableMouse(false)
-        end
+        _MSUF_SafeDisableMouse(frame)
     end
 end
 
@@ -1733,9 +1763,7 @@ local function HideDefaultFrames()
             if sel.UnregisterAllEvents then
                 sel:UnregisterAllEvents()
             end
-            if sel.EnableMouse then
-                sel:EnableMouse(false)
-            end
+            _MSUF_SafeDisableMouse(sel)
             sel:Hide()
             if sel.SetScript then
                 sel:SetScript("OnShow", function(f)  f:Hide()  end)
