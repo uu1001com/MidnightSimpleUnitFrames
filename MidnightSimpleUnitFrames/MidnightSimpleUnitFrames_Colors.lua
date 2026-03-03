@@ -3512,10 +3512,10 @@ local CP_TOKEN_OPTIONS = {
     { token = "ESSENCE",        label = ns.L["Essence"] },
     { token = "CHARGED",        label = ns.L["Empowered (Charged)"] },
     -- ── New: aura-based class powers ──
-    { token = "SOUL_FRAGMENTS",      label = "Soul Fragments (DH)" },
-    { token = "SOUL_FRAGMENTS_META", label = "Soul Fragments \124cFF9933EE(Void Meta)\124r" },
-    { token = "MAELSTROM",           label = "Maelstrom Weapon (Enh)" },
-    { token = "MAELSTROM_ABOVE_5",  label = "Maelstrom Weapon \124cFFFF8000(5+ Spender Ready)\124r" },
+    { token = "SOUL_FRAGMENTS",      label = ns.L["Soul Fragments (DH)"] },
+    { token = "SOUL_FRAGMENTS_META", label = ns.L["Soul Fragments \124cFF9933EE(Void Meta)\124r"] },
+    { token = "MAELSTROM",           label = ns.L["Maelstrom Weapon (Enh)"] },
+    { token = "MAELSTROM_ABOVE_5",  label = ns.L["Maelstrom Weapon \124cFFFF8000(5+ Spender Ready)\124r"] },
     -- ── Balance Druid: Astral Power + Eclipse ──
     { token = "ASTRAL_POWER",   label = ns.L["Astral Power (Balance)"] },
     { token = "AP_PREDICTION",  label = ns.L["Astral Power \124cFF7799CC(Prediction Overlay)\124r"] },

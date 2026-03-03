@@ -4228,13 +4228,13 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
             syncCB:SetSize(20, 20)
             syncCB:SetPoint("TOPLEFT", detachCB, "BOTTOMLEFT", 0, -2)
             local syncText = syncCB.Text or (syncCB.GetName and _G[syncCB:GetName() .. "Text"])
-            if syncText then syncText:SetText("Sync width to Resource Bar") end
+            if syncText then syncText:SetText(L["Sync width to Resource Bar"]) end
             pf.syncClassPowerCB = syncCB
 
             syncCB:SetScript("OnEnter", function()
                 MSUF_EM_PopupShowTooltip(pf,
-                    "Sync Width to Resource Bar",
-                    "Matches the detached power bar width to the Class Power bar (Combo Points, Soul Shards, etc.).\n\nThe Resource Bar becomes the width master.\nWidth field is locked while synced.")
+                    L["Sync Width to Resource Bar"],
+                    L["Matches the detached power bar width to the Class Power bar (Combo Points, Soul Shards, etc.).\n\nThe Resource Bar becomes the width master.\nWidth field is locked while synced."])
             end)
             syncCB:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
@@ -4248,13 +4248,13 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
             anchorCPCB:SetSize(20, 20)
             anchorCPCB:SetPoint("TOPLEFT", syncCB, "BOTTOMLEFT", 0, -2)
             local anchorCPText = anchorCPCB.Text or (anchorCPCB.GetName and _G[anchorCPCB:GetName() .. "Text"])
-            if anchorCPText then anchorCPText:SetText("Anchor to Resource Bar") end
+            if anchorCPText then anchorCPText:SetText(L["Anchor to Resource Bar"]) end
             pf.anchorToClassPowerCB = anchorCPCB
 
             anchorCPCB:SetScript("OnEnter", function()
                 MSUF_EM_PopupShowTooltip(pf,
-                    "Anchor to Resource Bar",
-                    "Attaches the detached power bar to the Class Power bar.\n\nMoving the Class Power bar also moves the power bar.\nYou can still adjust X/Y offsets relative to the resource bar.")
+                    L["Anchor to Resource Bar"],
+                    L["Attaches the detached power bar to the Class Power bar.\n\nMoving the Class Power bar also moves the power bar.\nYou can still adjust X/Y offsets relative to the resource bar."])
             end)
             anchorCPCB:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
@@ -4268,13 +4268,13 @@ MSUF_EM_BuildNumericRows(pf, frameRows, frameHeader, "BOTTOMLEFT", 0, ApplyUnitP
             textOnBarCB:SetSize(20, 20)
             textOnBarCB:SetPoint("TOPLEFT", anchorCPCB, "BOTTOMLEFT", 0, -2)
             local textOnBarText = textOnBarCB.Text or (textOnBarCB.GetName and _G[textOnBarCB:GetName() .. "Text"])
-            if textOnBarText then textOnBarText:SetText("Power text on bar") end
+            if textOnBarText then textOnBarText:SetText(L["Power text on bar"]) end
             pf.powerTextOnBarCB = textOnBarCB
 
             textOnBarCB:SetScript("OnEnter", function()
                 MSUF_EM_PopupShowTooltip(pf,
-                    "Power Text on Bar",
-                    "Moves the power text from the unit frame onto the detached power bar.\n\nText offset X/Y still works relative to the power bar.")
+                    L["Power Text on Bar"],
+                    L["Moves the power text from the unit frame onto the detached power bar.\n\nText offset X/Y still works relative to the power bar."])
             end)
             textOnBarCB:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 

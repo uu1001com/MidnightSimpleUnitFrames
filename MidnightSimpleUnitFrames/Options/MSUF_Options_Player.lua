@@ -1941,7 +1941,7 @@ end
                 sep.isTitle = true
                 sep.notCheckable = true
                 UIDropDownMenu_AddButton(sep, level)
-                AddItem("All", "all")
+                AddItem(TR("All"), "all")
              end
             UIDropDownMenu_Initialize(panel[dropKey], Init)
             if not panel[dropKey]._msufCopySyncHooked and panel[dropKey].HookScript then
@@ -1995,11 +1995,11 @@ end
             defaultDest = "target",
             hintText = "",
             items = {
-                { "Target", "target" },
-                { "Focus", "focus" },
-                { "Boss frames", "boss" },
-                { "Pet", "pet" },
-                { "Target of Target", "targettarget" },
+                { TR("Target"), "target" },
+                { TR("Focus"), "focus" },
+                { TR("Boss frames"), "boss" },
+                { TR("Pet"), "pet" },
+                { TR("Target of Target"), "targettarget" },
             },
         },
         {
@@ -2009,11 +2009,11 @@ end
             defaultDest = "player",
             hintText = "",
             items = {
-                { "Player", "player" },
-                { "Focus", "focus" },
-                { "Boss frames", "boss" },
-                { "Pet", "pet" },
-                { "Target of Target", "targettarget" },
+                { TR("Player"), "player" },
+                { TR("Focus"), "focus" },
+                { TR("Boss frames"), "boss" },
+                { TR("Pet"), "pet" },
+                { TR("Target of Target"), "targettarget" },
             },
         },
         {
@@ -2023,11 +2023,11 @@ end
             defaultDest = "target",
             hintText = "",
             items = {
-                { "Player", "player" },
-                { "Target", "target" },
-                { "Boss frames", "boss" },
-                { "Pet", "pet" },
-                { "Target of Target", "targettarget" },
+                { TR("Player"), "player" },
+                { TR("Target"), "target" },
+                { TR("Boss frames"), "boss" },
+                { TR("Pet"), "pet" },
+                { TR("Target of Target"), "targettarget" },
             },
         },
         {
@@ -2037,11 +2037,11 @@ end
             defaultDest = "target",
             hintText = "",
             items = {
-                { "Player", "player" },
-                { "Target", "target" },
-                { "Focus", "focus" },
-                { "Pet", "pet" },
-                { "Target of Target", "targettarget" },
+                { TR("Player"), "player" },
+                { TR("Target"), "target" },
+                { TR("Focus"), "focus" },
+                { TR("Pet"), "pet" },
+                { TR("Target of Target"), "targettarget" },
             },
         },
         {
@@ -2051,11 +2051,11 @@ end
             defaultDest = "player",
             hintText = "",
             items = {
-                { "Player", "player" },
-                { "Target", "target" },
-                { "Focus", "focus" },
-                { "Boss frames", "boss" },
-                { "Pet", "pet" },
+                { TR("Player"), "player" },
+                { TR("Target"), "target" },
+                { TR("Focus"), "focus" },
+                { TR("Boss frames"), "boss" },
+                { TR("Pet"), "pet" },
             },
         },
         {
@@ -2065,11 +2065,11 @@ end
             defaultDest = "target",
             hintText = "",
             items = {
-                { "Player", "player" },
-                { "Target", "target" },
-                { "Target of Target", "targettarget" },
-                { "Focus", "focus" },
-                { "Boss frames", "boss" },
+                { TR("Player"), "player" },
+                { TR("Target"), "target" },
+                { TR("Target of Target"), "targettarget" },
+                { TR("Focus"), "focus" },
+                { TR("Boss frames"), "boss" },
             },
         },
     }
