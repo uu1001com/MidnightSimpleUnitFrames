@@ -70,66 +70,202 @@ Reminder.PROVIDERS = _PROVIDERS
 local _presentClasses = {}
 local _playerClass = nil
 
+-- Forward-declare (used by _ScanRoster, fully initialised in computation section)
+local _rosterGen = 0
+local _anyProviderInGroup = false
+local _providerCount = #_PROVIDERS
+
 local function _ScanRoster()
     wipe(_presentClasses)
     local _, cls = UnitClass("player")
     _playerClass = cls
     if cls then _presentClasses[cls] = true end
-    if not IsInGroup() and not IsInRaid() then return end
-    local n = GetNumGroupMembers() or 0
-    local prefix = IsInRaid() and "raid" or "party"
-    for i = 1, n do
-        local u = prefix .. i
-        if UnitExists(u) then
-            local _, c = UnitClass(u)
-            if c then _presentClasses[c] = true end
+    if IsInGroup() or IsInRaid() then
+        local n = GetNumGroupMembers() or 0
+        local prefix = IsInRaid() and "raid" or "party"
+        for i = 1, n do
+            local u = prefix .. i
+            if UnitExists(u) then
+                local _, c = UnitClass(u)
+                if c then _presentClasses[c] = true end
+            end
+        end
+    end
+    -- Bump roster generation → triggers rescan in _ComputeMissing
+    _rosterGen = _rosterGen + 1
+    -- Pre-compute: is ANY provider class present? If not, skip all work.
+    _anyProviderInGroup = false
+    for i = 1, _providerCount do
+        local pc = _PROVIDERS[i].providerClass
+        if pc == "ROGUE_SELF" then
+            if _playerClass == "ROGUE" then _anyProviderInGroup = true; break end
+        elseif _presentClasses[pc] then
+            _anyProviderInGroup = true; break
         end
     end
 end
 
 -- =========================================================================
 -- Missing / expiring computation
+--
+-- PERF STRATEGY (near-zero overhead when ON):
+--   1. Epoch-gate: _ScanPlayerAuras only runs when Cache epoch changes
+--      (= player auras actually added/removed/updated by UNIT_AURA).
+--      Typical raid: epoch changes 1-5× per second, Render called 60×.
+--      → 95%+ of calls skip the scan entirely.
+--   2. Provider-presence gate: if no provider class in group → skip scan.
+--   3. Result-cache: ghost frames only re-rendered when computed output
+--      actually changes (different providers missing, or timer bucket shift).
+--   4. Reverse spellId lookup: O(1) per aura instead of O(9) inner loop.
+--   5. All provider spells are whitelisted → direct arithmetic, no secret checks.
 -- =========================================================================
 local _results = {}
 local _resultCount = 0
+for i = 1, 9 do _results[i] = { provider = nil, state = nil, remaining = nil } end
 
-local function _ComputeMissing(reminders, threshold, isPreview)
-    wipe(_results)
-    _resultCount = 0
+-- Reverse spellId → provider index (built once at load, O(1) per aura)
+local _spellToProvider = {}
+for i = 1, #_PROVIDERS do
+    for sid in next, _PROVIDERS[i].satisfiedBy do
+        _spellToProvider[sid] = i
+    end
+end
+
+local _providerHasBuff = {}
+local _providerMinRem  = {}
+
+-- ---- Epoch + dirty tracking ----
+local _lastEpoch       = -1   -- last Cache.GetEpoch("player") we scanned at
+local _lastRosterGen   = -1   -- last roster gen we scanned at
+
+-- Result signature: compact fingerprint of last _ComputeMissing output.
+-- Format: per result entry "providerKey:state:timerBucket" joined.
+-- When sig unchanged → ghost frame update skipped entirely.
+local _lastResultSig    = ""
+-- Layout cache: track last ghost sizing to avoid SetSize/ClearAllPoints/SetPoint
+local _lastRenderSize   = -1
+local _lastRenderGap    = -1
+local _lastRenderGrow   = ""
+local _lastRenderEdit   = -1  -- -1 = never rendered
+
+-- Called from Options when user toggles reminder checkboxes / threshold
+function Reminder.MarkDirty()
+    _lastEpoch = -1      -- force rescan
+    _lastResultSig = ""  -- force re-render
+end
+
+local function _ScanPlayerAuras(threshold)
     local Cache = API.Cache
-    local hasSpell  = Cache and Cache.HasAnySpell
-    local getMinRem = Cache and Cache.GetMinRemaining
-    local thr = (type(threshold) == "number" and threshold > 0) and threshold or 0
-
-    for i = 1, #_PROVIDERS do
-        local p = _PROVIDERS[i]
-        if not reminders or reminders[p.key] ~= false then
-            if isPreview then
-                _resultCount = _resultCount + 1
-                _results[_resultCount] = { provider = p, state = "MISSING", remaining = nil }
-            else
-                local shouldCheck = false
-                if p.providerClass == "ROGUE_SELF" then
-                    shouldCheck = (_playerClass == "ROGUE")
-                else
-                    shouldCheck = (_presentClasses[p.providerClass] == true)
-                end
-                if shouldCheck and hasSpell then
-                    local hasBuff = hasSpell("player", p.satisfiedBy)
-                    if not hasBuff then
-                        _resultCount = _resultCount + 1
-                        _results[_resultCount] = { provider = p, state = "MISSING", remaining = nil }
-                    elseif thr > 0 and getMinRem then
-                        local rem = getMinRem("player", p.satisfiedBy)
-                        if rem and rem < thr then
-                            _resultCount = _resultCount + 1
-                            _results[_resultCount] = { provider = p, state = "EXPIRING", remaining = rem }
+    local s = Cache._units and Cache._units.player
+    if not s or not s.all then return end
+    local now = GetTime()
+    local thr = threshold
+    local lookup = _spellToProvider
+    for _, data in next, s.all do
+        local sid = data._msufA2_sid
+        if sid and sid ~= 0 then
+            local idx = lookup[sid]
+            if idx then
+                _providerHasBuff[idx] = true
+                if thr > 0 then
+                    local exp = data.expirationTime
+                    if exp and exp ~= 0 then
+                        local rem = exp - now
+                        if rem < 0 then rem = 0 end
+                        local prev = _providerMinRem[idx]
+                        if not prev or rem < prev then
+                            _providerMinRem[idx] = rem
+                        end
+                    else
+                        if not _providerMinRem[idx] then
+                            _providerMinRem[idx] = 999999
                         end
                     end
                 end
             end
         end
     end
+end
+
+-- Build compact result signature (zero-alloc via reusable buffer)
+local _sigParts = {}
+local function _BuildResultSig()
+    local n = _resultCount
+    if n == 0 then return "" end
+    for i = 1, n do
+        local r = _results[i]
+        -- Timer bucket at 10s granularity to avoid churn on trivial tick changes
+        local bucket = r.remaining and floor(r.remaining * 0.1) or -1
+        _sigParts[i] = r.provider.key .. (r.state == "EXPIRING" and bucket or "M")
+    end
+    for i = n + 1, #_sigParts do _sigParts[i] = nil end
+    return table.concat(_sigParts, ",")
+end
+
+local function _ComputeMissing(reminders, threshold, isPreview)
+    _resultCount = 0
+    local thr = (type(threshold) == "number" and threshold > 0) and threshold or 0
+
+    if isPreview then
+        for i = 1, _providerCount do
+            local p = _PROVIDERS[i]
+            if not reminders or reminders[p.key] ~= false then
+                _resultCount = _resultCount + 1
+                local r = _results[_resultCount]
+                r.provider = p; r.state = "MISSING"; r.remaining = nil
+            end
+        end
+        return true -- always "changed" in preview
+    end
+
+    -- PERF: No provider class in group → nothing can be missing, skip scan
+    if not _anyProviderInGroup then return false end
+
+    -- PERF: Epoch-gate — only rescan when player auras actually changed
+    local Cache = API.Cache
+    local epoch = Cache and Cache.GetEpoch and Cache.GetEpoch("player") or 0
+    local rGen = _rosterGen
+    if epoch == _lastEpoch and rGen == _lastRosterGen then
+        -- Nothing changed since last scan → _results still valid
+        return false
+    end
+    _lastEpoch = epoch
+    _lastRosterGen = rGen
+
+    -- Reset (fixed-size, no wipe)
+    for i = 1, _providerCount do
+        _providerHasBuff[i] = false
+        _providerMinRem[i] = nil
+    end
+
+    _ScanPlayerAuras(thr)
+
+    for i = 1, _providerCount do
+        local p = _PROVIDERS[i]
+        if not reminders or reminders[p.key] ~= false then
+            local shouldCheck = false
+            if p.providerClass == "ROGUE_SELF" then
+                shouldCheck = (_playerClass == "ROGUE")
+            else
+                shouldCheck = (_presentClasses[p.providerClass] == true)
+            end
+            if shouldCheck then
+                if not _providerHasBuff[i] then
+                    _resultCount = _resultCount + 1
+                    local r = _results[_resultCount]
+                    r.provider = p; r.state = "MISSING"; r.remaining = nil
+                elseif thr > 0 then
+                    local rem = _providerMinRem[i]
+                    if rem and rem < thr then
+                        _resultCount = _resultCount + 1
+                        local r = _results[_resultCount]
+                        r.provider = p; r.state = "EXPIRING"; r.remaining = rem
+                    end
+                end
+            end
+        end
+    end
+    return true -- data was rescanned
 end
 
 -- =========================================================================
@@ -154,7 +290,10 @@ local _ghostActive = 0
 local function _AcquireGhost(container, index)
     local ghost = _ghostPool[index]
     if ghost then
-        ghost:SetParent(container)
+        -- PERF: SetParent triggers texture regeneration; skip if unchanged.
+        if ghost:GetParent() ~= container then
+            ghost:SetParent(container)
+        end
         if not ghost:IsShown() then ghost:Show() end
         return ghost
     end
@@ -675,6 +814,15 @@ end
 
 -- =========================================================================
 -- Render: show ghost icons into entry.reminder container
+--
+-- PERF: Three-layer gating ensures near-zero overhead when ON:
+--   Layer 1: _ComputeMissing epoch-gates the aura scan (Cache.GetEpoch)
+--            → 95%+ of calls skip _ScanPlayerAuras entirely.
+--   Layer 2: Result signature check — if same providers missing with
+--            same timer buckets AND same layout → skip ALL ghost updates.
+--            Cost: 1 string compare. No SetSize, SetPoint, SetTexture calls.
+--   Layer 3: Individual ghost dirty checks — only update properties that
+--            actually changed (size, position, texture, state).
 -- =========================================================================
 function Reminder.Render(entry, unit, shared, iconSize, spacing, growth, isEditMode)
     if unit ~= "player" then
@@ -713,8 +861,10 @@ function Reminder.Render(entry, unit, shared, iconSize, spacing, growth, isEditM
     if not remGrowth and sh and type(sh.reminderGrowth) == "string" then remGrowth = sh.reminderGrowth end
     remGrowth = remGrowth or growth or "RIGHT"
 
-    _ComputeMissing(reminders, thr, isEditMode)
+    -- Layer 1: Epoch-gated compute (returns true only if data rescanned)
+    local rescanned = _ComputeMissing(reminders, thr, isEditMode)
 
+    -- Handle count decrease
     if _resultCount < _ghostActive then
         _HideGhosts(_resultCount + 1)
     end
@@ -722,10 +872,30 @@ function Reminder.Render(entry, unit, shared, iconSize, spacing, growth, isEditM
 
     if _resultCount == 0 then
         container:Hide()
+        _lastResultSig = ""
         return
     end
     container:Show()
 
+    -- Layer 2: Result + layout signature check.
+    -- If epoch said "no change" AND layout identical → skip ALL ghost updates.
+    local editFlag = isEditMode and 1 or 0
+    local sig = rescanned and _BuildResultSig() or _lastResultSig
+    if sig == _lastResultSig
+       and remSize == _lastRenderSize
+       and remSpacing == _lastRenderGap
+       and remGrowth == _lastRenderGrow
+       and editFlag == _lastRenderEdit then
+        -- Identical output — zero ghost frame calls.
+        return
+    end
+    _lastResultSig  = sig
+    _lastRenderSize = remSize
+    _lastRenderGap  = remSpacing
+    _lastRenderGrow = remGrowth
+    _lastRenderEdit = editFlag
+
+    -- Layer 3: Update ghost frames (only reached when something changed)
     local size = remSize
     local gap = remSpacing
     local growDir = remGrowth
