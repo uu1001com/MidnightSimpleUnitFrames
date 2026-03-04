@@ -1693,10 +1693,10 @@ end
             { L["Show cooldown text"], 200, -300, A2_Settings, "showCooldownText", nil,
                 L["Shows the countdown numbers on aura icons. Disable to hide cooldown numbers (swipe can remain enabled)."],
                 "cbShowCooldownText" },
-            { "Click-through auras", 200, -324, A2_Settings, "clickThroughAuras", nil,
-                "Makes all aura icons non-interactive. Mouse clicks and tooltips pass through to the game world.",
+            { L["Click-through auras"], 200, -324, A2_Settings, "clickThroughAuras", nil,
+                L["Makes all aura icons non-interactive. Mouse clicks and tooltips pass through to the game world."],
                 "cbClickThrough" },
-            { "Show tooltip", 12, -276, A2_Settings, "showTooltip", nil, nil, "cbShowTooltip" },
+            { L["Show tooltip"], 12, -276, A2_Settings, "showTooltip", nil, nil, "cbShowTooltip" },
         }, displayCB)
         for _, cb in pairs(displayCB) do
             A2_Track("global", cb)
@@ -2033,16 +2033,16 @@ end
     do
         local refs = {}
         BuildBoolPathCheckboxes(advBox, {
-            { "Include boss buffs", 12, -58, A2_FilterBuffs, "includeBoss", nil, nil, "cbBossBuffs" },
-            { "Include boss debuffs", 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
-            { "Show Sated/Exhaustion", 12, -114, A2_Settings, "showSated", nil,
-                "Controls whether Bloodlust lockout auras (Sated/Exhaustion/Temporal Displacement, etc.) are shown.", "cbShowSated" },
-            { "Only show boss auras", 380, -58, GetEditingFilters, "onlyBossAuras", nil,
-                "Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown.", "cbOnlyBoss" },
-            { "Only show IMPORTANT buffs", 380, -86, A2_FilterBuffs, "onlyImportant", nil,
-                "Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.).", "cbOnlyImpBuffs" },
-            { "Only show IMPORTANT debuffs", 380, -114, A2_FilterDebuffs, "onlyImportant", nil,
-                "Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.).", "cbOnlyImpDebuffs" },
+            { L["Include boss buffs"], 12, -58, A2_FilterBuffs, "includeBoss", nil, nil, "cbBossBuffs" },
+            { L["Include boss debuffs"], 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
+            { L["Show Sated/Exhaustion"], 12, -114, A2_Settings, "showSated", nil,
+                L["Controls whether Bloodlust lockout auras (Sated/Exhaustion/Temporal Displacement, etc.) are shown."], "cbShowSated" },
+            { L"Only show boss auras", 380, -58, GetEditingFilters, "onlyBossAuras", nil,
+                L["Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown."], "cbOnlyBoss" },
+            { L["Only show IMPORTANT buffs"], 380, -86, A2_FilterBuffs, "onlyImportant", nil,
+                L["Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpBuffs" },
+            { L["Only show IMPORTANT debuffs"], 380, -114, A2_FilterDebuffs, "onlyImportant", nil,
+                L["Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpDebuffs" },
         }, refs)
 
         -- Sated/Exhaustion remaining-time threshold (0 = always show when toggle is on)
@@ -2402,16 +2402,16 @@ end
         local catMeta = a2api and a2api.Cache and a2api.Cache.IGNORE_CAT_META
         if not catMeta then
             catMeta = {
-                { key = "RAID_BUFFS",      label = "Raid Buffs" },
-                { key = "BLESSING_BRONZE", label = "Blessing of the Bronze" },
-                { key = "HEALER_HOTS",     label = "Healer HoTs" },
-                { key = "ROGUE_POISONS",   label = "Rogue Poisons" },
-                { key = "SHAMAN_IMBUE",    label = "Shaman Imbuements" },
-                { key = "DESERTER",        label = "Deserter" },
-                { key = "SKYRIDING",       label = "Skyriding" },
-                { key = "SELF_BUFFS",      label = "Long-term Self Buffs" },
-                { key = "RESOURCE_AURAS",  label = "Resource-like Auras" },
-                { key = "COOLDOWNS",       label = "Cooldowns" },
+                { key = "RAID_BUFFS",      label = L["Raid Buffs"] },
+                { key = "BLESSING_BRONZE", label = L["Blessing of the Bronze"] },
+                { key = "HEALER_HOTS",     label = L["Healer HoTs"] },
+                { key = "ROGUE_POISONS",   label = L["Rogue Poisons"] },
+                { key = "SHAMAN_IMBUE",    label = L["Shaman Imbuements"] },
+                { key = "DESERTER",        label = L["Deserter"] },
+                { key = "SKYRIDING",       label = L["Skyriding"] },
+                { key = "SELF_BUFFS",      label = L["Long-term Self Buffs"] },
+                { key = "RESOURCE_AURAS",  label = L["Resource-like Auras"] },
+                { key = "COOLDOWNS",       label = L["Cooldowns"] },
             }
         end
 
@@ -2464,7 +2464,7 @@ end
         end
 
         -- Gating: enable/disable checkboxes based on editing key + override state
-        local _IGNORE_UNIT_LABELS = { shared = "Shared (all units)", player = "Player", target = "Target", focus = "Focus" }
+        local _IGNORE_UNIT_LABELS = { shared = L["Shared (all units)"], player = "Player", target = "Target", focus = "Focus" }
         local function UpdateIgnoreBoxState()
             local key = GetEditingKey()
             local isBoss = (key == "boss1" or key == "boss2" or key == "boss3" or key == "boss4" or key == "boss5")
@@ -2472,7 +2472,7 @@ end
 
             -- Editing label
             if isBoss then
-                ignEditLabel:SetText("|cff888888Not available for Boss frames|r")
+                ignEditLabel:SetText(L["|cff888888Not available for Boss frames|r"])
             else
                 ignEditLabel:SetText("Editing: |cffffd200" .. (_IGNORE_UNIT_LABELS[key] or key) .. "|r")
             end
@@ -2517,12 +2517,12 @@ end
 
         local remDesc = reminderBox:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
         remDesc:SetPoint("TOPLEFT", reminderBox, "TOPLEFT", 12, -28)
-        remDesc:SetWidth(500)
+        remDesc:SetWidth(700)
         remDesc:SetJustifyH("LEFT")
-        remDesc:SetText("Ghost icons appear at the player frame when a buff is missing or about to expire. Position via Edit Mode mover.")
+        remDesc:SetText(TR("Ghost icons appear at the player frame when a buff is missing or about to expire. Position via Edit Mode mover."))
 
         -- Master toggle
-        local cbShowReminders = CreateCheckbox(reminderBox, "Enable Buff Reminders", 12, -50,
+        local cbShowReminders = CreateCheckbox(reminderBox, TR("Enable Buff Reminders"), 12, -50,
             function()
                 local s = A2_Settings()
                 return s and (s.showReminders ~= false)
@@ -2535,20 +2535,20 @@ end
                 if rm and rm.MarkDirty then rm.MarkDirty() end
                 A2_RequestApply()
             end,
-            "Show ghost icons for missing buffs at the player frame.")
+            TR("Show ghost icons for missing buffs at the player frame."))
         A2_Track("global", cbShowReminders)
 
         -- Per-buff checkboxes
         local provMeta = {
-            { key = "FORTITUDE",       label = "Power Word: Fortitude" },
-            { key = "ARCANE_INTELLECT", label = "Arcane Intellect" },
-            { key = "MARK_OF_WILD",    label = "Mark of the Wild" },
-            { key = "BATTLE_SHOUT",    label = "Battle Shout" },
-            { key = "SKYFURY",         label = "Skyfury" },
-            { key = "SOURCE_OF_MAGIC", label = "Source of Magic" },
-            { key = "BLESSING_BRONZE", label = "Blessing of the Bronze" },
-            { key = "ROGUE_LETHAL",    label = "Lethal Poison (Rogue)" },
-            { key = "ROGUE_NONLETHAL", label = "Non-Lethal Poison (Rogue)" },
+            { key = "FORTITUDE",       label = TR("Power Word: Fortitude") },
+            { key = "ARCANE_INTELLECT", label = TR("Arcane Intellect") },
+            { key = "MARK_OF_WILD",    label = TR("Mark of the Wild") },
+            { key = "BATTLE_SHOUT",    label = TR("Battle Shout") },
+            { key = "SKYFURY",         label = TR("Skyfury") },
+            { key = "SOURCE_OF_MAGIC", label = TR("Source of Magic") },
+            { key = "BLESSING_BRONZE", label = TR("Blessing of the Bronze") },
+            { key = "ROGUE_LETHAL",    label = TR("Lethal Poison (Rogue)") },
+            { key = "ROGUE_NONLETHAL", label = TR("Non-Lethal Poison (Rogue)") },
         }
         -- Try to use live provider list if available
         local a2api = ns and ns.MSUF_Auras2
@@ -2599,13 +2599,13 @@ end
         -- Threshold slider
         local thrLabel = reminderBox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
         thrLabel:SetPoint("TOPLEFT", reminderBox, "TOPLEFT", 12, -202)
-        thrLabel:SetText("Expiry Warning")
+        thrLabel:SetText(TR("Expiry Warning"))
 
         local thrDesc2 = reminderBox:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
         thrDesc2:SetPoint("TOPLEFT", thrLabel, "BOTTOMLEFT", 0, -2)
-        thrDesc2:SetWidth(340)
+        thrDesc2:SetWidth(500)
         thrDesc2:SetJustifyH("LEFT")
-        thrDesc2:SetText("Show reminder when buff expires within this time. 0 = only when missing.")
+        thrDesc2:SetText(TR("Show reminder when buff expires within this time. 0 = only when missing."))
 
         local thrSlider = CreateSlider(reminderBox, "", 0, 600, 5, 12, -244,
             function()

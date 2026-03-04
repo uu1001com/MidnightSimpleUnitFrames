@@ -1509,7 +1509,7 @@ end
     --------------------------------------------------
     local barAppHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     barAppHeader:SetPoint("TOPLEFT", F._darkBgCustomCheck, "BOTTOMLEFT", 4, -22)
-    barAppHeader:SetText("Bar appearance")
+    barAppHeader:SetText(ns.L["Bar appearance"])
     F.CreateHeaderDividerAbove(barAppHeader)
 
     local barModeLabel = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")

@@ -52,6 +52,11 @@ local T = {
     ["Center"] = "居中",
     ["Left to player name"] = "玩家名称左",
     ["Right to player name"] = "玩家名称右",
+    ["Right to Left"] = "从右到左",
+    ["Bottom to Top"] = "从下到上",
+    ["Top to Bottom"] = "从上到下",
+    ["Left to Right"] = "从左到右",
+
 
     ["Top Left"] = "左上",
     ["Top Right"] = "右上",
@@ -75,7 +80,7 @@ local T = {
     ["Edit Mode: Use |cff00ff00Toggle Edit Mode|r to move frames quickly, then fine-tune with the position popup."]  = "编辑模式: 使用|cff00ff00切换编辑模式|r快速移动框架,然后使用位置弹出窗口进行精细调整.",
     ["Profiles safety: Create a new profile before big experiments — switch back instantly if needed."]  = "配置文件安全: 在进行大型实验之前创建一个新的配置文件——如果需要,可以立即切换回来.",
     ["Colors: The |cff00ff00Colors|r tab lets you customize almost everything (fonts, bars, castbars, highlights)."]  = "颜色: |cff00ff00颜色|r选项卡允许您自定义几乎所有内容(字体,计量条,施法条,高亮显示).",
-    ["Gameplay: The |cff00ff00Gameplay|r tab contains extra UI tools and warnings you can enable/disable."]  = "游戏玩法: |cff00ff00游戏玩法|r选项卡包含您可以启用/禁用的额外UI工具和警告.",
+    ["Gameplay: The |cff00ff00Gameplay|r tab contains extra UI tools and warnings you can enable/disable."]  = "游戏功能: |cff00ff00游戏功能|r选项卡包含您可以启用/禁用的额外UI工具和警告.",
     ["Recommended: |cff00ff00Sensei Resource Bar|r pairs insanely well with MSUF to track resources cleanly."]  = "推荐: |cff00ff00Sensei Resource Bar|r与MSUF搭配使用,可以清晰地跟踪资源.",
     ["UI scale tip: MSUF has its own UI scale — separate from the Global UI scale."]    = "UI缩放提示: MSUF有自己的UI缩放——与全局UI缩放分开.",
     ["Troubleshoot: If visuals don’t update, a quick |cff00ff00/reload|r fixes most UI state issues."]  = "故障排除: 如果视觉效果没有更新,一个快速的|cff00ff00/reload|r可以解决大多数UI状态问题.",
@@ -113,9 +118,9 @@ local T = {
     ["Global UI Scale: Auto"] = "全局UI缩放: 自动",
     ["Scaling OFF"] = "缩放关闭",
     ["Disable ALL MSUF scaling"] = "关闭所有MSUF缩放",
-    ["Applies MSUF's global scale preset for 1080p-like setups and reloads your UI. Auto restores Blizzard scaling on reload."] = "应用MSUF的全局缩放预设,类似于1080p的设置并重新加载您的UI. 自动恢复暴雪的缩放在重载.",
-    ["Applies MSUF's global scale preset for 1440p-like setups and reloads your UI. Auto restores Blizzard scaling on reload."] = "应用MSUF的全局缩放预设,类似于1440p的设置并重新加载您的UI. 自动恢复暴雪的缩放在重载.",
-    ["Applies MSUF's global scale preset for 4K (2160p) setups (0.3556) and reloads your UI. Auto restores Blizzard scaling on reload."] = "应用MSUF的全局缩放预设,类似于4K(2160p)的设置(0.3556)并重新加载您的UI. 自动恢复暴雪的缩放在重载.",
+    ["Applies MSUF's global scale preset for 1080p-like setups and reloads your UI. Auto restores Blizzard scaling on reload."] = "应用MSUF的全局缩放预设,适应于1080p的设置并重新加载您的UI. 自动恢复暴雪的缩放在重载.",
+    ["Applies MSUF's global scale preset for 1440p-like setups and reloads your UI. Auto restores Blizzard scaling on reload."] = "应用MSUF的全局缩放预设,适应于1440p的设置并重新加载您的UI. 自动恢复暴雪的缩放在重载.",
+    ["Applies MSUF's global scale preset for 4K (2160p) setups (0.3556) and reloads your UI. Auto restores Blizzard scaling on reload."] = "应用MSUF的全局缩放预设,适应于4K(2160p)的设置(0.3556)并重新加载您的UI. 自动恢复暴雪的缩放在重载.",
     ["Stops enforcing MSUF global scale and restores your previous Blizzard UI scale."] = "停止强制MSUF全局缩放并恢复您以前的暴雪UI缩放.",
     ["Turns off all scaling MSUF applies (global UI scale + MSUF-only scale), then reloads your UI. Blizzard handles scaling."] = "关闭所有MSUF应用的缩放(全局UI缩放 + MSUF-only缩放),然后重新加载您的UI. 暴雪处理缩放.",
 
@@ -540,10 +545,12 @@ local T = {
     ["Show cooldown text"] =  "显示冷却文本",
     ["Shows the countdown numbers on aura icons. Disable to hide cooldown numbers (swipe can remain enabled)."] = "在光环图标上显示倒计时数字. 禁用以隐藏冷却数字 (扫过可以保持启用).",
     ["Show tooltip"] = "显示鼠标提示",
+    ["Click-through auras"] = "点击穿透光环",
+    ["Makes all aura icons non-interactive. Mouse clicks and tooltips pass through to the game world."] = "使所有光环图标变为不可交互. 鼠标点击和提示信息穿透到游戏世界.",
     ["Hide permanent buffs"] = "隐藏永久Buffs",
     ['Hides buffs with no duration. Debuffs are never hidden by this option.\n\nNote: Target/Focus APIs may still show permanent buffs during combat due to API limitations.'] = "隐藏无持续时间的Buffs. Debuffs不会被此选项隐藏.\n\n注意: 目标/焦点API在战斗中可能仍然显示永久Buffs, 由于API限制.",
     ["Dispel-type borders"] = "驱散类型边框",
-    ["Colors aura borders by debuff dispel type (Magic/Curse/Poison/Disease), similar to Blizzard private aura borders."] = "根据Debuff驱散类型 (魔法/诅咒/中毒/疾病) 着色光环边框, 类似于暴雪私人光环边框.",
+    ["Colors aura borders by debuff dispel type (Magic/Curse/Poison/Disease), similar to Blizzard private aura borders."] = "根据Debuff驱散类型 (魔法/诅咒/中毒/疾病) 着色光环边框, 类似于暴雪私有光环边框.",
     ["Only my buffs"]  = "仅自己的Buffs",
     ["Only my debuffs"] = "仅自己的Debuffs",
     ["Max Buffs"] = "最大Buffs数量",
@@ -579,24 +586,61 @@ local T = {
     ["Additive: this will NOT hide your normal debuffs."] = "附加: 这不会隐藏你的正常Debuffs.",
     ["Only show boss auras"] =   "仅显示首领光环",
     ["Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown."] = "硬过滤: 启用时 (并且过滤器已启用), 将仅显示标记为首领光环的光环.",
-    ["Private Auras"] = "私人光环",
+    ["Private Auras"] = "私有光环",
     ["Only show IMPORTANT buffs"] = "仅显示重要Buffs",
     ["Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."] = "硬过滤: 启用时 (并且过滤器已启用), 将仅显示暴雪精心挑选的 IMPORTANT Buffs列表中 (例如, 团队机制, 关键防御等).",
     ["Only show IMPORTANT debuffs"] = "仅显示重要Debuffs",
     ["Hard filter: when enabled (and filters are enabled), only debuffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."] = "硬过滤: 启用时 (并且过滤器已启用), 将仅显示暴雪精心挑选的 IMPORTANT Debuffs列表中 (例如, 团队机制, 关键防御等).",
     ["Enabled"] = "启用",
-    ["Master switch for anchoring Blizzard Private Auras to MSUF."] = "将暴雪私人光环锚定到MSUF的主开关.",
+    ["Master switch for anchoring Blizzard Private Auras to MSUF."] = "将暴雪私有光环锚定到MSUF的主开关.",
     ["Show (Player)"] = "显示 (玩家)",
-    ["Re-anchors Blizzard Private Auras to MSUF (no spell lists)."] = "将暴雪私人光环锚定到MSUF (无需法术列表).",
+    ["Re-anchors Blizzard Private Auras to MSUF (no spell lists)."] = "将暴雪私有光环锚定到MSUF (无需法术列表).",
     ["Show (Focus)"] = "显示 (焦点)",
-    ["Re-anchors Blizzard Private Auras to MSUF Focus."] = "将暴雪私人光环锚定到MSUF焦点.",
+    ["Re-anchors Blizzard Private Auras to MSUF Focus."] = "将暴雪私有光环锚定到MSUF焦点.",
     ["Show (Boss)"] = "显示 (首领)",
-    ["Re-anchors Blizzard Private Auras to MSUF Boss frames."] = "将暴雪私人光环锚定到MSUF首领框架.",
+    ["Re-anchors Blizzard Private Auras to MSUF Boss frames."] = "将暴雪私有光环锚定到MSUF首领框架.",
     ["Max (Player)"] = "最大 (玩家)",
     ["Max (Focus/Boss)"] = "最大 (焦点/首领)",
 
+------BUFF REMINDERS----------------
+    ["Buff Reminders"] = "Buff提醒",
+    ["Ghost icons appear at the player frame when a buff is missing or about to expire. Position via Edit Mode mover."] = "当缺少Buff或即将过期时, 玩家头像框上会显示半透明图标.可通过编辑模式移动器调整其位置.",
+    ["Enable Buff Reminders"]   = "启用Buff提醒",
+    ["Show ghost icons for missing buffs at the player frame."] = "在玩家头像框上显示缺少Buff的半透明图标.",
+    ["Power Word: Fortitude"]   = "真言术：韧",
+    ["Arcane Intellect"]    = "奥术智慧",
+    ["Mark of the Wild"]    = "野性印记",
+    ["Battle Shout"]    = "战斗怒吼",
+    ["Skyfury"]    = "天怒",
+    ["Source of Magic"]    = "魔力之源",
+    ["Blessing of the Bronze"]    = "青铜龙的祝福",
+    ["Lethal Poison"]    = "致命药膏",
+    ["Lethal Poison (Rogue)"]    = "致命药膏(潜行者)",
+    ["Non-Lethal Poison (Rogue)"]    = "非致命药膏(潜行者)",
+    ["Non-Lethal Poison"]    = "非致命药膏",
+    ["Expiry Warning"]   = "过期警告",
+    ["Show reminder when buff expires within this time. 0 = only when missing."]   = "当Buff在此时间内过期时显示提醒. 0 = 仅在缺失时显示.",
+    ["Buff Reminder Preview"]   = "Buff提醒预览",
+    ["Click the mover to open position settings."]   = "点击移动锚点以打开位置设置.",
+    ["Expiring: "]      = "即将过期: ",
+    ["Missing: "]        = "缺失: ",
+    ["Apply your poison!"]   = "使用你的毒药!",
+    [" in your group can provide this."] = "你的队伍中有人可提供此增益.",
+    ["MSUF Edit  Player Reminders"]   = "MSUF编辑 玩家提醒",
+    ["Reminder Icons"]   = "提醒图标",
+    ["Player Reminders"]    = "玩家提醒",
+
+    
+
+
+
+
+
+
+
+
     ["Preview"] = "预览",
-    ["Visual only: adds a purple border + corner marker on private aura slots."] = "仅视觉: 在私人光环槽上添加紫色边框 + 角标记.",
+    ["Visual only: adds a purple border + corner marker on private aura slots."] = "仅视觉: 在私有光环槽上添加紫色边框 + 角标记.",
     ["Debuff types"] = "Debuff类型",
     ["Magic"]  =  "魔法",
     ["Curse"]  = "诅咒",
@@ -633,6 +677,40 @@ local T = {
     [" Debuffs"] = " Debuffs",
     [" Private"] = " 私人",
     ["Boss "] = "首领 ",
+    ["Global Ignore List"]  = "全局忽略列表",
+    ["Shared (all units)"]  = "共享 (所有单位)",
+    ["|cff888888Not available for Boss frames|r"]  = "|cff888888Boss框架不可用|r",
+
+
+    ["Raid Buffs"]  = "团队Buff",
+    ["Mark of the Wild, Fortitude, Arcane Intellect, Battle Shout, etc."]  = "野性印记, 韧, 奥术智慧, 战斗怒吼等.",
+    ["Blessing of the Bronze"]  = "青铜龙的祝福",
+    ["All class-specific Blessing of the Bronze variants."]  = "所有职业特定的青铜龙的祝福变体.",
+    ["Healer HoTs"]  = "治疗持续性法术",
+    ["All healer class HoTs and shields (Druid, Priest, Paladin, Shaman, Monk, Evoker)."]  = "所有治疗持续性法术和护盾 (德鲁伊, 牧师, 圣骑士, 萨满, 武僧, 唤魔者).",
+    ["Rogue Poisons"]   = "潜行者毒药",
+    ["Self-applied poison buffs (Deadly, Wound, Crippling, etc.)."]  = "自我施放的毒药Buff (致命, 伤口, 残废等).",
+    ["Shaman Imbuements"]   = "萨满注入",
+    ["Weapon enchant buffs (Windfury, Flametongue, Earthliving, etc.)."]    = "武器附魔Buff (风怒, 火焰图腾, 生命之树等).",
+    ["Deserter"]    = "逃亡者",
+    ["BG and Dungeon deserter debuffs."]    = "战场和地下城逃亡者Debuff.",
+    ["Skyriding"]  = "空中飞行",
+    ["Ride Along auras (Available, Active, Inactive)."]  = "载具光环(可用,激活,未激活).",
+    ["Long-term Self Buffs"]   = "长期自身Buff",
+    ["Rite of Sanctification, Rite of Adjuration."]   = "圣言祭礼, 恳求祭礼.",
+    ["Resource-like Auras"]   = "资源类光环",
+    ["Mage Icicles, Hunter Tip of the Spear."]   = "法师冰刺, 猎人利矛之刃.",
+    ["Cooldowns"]    = "冷却",
+    ["Hearthstone, Reincarnation cooldown auras."]    = "炉石, 复活冷却光环.",
+    ["Growth:"]  = "增长:",
+
+
+
+
+
+
+
+
 
 
 
@@ -1032,8 +1110,8 @@ local T = {
     ["Debuff offset X:"] = "负面偏移X:",
     ["Debuff offset Y:"] = "负面偏移Y:",
     ["Debuff icon size:"] = "负面图标大小:",
-    ['Preview (highlight) private auras'] = '预览(高亮)私人光环',
-    ['Private Auras']   = '私人光环',
+    ['Preview (highlight) private auras'] = '预览(高亮)私有光环',
+    ['Private Auras']   = '私有光环',
     ["Private offset X:"] = "私人偏移X:",
     ["Private offset Y:"] = "私人偏移Y:",
     ["Private icon size:"] = "私人图标大小:",

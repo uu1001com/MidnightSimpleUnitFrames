@@ -17,6 +17,21 @@
 
 local addonName, ns = ...
 ns = (rawget(_G, "MSUF_NS") or ns) or {}
+
+--------
+ns.L = ns.L or (_G and _G.MSUF_L) or {}
+local L = ns.L
+if not getmetatable(L) then
+    setmetatable(L, { __index = function(t, k) return k end })
+end
+local isEn = (ns and ns.LOCALE) == "enUS"
+local function TR(v)
+    if type(v) ~= "string" then return v end
+    if isEn then return v end
+    return L[v] or v
+end
+-----------
+
 ns.MSUF_Auras2 = (type(ns.MSUF_Auras2) == "table") and ns.MSUF_Auras2 or {}
 local API = ns.MSUF_Auras2
 
@@ -165,16 +180,16 @@ local _IGNORE_CAT_SPELLS = {
 
 -- UI metadata (exposed to Options via API)
 local _IGNORE_CAT_META = {
-    { key = "RAID_BUFFS",       label = "Raid Buffs",              tooltip = "Mark of the Wild, Fortitude, Arcane Intellect, Battle Shout, etc." },
-    { key = "BLESSING_BRONZE",  label = "Blessing of the Bronze",  tooltip = "All class-specific Blessing of the Bronze variants." },
-    { key = "HEALER_HOTS",      label = "Healer HoTs",             tooltip = "All healer class HoTs and shields (Druid, Priest, Paladin, Shaman, Monk, Evoker)." },
-    { key = "ROGUE_POISONS",    label = "Rogue Poisons",           tooltip = "Self-applied poison buffs (Deadly, Wound, Crippling, etc.)." },
-    { key = "SHAMAN_IMBUE",     label = "Shaman Imbuements",       tooltip = "Weapon enchant buffs (Windfury, Flametongue, Earthliving, etc.)." },
-    { key = "DESERTER",         label = "Deserter",                tooltip = "BG and Dungeon deserter debuffs." },
-    { key = "SKYRIDING",        label = "Skyriding",               tooltip = "Ride Along auras (Available, Active, Inactive)." },
-    { key = "SELF_BUFFS",       label = "Long-term Self Buffs",    tooltip = "Rite of Sanctification, Rite of Adjuration." },
-    { key = "RESOURCE_AURAS",   label = "Resource-like Auras",     tooltip = "Mage Icicles, Hunter Tip of the Spear." },
-    { key = "COOLDOWNS",        label = "Cooldowns",               tooltip = "Hearthstone, Reincarnation cooldown auras." },
+    { key = "RAID_BUFFS",       label = L["Raid Buffs"],              tooltip = L["Mark of the Wild, Fortitude, Arcane Intellect, Battle Shout, etc."] },
+    { key = "BLESSING_BRONZE",  label = L["Blessing of the Bronze"],  tooltip = L["All class-specific Blessing of the Bronze variants."] },
+    { key = "HEALER_HOTS",      label = L["Healer HoTs"],             tooltip = L["All healer class HoTs and shields (Druid, Priest, Paladin, Shaman, Monk, Evoker)."] },
+    { key = "ROGUE_POISONS",    label = L["Rogue Poisons"],           tooltip = L["Self-applied poison buffs (Deadly, Wound, Crippling, etc.)."] },
+    { key = "SHAMAN_IMBUE",     label = L["Shaman Imbuements"],       tooltip = L["Weapon enchant buffs (Windfury, Flametongue, Earthliving, etc.)."] },
+    { key = "DESERTER",         label = L["Deserter"],                tooltip = L["BG and Dungeon deserter debuffs."] },
+    { key = "SKYRIDING",        label = L["Skyriding"],               tooltip = L["Ride Along auras (Available, Active, Inactive)."] },
+    { key = "SELF_BUFFS",       label = L["Long-term Self Buffs"],    tooltip = L["Rite of Sanctification, Rite of Adjuration."] },
+    { key = "RESOURCE_AURAS",   label = L["Resource-like Auras"],     tooltip = L["Mage Icicles, Hunter Tip of the Spear."] },
+    { key = "COOLDOWNS",        label = L["Cooldowns"],               tooltip = L["Hearthstone, Reincarnation cooldown auras."] },
 }
 
 -- Expose for Options UI

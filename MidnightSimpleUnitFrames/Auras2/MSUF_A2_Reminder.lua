@@ -10,6 +10,22 @@
 
 local addonName, ns = ...
 ns = (rawget(_G, "MSUF_NS") or ns) or {}
+
+--------
+ns.L = ns.L or (_G and _G.MSUF_L) or {}
+local L = ns.L
+if not getmetatable(L) then
+    setmetatable(L, { __index = function(t, k) return k end })
+end
+local isEn = (ns and ns.LOCALE) == "enUS"
+local function TR(v)
+    if type(v) ~= "string" then return v end
+    if isEn then return v end
+    return L[v] or v
+end
+-----------
+
+
 ns.MSUF_Auras2 = (type(ns.MSUF_Auras2) == "table") and ns.MSUF_Auras2 or {}
 local API = ns.MSUF_Auras2
 
@@ -49,18 +65,18 @@ end
 -- BUFF PROVIDERS
 -- =========================================================================
 local _PROVIDERS = {
-    { key="FORTITUDE",       label="Power Word: Fortitude",  providerClass="PRIEST",     satisfiedBy={[21562]=true},  iconSpell=21562  },
-    { key="ARCANE_INTELLECT",label="Arcane Intellect",       providerClass="MAGE",       satisfiedBy={[1459]=true},   iconSpell=1459   },
-    { key="MARK_OF_WILD",    label="Mark of the Wild",       providerClass="DRUID",      satisfiedBy={[1126]=true},   iconSpell=1126   },
-    { key="BATTLE_SHOUT",    label="Battle Shout",           providerClass="WARRIOR",    satisfiedBy={[6673]=true},   iconSpell=6673   },
-    { key="SKYFURY",         label="Skyfury",                providerClass="SHAMAN",     satisfiedBy={[462854]=true}, iconSpell=462854 },
-    { key="SOURCE_OF_MAGIC", label="Source of Magic",        providerClass="EVOKER",     satisfiedBy={[369459]=true}, iconSpell=369459 },
-    { key="BLESSING_BRONZE", label="Blessing of the Bronze", providerClass="EVOKER",
+    { key="FORTITUDE",       label=TR("Power Word: Fortitude"),  providerClass="PRIEST",     satisfiedBy={[21562]=true},  iconSpell=21562  },
+    { key="ARCANE_INTELLECT",label=TR("Arcane Intellect"),       providerClass="MAGE",       satisfiedBy={[1459]=true},   iconSpell=1459   },
+    { key="MARK_OF_WILD",    label=TR("Mark of the Wild"),       providerClass="DRUID",      satisfiedBy={[1126]=true},   iconSpell=1126   },
+    { key="BATTLE_SHOUT",    label=TR("Battle Shout"),           providerClass="WARRIOR",    satisfiedBy={[6673]=true},   iconSpell=6673   },
+    { key="SKYFURY",         label=TR("Skyfury"),                providerClass="SHAMAN",     satisfiedBy={[462854]=true}, iconSpell=462854 },
+    { key="SOURCE_OF_MAGIC", label=TR("Source of Magic"),        providerClass="EVOKER",     satisfiedBy={[369459]=true}, iconSpell=369459 },
+    { key="BLESSING_BRONZE", label=TR("Blessing of the Bronze"), providerClass="EVOKER",
         satisfiedBy={[381732]=true,[381741]=true,[381746]=true,[381748]=true,[381749]=true,[381750]=true,
                      [381751]=true,[381752]=true,[381753]=true,[381754]=true,[381756]=true,[381757]=true,[381758]=true},
         iconSpell=381732 },
-    { key="ROGUE_LETHAL",    label="Lethal Poison",          providerClass="ROGUE_SELF", satisfiedBy={[2823]=true,[8679]=true,[315584]=true,[381664]=true}, iconSpell=2823 },
-    { key="ROGUE_NONLETHAL", label="Non-Lethal Poison",      providerClass="ROGUE_SELF", satisfiedBy={[3408]=true,[5761]=true,[381637]=true},               iconSpell=3408 },
+    { key="ROGUE_LETHAL",    label=TR("Lethal Poison"),          providerClass="ROGUE_SELF", satisfiedBy={[2823]=true,[8679]=true,[315584]=true,[381664]=true}, iconSpell=2823 },
+    { key="ROGUE_NONLETHAL", label=TR("Non-Lethal Poison"),      providerClass="ROGUE_SELF", satisfiedBy={[3408]=true,[5761]=true,[381637]=true},               iconSpell=3408 },
 }
 Reminder.PROVIDERS = _PROVIDERS
 
@@ -337,21 +353,21 @@ local function _AcquireGhost(container, index)
         GameTooltip:ClearLines()
         local r = self._result
         if self._isPreview then
-            GameTooltip:AddLine("Buff Reminder Preview", 0.4, 0.7, 1)
+            GameTooltip:AddLine(L["Buff Reminder Preview"], 0.4, 0.7, 1)
             GameTooltip:AddLine(r.provider.label, 1, 1, 1)
-            GameTooltip:AddLine("Click the mover to open position settings.", 0.7, 0.7, 0.7, true)
+            GameTooltip:AddLine(L["Click the mover to open position settings."], 0.7, 0.7, 0.7, true)
         elseif r.state == "EXPIRING" then
-            GameTooltip:AddLine("Expiring: " .. r.provider.label, 1, 0.6, 0.1)
+            GameTooltip:AddLine(L["Expiring: "] .. r.provider.label, 1, 0.6, 0.1)
             GameTooltip:AddLine(_FormatTime(r.remaining) .. " remaining", 0.9, 0.9, 0.9)
         else
-            GameTooltip:AddLine("Missing: " .. r.provider.label, 1, 0.3, 0.3)
+            GameTooltip:AddLine(L["Missing: "] .. r.provider.label, 1, 0.3, 0.3)
             if r.provider.providerClass == "ROGUE_SELF" then
-                GameTooltip:AddLine("Apply your poison!", 0.8, 0.8, 0.8, true)
+                GameTooltip:AddLine(L["Apply your poison!"], 0.8, 0.8, 0.8, true)
             else
                 local cls = r.provider.providerClass
                 local color = RAID_CLASS_COLORS and RAID_CLASS_COLORS[cls]
                 local cName = color and color.colorStr and ("|c" .. color.colorStr .. cls .. "|r") or cls
-                GameTooltip:AddLine("A " .. cName .. " in your group can provide this.", 0.8, 0.8, 0.8, true)
+                GameTooltip:AddLine("A " .. cName .. L[" in your group can provide this."], 0.8, 0.8, 0.8, true)
             end
         end
         GameTooltip:Show()
@@ -482,16 +498,16 @@ end
 
 -- Growth direction dropdown builder
 local _GROWTH_OPTIONS = {
-    { value = "RIGHT", text = "Left to Right" },
-    { value = "LEFT",  text = "Right to Left" },
-    { value = "UP",    text = "Bottom to Top" },
-    { value = "DOWN",  text = "Top to Bottom" },
+    { value = "RIGHT", text = L["Left to Right"] },
+    { value = "LEFT",  text = L["Right to Left"] },
+    { value = "UP",    text = L["Bottom to Top"] },
+    { value = "DOWN",  text = L["Top to Bottom"] },
 }
 
 local function _CreateGrowthDropdown(parent, anchorTo, dy, onChanged)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     label:SetPoint("TOPLEFT", anchorTo, "BOTTOMLEFT", 0, dy or -8)
-    label:SetText("Growth:")
+    label:SetText(L["Growth:"])
     label:SetTextColor(0.85, 0.85, 0.85, 1)
 
     local dd = CreateFrame("Frame", "MSUF_ReminderGrowthDropdown", parent, "UIDropDownMenuTemplate")
@@ -547,7 +563,7 @@ local function _EnsurePopup()
     -- Title
     local title = pf:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOP", 0, -12)
-    title:SetText("MSUF Edit  Player Reminders")
+    title:SetText(L["MSUF Edit  Player Reminders"])
     pf.title = title
 
     -- Close button
@@ -558,7 +574,7 @@ local function _EnsurePopup()
     -- Section header
     local header = pf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     header:SetPoint("TOPLEFT", pf, "TOPLEFT", 16, -36)
-    header:SetText("Reminder Icons")
+    header:SetText(L["Reminder Icons"])
     header:SetTextColor(1, 0.82, 0, 1)
 
     -- Apply callback — reads all boxes, writes to DB, refreshes
@@ -607,10 +623,10 @@ local function _EnsurePopup()
     end
 
     -- Build numeric rows
-    pf._rowX = _CreateNumericRow(pf, "Offset X:", header, -10, Apply)
-    pf._rowY = _CreateNumericRow(pf, "Offset Y:", pf._rowX.label, -8, Apply)
-    pf._rowSize = _CreateNumericRow(pf, "Icon Size:", pf._rowY.label, -8, Apply)
-    pf._rowSpacing = _CreateNumericRow(pf, "Spacing:", pf._rowSize.label, -8, Apply)
+    pf._rowX = _CreateNumericRow(pf, L["Offset X:"], header, -10, Apply)
+    pf._rowY = _CreateNumericRow(pf, L["Offset Y:"], pf._rowX.label, -8, Apply)
+    pf._rowSize = _CreateNumericRow(pf, L["Icon Size:"], pf._rowY.label, -8, Apply)
+    pf._rowSpacing = _CreateNumericRow(pf, L["Spacing:"], pf._rowSize.label, -8, Apply)
 
     -- Growth dropdown
     pf._growth = _CreateGrowthDropdown(pf, pf._rowSpacing.label, -12, Apply)
@@ -744,7 +760,7 @@ function Reminder.EnsureMover(entry, unit, shared)
     lbl:SetPoint("LEFT", ico, "RIGHT", 6, 0)
     lbl:SetPoint("RIGHT", hdr, "RIGHT", -6, 0)
     lbl:SetJustifyH("LEFT")
-    lbl:SetText("Player Reminders")
+    lbl:SetText(L["Player Reminders"])
     lbl:SetTextColor(0.95, 0.95, 0.95, 0.92)
 
     mover:Hide()
