@@ -44,6 +44,7 @@ local T = {
     ["Overrides"] = "覆盖",
     ["Enable"] = "启用",
     ["Cancel"] = "取消",
+    ["Position"] = "位置",
 
     ["Top left"] = "左上",
     ["Top right"] = "右上",
@@ -582,6 +583,8 @@ local T = {
 
     ["Include boss buffs"] =  "包含首领Buffs",
     ["Include boss debuffs"] =  "包含首领Debuffs",
+    ["Show Sated/Exhaustion"]   = "显示嗜血/英勇冷却" ,
+    ["Controls whether Bloodlust lockout auras (Sated/Exhaustion/Temporal Displacement, etc.) are shown."]  = "控制嗜血/英勇冷却光环是否显示.",
     ["Always include dispellable debuffs"] =  "始终包含可驱散的Debuffs",
     ["Additive: this will NOT hide your normal debuffs."] = "附加: 这不会隐藏你的正常Debuffs.",
     ["Only show boss auras"] =   "仅显示首领光环",
@@ -715,8 +718,18 @@ local T = {
 
 
     ["Castbar"] = "施法条",
-    ["Focus Kick"] = "焦点脚踢",
-    ["Focus Kick Icon"] = "焦点脚踢图标",
+    ["Focus Kick"] = "焦点打断",
+    ["Focus Kick Icon"] = "焦点打断图标",
+----------
+    ["Focus Interrupt Tracker"] = "焦点打断追踪",
+    ["Enable Focus Interrupt Tracker"] = "启用焦点打断追踪",
+    ["Track interrupts on your Focus without showing the Focus castbar."] = "追踪你的焦点打断，但不显示焦点的施法条.",
+    ["Show on Screen Preview"]  = "显示屏幕预览",
+    ["Reset Position"] = "重置位置",
+
+
+
+--------------
     ["Behavior"] = "行为",
     ["Style"] = "样式",
     ["Empowered casts"] = "强化施法",

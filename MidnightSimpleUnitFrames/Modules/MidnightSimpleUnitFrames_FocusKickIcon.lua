@@ -11,6 +11,13 @@
 
 local addonName, ns = ...
 ns = ns or {}
+------------------------------------
+local L=ns.L or (_G and _G.MSUF_L)
+if not L then L={}setmetatable(L,{__index=function(t,k)return k end})ns.L=L end
+local isEn=(ns and ns.LOCALE)=="enUS"
+local function T(v) if type(v)=="string" then if isEn then return v end return L[v] or v end return v end
+
+-------------------------------------
 
 ------------------------------------------------------
 -- Local API shortcuts
@@ -1046,7 +1053,7 @@ function MSUF_InitFocusKickIconOptions()
 
     local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOP", panel, "TOP", 0, -18)
-    title:SetText("Focus Interrupt Tracker")
+    title:SetText(L["Focus Interrupt Tracker"])
 
     local topLine = panel:CreateTexture(nil, "ARTWORK")
     topLine:SetColorTexture(1, 1, 1, 0.12)
@@ -1071,7 +1078,7 @@ function MSUF_InitFocusKickIconOptions()
     local cb = CreateFrame("CheckButton", "MSUF_FocusKickIconCheck", panel, "UICheckButtonTemplate")
     cb:SetPoint("TOPLEFT", panel, "TOPLEFT", 18, -64)
     if cb.Text then
-        cb.Text:SetText("Enable Focus Interrupt Tracker")
+        cb.Text:SetText(L["Enable Focus Interrupt Tracker"])
     end
     cb.tooltipText = "Shows an interrupt reminder icon for your Focus."
     cb.tooltipRequirement = "Use this to track interrupts on your Focus without showing the Focus castbar."
@@ -1080,7 +1087,7 @@ function MSUF_InitFocusKickIconOptions()
     desc:SetPoint("TOPLEFT", cb, "BOTTOMLEFT", 2, -6)
     desc:SetWidth(260)
     desc:SetJustifyH("LEFT")
-    desc:SetText("Track interrupts on your Focus without showing the Focus castbar.")
+    desc:SetText(L["Track interrupts on your Focus without showing the Focus castbar."])
 
     cb:SetScript("OnClick", function(self)
         if panel._msufSyncing then return end
@@ -1102,11 +1109,11 @@ function MSUF_InitFocusKickIconOptions()
     -- MID: Size
     local sizeHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     sizeHeader:SetPoint("TOPLEFT", panel, "TOPLEFT", 290, -62)
-    sizeHeader:SetText("Size")
+    sizeHeader:SetText(L["Size"])
 
     local sliderWidth = FocusKick_CreateSlider(
         "MSUF_FocusKickIconWidthSlider",
-        "Width",
+        L["Width"],
         panel,
         16, 128, 1,
         290, -100
@@ -1125,7 +1132,7 @@ function MSUF_InitFocusKickIconOptions()
 
     local sliderHeight = FocusKick_CreateSlider(
         "MSUF_FocusKickIconHeightSlider",
-        "Height",
+        L["Height"],
         panel,
         16, 128, 1,
         290, -170
@@ -1145,7 +1152,7 @@ function MSUF_InitFocusKickIconOptions()
     -- Text size (mirrors Focus castbar time text; font size only)
     local sliderTextSize = FocusKick_CreateSlider(
         "MSUF_FocusKickTextSizeSlider",
-        "Text Size",
+        L["Text Size"],
         panel,
         8, 24, 1,
         290, -240
@@ -1179,11 +1186,11 @@ function MSUF_InitFocusKickIconOptions()
     -- RIGHT: Position
     local posHeader = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     posHeader:SetPoint("TOPLEFT", panel, "TOPLEFT", 460, -62)
-    posHeader:SetText("Position")
+    posHeader:SetText(L["Position"])
 
     local sliderOffsetX = FocusKick_CreateSlider(
         "MSUF_FocusKickIconOffsetXSlider",
-        "X offset",
+        L["X offset"],
         panel,
         -500, 500, 1,
         460, -100
@@ -1202,7 +1209,7 @@ function MSUF_InitFocusKickIconOptions()
 
     local sliderOffsetY = FocusKick_CreateSlider(
         "MSUF_FocusKickIconOffsetYSlider",
-        "Y offset",
+        L["Y offset"],
         panel,
         -500, 500, 1,
         460, -170
@@ -1232,7 +1239,7 @@ function MSUF_InitFocusKickIconOptions()
     -- Place this toggle in the left column under the enable description.
     previewCheck:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", -2, -10)
     if previewCheck.Text then
-        previewCheck.Text:SetText("Show on Screen Preview")
+        previewCheck.Text:SetText(L["Show on Screen Preview"])
     end
     panel._msufFocusKickPreviewCheck = previewCheck
 
@@ -1255,7 +1262,7 @@ function MSUF_InitFocusKickIconOptions()
 local resetBtn = CreateFrame("Button", "MSUF_FocusKickResetPositionButton", panel, "UIPanelButtonTemplate")
     resetBtn:SetSize(150, 24)
     resetBtn:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 18)
-    resetBtn:SetText("Reset Position")
+    resetBtn:SetText(L["Reset Position"])
     resetBtn:SetScript("OnClick", function()
         FocusKick_EnsureDB()
         if not MSUF_DB or not MSUF_DB.general then return end

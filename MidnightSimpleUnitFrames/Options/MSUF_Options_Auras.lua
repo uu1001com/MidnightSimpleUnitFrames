@@ -2037,7 +2037,7 @@ end
             { L["Include boss debuffs"], 12, -86, A2_FilterDebuffs, "includeBoss", nil, nil, "cbBossDebuffs" },
             { L["Show Sated/Exhaustion"], 12, -114, A2_Settings, "showSated", nil,
                 L["Controls whether Bloodlust lockout auras (Sated/Exhaustion/Temporal Displacement, etc.) are shown."], "cbShowSated" },
-            { L"Only show boss auras", 380, -58, GetEditingFilters, "onlyBossAuras", nil,
+            { L["Only show boss auras"], 380, -58, GetEditingFilters, "onlyBossAuras", nil,
                 L["Hard filter: when enabled (and filters are enabled), only auras flagged as boss auras will be shown."], "cbOnlyBoss" },
             { L["Only show IMPORTANT buffs"], 380, -86, A2_FilterBuffs, "onlyImportant", nil,
                 L["Hard filter: when enabled (and filters are enabled), only buffs in Blizzard\'s curated IMPORTANT list will be shown (e.g. raid mechanics, key defensives, etc.)."], "cbOnlyImpBuffs" },
