@@ -3374,12 +3374,12 @@ panel.meleeSpellPerClassCheck = perClassCB
 -- Takes priority over per-class when both are enabled.
 local perSpecCB = CreateFrame("CheckButton", "MSUF_Gameplay_MeleeSpellPerSpecCheck", content, "InterfaceOptionsCheckButtonTemplate")
 perSpecCB:SetPoint("TOPLEFT", perClassCB, "BOTTOMLEFT", 0, 2)
-perSpecCB.Text:SetText("Store per spec")
+perSpecCB.Text:SetText(L["Store per spec"])
 panel.meleeSpellPerSpecCheck = perSpecCB
 
 local perStorageHint = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 perStorageHint:SetPoint("TOPLEFT", perSpecCB, "BOTTOMLEFT", 20, -2)
-perStorageHint:SetText("Keeps per character / spec settings.")
+perStorageHint:SetText(L["Keeps per character / spec settings."])
 panel.meleeSpellPerStorageHint = perStorageHint
 
 -- Tooltips for per-class / per-spec (since hint label may be hidden in compact layout)
@@ -3396,8 +3396,8 @@ local function _SetStorageTooltip(cb, title, body)
         if GameTooltip then GameTooltip:Hide() end
     end)
 end
-_SetStorageTooltip(perClassCB, "Store per class", "Each class keeps its own melee range spell.\nAllows one profile across multiple characters.")
-_SetStorageTooltip(perSpecCB, "Store per spec", "Each specialization keeps its own melee range spell.\nRequires 'Store per class' to be enabled.")
+_SetStorageTooltip(perClassCB, L["Store per class"], L["Each class keeps its own melee range spell.\nAllows one profile across multiple characters."])
+_SetStorageTooltip(perSpecCB, L["Store per spec"], L["Each specialization keeps its own melee range spell.\nRequires 'Store per class' to be enabled."])
 
 local meleeSelected = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 meleeSelected:SetPoint("LEFT", meleeInput, "RIGHT", 12, 0)
@@ -4496,19 +4496,19 @@ _totemsLeftBottom = totemsDragHint
     _apexUISep:SetSize(560, 1)
 
     local apexTitle = _MSUF_Label("GameFontNormal", "TOPLEFT", _apexUISep, "BOTTOMLEFT", 0, -10,
-        "Rogue: Apex Alert (Shadowstrike! hint)", "apexAlertTitle")
+        L["Rogue: Apex Alert (Shadowstrike! hint)"], "apexAlertTitle")
     local apexSub1 = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", apexTitle, "BOTTOMLEFT", 0, -2,
-        "Shows |cff00ff00SHADOWSTRIKE!|r if Shadow Dance (185313) is active.", "apexAlertSub1")
+        L["Shows |cff00ff00SHADOWSTRIKE!|r if Shadow Dance (185313) is active."], "apexAlertSub1")
     local apexSub2 = _MSUF_Label("GameFontDisableSmall", "TOPLEFT", apexSub1, "BOTTOMLEFT", 0, -2,
-        "|cff00ff00SHADOWSTRIKE!|r User needs to check himself if shadow tech stacks are above 5.", "apexAlertSub2")
+        L["|cff00ff00SHADOWSTRIKE!|r User needs to check himself if shadow tech stacks are above 5."], "apexAlertSub2")
 
     local apexCheck = _MSUF_Check("MSUF_Gameplay_ApexAlertCheck", "TOPLEFT", apexSub2, "BOTTOMLEFT", 0, -8,
-        "Enable Apex Alert (Shadowstrike hint)", "apexAlertCheck", "enableApexAlert")
+        L["Enable Apex Alert (Shadowstrike hint)"], "apexAlertCheck", "enableApexAlert")
     if not _isRogue then apexCheck:SetEnabled(false) end
     panel.apexAlertCheck = apexCheck
 
     local apexLock = _MSUF_Check("MSUF_Gameplay_ApexAlertLockCheck", "LEFT", apexCheck, "RIGHT", 220, 0,
-        "Lock position", "apexAlertLockCheck", "lockApexAlert",
+        L["Lock position"], "apexAlertLockCheck", "lockApexAlert",
         function()
             local g2 = EnsureGameplayDefaults()
             local f = _G.MSUF_ApexAlertFrame
@@ -4520,11 +4520,11 @@ _totemsLeftBottom = totemsDragHint
 
     -- Schriftgröße (EditBox, Zahl)
     local apexFontLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", apexCheck, "BOTTOMLEFT", 0, -16,
-        "Schriftgröße", "apexFontSizeLabel")
+        L["Schriftgröße"], "apexFontSizeLabel")
     local apexFontInput = _MSUF_EditBox("MSUF_Gameplay_ApexFontSizeInput",
         "TOPLEFT", apexFontLabel, "BOTTOMLEFT", -4, -6, 60, 20, "apexFontSizeInput")
     _MSUF_Label("GameFontDisableSmall", "LEFT", apexFontInput, "RIGHT", 8, 0,
-        "px  (default 26)", "apexFontSizeHint")
+        L["px  (default 26)"], "apexFontSizeHint")
     panel.apexFontSizeInput = apexFontInput
     local function _CommitApexFont()
         local g2 = EnsureGameplayDefaults()
@@ -4540,11 +4540,11 @@ _totemsLeftBottom = totemsDragHint
 
     -- Anzeigetext
     local apexMsgLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", apexFontInput, "BOTTOMLEFT", 0, -14,
-        "Anzeigetext", "apexMsgLabel")
+        L["Anzeigetext"], "apexMsgLabel")
     local apexMsgInput = _MSUF_EditBox("MSUF_Gameplay_ApexMsgInput",
         "TOPLEFT", apexMsgLabel, "BOTTOMLEFT", -4, -6, 220, 20, "apexMsgInput")
     _MSUF_Label("GameFontDisableSmall", "TOPLEFT", apexMsgInput, "BOTTOMLEFT", 0, -2,
-        "Wird grün angezeigt. Default: SHADOWSTRIKE!", "apexMsgHint")
+        L["Wird grün angezeigt. Default: SHADOWSTRIKE!"], "apexMsgHint")
     panel.apexMsgInput = apexMsgInput
     local function _CommitApexMsg()
         local g2 = EnsureGameplayDefaults()
@@ -4609,11 +4609,11 @@ _totemsLeftBottom = totemsDragHint
 
     -- Shadow Dance Fenster-Dauer (Kommazahl, z.B. 8.0)
     local danceWinLabel = _MSUF_Label("GameFontNormal", "TOPLEFT", apexOffsetYSlider, "BOTTOMLEFT", 0, -16,
-        "Shadow Dance Dauer (s)", "apexDanceWinLabel")
+        L["Shadow Dance Dauer (s)"], "apexDanceWinLabel")
     local danceWinInput = _MSUF_EditBox("MSUF_Gameplay_ApexDanceWinInput",
         "TOPLEFT", danceWinLabel, "BOTTOMLEFT", -4, -6, 80, 20, "apexDanceWinInput")
     _MSUF_Label("GameFontDisableSmall", "LEFT", danceWinInput, "RIGHT", 8, 0,
-        "Default 8.0 — +3s automatisch wenn First Dance voll ausläuft.", "apexDanceWinHint")
+        L["Default 8.0 — +3s automatisch wenn First Dance voll ausläuft."], "apexDanceWinHint")
     panel.apexDanceWinInput = danceWinInput
     local function _CommitDanceWin()
         local g2 = EnsureGameplayDefaults()
@@ -4629,10 +4629,10 @@ _totemsLeftBottom = totemsDragHint
     -- Ancient Arts: track via Spell Activation Overlay (event-driven, no aura ID needed)
     local aaCheck = _MSUF_Check("MSUF_Gameplay_ApexAAOverlayCheck",
         "TOPLEFT", danceWinInput, "BOTTOMLEFT", 0, -14,
-        "Track Ancient Arts via Spell Activation Overlay",
+        L["Track Ancient Arts via Spell Activation Overlay"],
         "apexAAOverlayCheck", "apexAlertTrackOverlay")
     _MSUF_Label("GameFontDisableSmall", "TOPLEFT", aaCheck, "BOTTOMLEFT", 24, -2,
-        "Shows |cff00ccffAA|r on proc. Event-driven — Sub Rogue has exactly one overlay.", "apexAAHint")
+        L["Shows |cff00ccffAA|r on proc. Event-driven — Sub Rogue has exactly one overlay."], "apexAAHint")
     panel.apexAAOverlayCheck = aaCheck
     if not _isRogue then aaCheck:SetEnabled(false) end
 
