@@ -75,6 +75,7 @@ local GetPowerBarBackgroundMatchHP    = _API.GetPowerBarBackgroundMatchHP
 local SetPowerBarBackgroundMatchHP    = _API.SetPowerBarBackgroundMatchHP
 
 _API = nil  -- not needed after alias init; avoid accidental upvalue capture
+
 ------------------------------------------------------
 -- Local shortcuts (UI framework)
 ------------------------------------------------------
@@ -204,7 +205,6 @@ local function OpenColorPicker(initialR, initialG, initialB, callback)
     end
 end
 
-------------------------------------------------------
 -- Public: register Colors options panel (with scrolling)
 ------------------------------------------------------
 function ns.MSUF_RegisterColorsOptions_Full(parentCategory)
@@ -1520,6 +1520,40 @@ do
     castbarBorderTex:SetColorTexture(r, g, b)
 end
 
+-- Castbar background color (right-click to reset)
+local castbarBgColorLabel = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+castbarBgColorLabel:SetPoint("TOPLEFT", castbarBorderSwatch, "BOTTOMLEFT", 0, -18)
+castbarBgColorLabel:SetText("Castbar background color")
+
+local castbarBgSwatch = CreateFrame("Button", "MSUF_Colors_CastbarBgColorSwatch", content)
+castbarBgSwatch:SetSize(32, 16)
+castbarBgSwatch:SetPoint("TOPLEFT", castbarBgColorLabel, "BOTTOMLEFT", 0, -8)
+
+local castbarBgTex = castbarBgSwatch:CreateTexture(nil, "ARTWORK")
+castbarBgTex:SetAllPoints()
+S.castbarBgTex = castbarBgTex
+
+castbarBgSwatch:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+castbarBgSwatch:SetScript("OnClick", function(_, btn)
+    if btn == "RightButton" then
+        ResetCastbarBackgroundColor()
+        local rr, gg, bb = GetCastbarBackgroundColor()
+        castbarBgTex:SetColorTexture(rr, gg, bb)
+        return
+    end
+
+    local r, g, b = GetCastbarBackgroundColor()
+    OpenColorPicker(r, g, b, function(nr, ng, nb)
+        SetCastbarBackgroundColor(nr, ng, nb, 1)
+        castbarBgTex:SetColorTexture(nr, ng, nb)
+    end)
+end)
+
+do
+    local r, g, b = GetCastbarBackgroundColor()
+    castbarBgTex:SetColorTexture(r, g, b)
+end
+
 
 
     --------------------------------------------------
@@ -1661,6 +1695,12 @@ end
                     g.playerCastbarOverrideR = 1
                     g.playerCastbarOverrideG = 1
                     g.playerCastbarOverrideB = 1
+
+                    -- Castbar background defaults
+                    g.castbarBgR = nil
+                    g.castbarBgG = nil
+                    g.castbarBgB = nil
+                    g.castbarBgA = nil
             
                     -- Update swatches in the Colors panel
                     if S.interruptibleTex then
@@ -1674,6 +1714,10 @@ end
                     if S.interruptFeedbackTex then
                         local r3, g3, b3 = GetInterruptFeedbackCastColor()
                         S.interruptFeedbackTex:SetColorTexture(r3, g3, b3)
+                    end
+                    if S.castbarBgTex then
+                        local rb, gb, bb = GetCastbarBackgroundColor()
+                        S.castbarBgTex:SetColorTexture(rb, gb, bb)
                     end
             
                     if F.UpdatePlayerOverrideControls then
@@ -3430,6 +3474,11 @@ end
                 local r, g2, b2 = GetInterruptFeedbackCastColor()
                 S.interruptFeedbackTex:SetColorTexture(r, g2, b2)
             end
+        end
+        -- Castbar background color
+        if S.castbarBgTex then
+            local r, g2, b2 = GetCastbarBackgroundColor()
+            S.castbarBgTex:SetColorTexture(r, g2, b2)
         end
         -- Mouseover highlight (enable + colorpicker)
         if S.highlightEnableCheck or S.highlightColorTex then
