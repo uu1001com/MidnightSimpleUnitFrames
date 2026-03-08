@@ -296,7 +296,7 @@ end
         local name = spec.name
         local dd = name and _G[name] or nil
         if not dd then
-            dd = CreateFrame("Frame", name, spec.parent, "UIDropDownMenuTemplate")
+            dd = (_G.MSUF_CreateStyledDropdown and _G.MSUF_CreateStyledDropdown(name, spec.parent) or CreateFrame("Frame", name, spec.parent, "UIDropDownMenuTemplate"))
         end
         dd:SetParent(spec.parent)
         dd:ClearAllPoints()
@@ -737,9 +737,33 @@ end
         end,
     })
 
-
-
-
+    local dropdownStyleLabel = UI:Label(rightPanel, "MSUF dropdown style", "TOPLEFT", targetSoundsCheck, 0, -28)
+    UI:MakeDropdown({
+        name = "MSUF_MiscDropdownStyleDropdown",
+        parent = rightPanel,
+        anchor = dropdownStyleLabel,
+        x = -16, y = -8,
+        width = 180,
+        options = {
+            { text = "New MSUF dropdowns", value = "msuf" },
+            { text = "Old Blizzard dropdowns", value = "old" },
+        },
+        fallbackText = "New MSUF dropdowns",
+        get = function()
+            local g = EnsureGeneral()
+            local mode = g.dropdownStyleMode
+            if mode == "old" or mode == "blizzard" or mode == "legacy" then return "old" end
+            return "msuf"
+        end,
+        set = function(v)
+            local g = EnsureGeneral()
+            local mode = (v == "old") and "old" or "msuf"
+            g.dropdownStyleMode = mode
+            if _G.MSUF_SetDropdownStyleMode then
+                _G.MSUF_SetDropdownStyleMode(mode)
+            end
+        end,
+    })
 
 
 
@@ -816,7 +840,11 @@ end
             local t = EnsureTarget()
             t.rangeFadeEnabled = v and true or false
             if _G.MSUF_RangeFade_Reset then _G.MSUF_RangeFade_Reset() end
-            if _G.MSUF_RangeFade_RebuildSpells then _G.MSUF_RangeFade_RebuildSpells() end
+            if _G.MSUF_RangeFade_EvaluateActive then
+                _G.MSUF_RangeFade_EvaluateActive(true)
+            elseif _G.MSUF_RangeFade_RebuildSpells then
+                _G.MSUF_RangeFade_RebuildSpells()
+            end
         end,
     })
 
@@ -835,8 +863,12 @@ end
             local t = EnsureFocus()
             t.rangeFadeEnabled = v and true or false
             if _G.MSUF_RangeFadeFB_Reset then _G.MSUF_RangeFadeFB_Reset() end
-            if _G.MSUF_RangeFadeFB_RebuildSpells then _G.MSUF_RangeFadeFB_RebuildSpells() end
-            if _G.MSUF_RangeFadeFB_ApplyCurrent then _G.MSUF_RangeFadeFB_ApplyCurrent(true) end
+            if _G.MSUF_RangeFadeFB_EvaluateActive then
+                _G.MSUF_RangeFadeFB_EvaluateActive(true)
+            else
+                if _G.MSUF_RangeFadeFB_RebuildSpells then _G.MSUF_RangeFadeFB_RebuildSpells() end
+                if _G.MSUF_RangeFadeFB_ApplyCurrent then _G.MSUF_RangeFadeFB_ApplyCurrent(true) end
+            end
         end,
     })
 
@@ -855,8 +887,12 @@ end
             local t = EnsureBoss()
             t.rangeFadeEnabled = v and true or false
             if _G.MSUF_RangeFadeFB_Reset then _G.MSUF_RangeFadeFB_Reset() end
-            if _G.MSUF_RangeFadeFB_RebuildSpells then _G.MSUF_RangeFadeFB_RebuildSpells() end
-            if _G.MSUF_RangeFadeFB_ApplyCurrent then _G.MSUF_RangeFadeFB_ApplyCurrent(true) end
+            if _G.MSUF_RangeFadeFB_EvaluateActive then
+                _G.MSUF_RangeFadeFB_EvaluateActive(true)
+            else
+                if _G.MSUF_RangeFadeFB_RebuildSpells then _G.MSUF_RangeFadeFB_RebuildSpells() end
+                if _G.MSUF_RangeFadeFB_ApplyCurrent then _G.MSUF_RangeFadeFB_ApplyCurrent(true) end
+            end
         end,
     })
 
